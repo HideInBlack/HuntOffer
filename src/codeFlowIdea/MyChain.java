@@ -439,6 +439,30 @@ public class MyChain {
         return curA;
     }
 
+    /**
+     * √（8）环形链表 II 142. time：2023年10月15日13:48:29 -> 2023年10月15日14:03:05
+     * 我的思路：一直往下走 走一个存储一个结点的 hashCode() 如果此值是存在过的 则返回此节点，此节点便是环的入口
+     * 重点笔记：巧妙利用链表节点的hashCode的唯一值！！！ （不可以用节点值表示唯一，就一定要用hashCode()表示唯一！）
+     */
+    public ListNode detectCycle(ListNode head) {
+        ListNode cur = head;
+        Map<Integer, Integer> map = new HashMap<>();
+        while (cur != null){
+            //如果map中不存在这个key 则让其key=1，如果已经存在了 就在其基础上+1.
+            map.put(cur.hashCode(), map.getOrDefault(cur.hashCode(), 0) + 1);
+            if (map.get(cur.hashCode()) == 2){
+                return cur;
+            }
+            cur = cur.next;
+        }
+        return null;
+    }
+
+    //（8）方法二 环形链表 II
+    public ListNode detectCycle2(ListNode head) {
+
+        return null;
+    }
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
@@ -447,15 +471,18 @@ public class MyChain {
         MyChain myChain = new MyChain();
 
         //（4）反转链表 206.
-        ListNode listNode1 = new ListNode(1);
+        ListNode listNode1 = new ListNode(3);
         ListNode listNode2 = new ListNode(2);
-        ListNode listNode3 = new ListNode(3);
-        ListNode listNode4 = new ListNode(4);
-        ListNode listNode5 = new ListNode(5);
+        ListNode listNode3 = new ListNode(0);
+        ListNode listNode4 = new ListNode(-4);
         listNode1.next = listNode2;
         listNode2.next = listNode3;
         listNode3.next = listNode4;
-        listNode4.next = listNode5;
+        listNode4.next = listNode2;
+
+        //（8）测试环形链表
+        ListNode cur = myChain.detectCycle(listNode1);
+        System.out.println(cur.val);
 
         //（4）测试反转链表
 //        ListNode cur = myChain.reverseAll(listNode1);
@@ -465,11 +492,11 @@ public class MyChain {
 //        }
 
         //(4) 测试反转链表2
-        ListNode cur = myChain.reverseBetween3(listNode1, 2, 4);
-        while(cur != null){
-            System.out.println(cur.val);
-            cur = cur.next;
-        }
+//        ListNode cur = myChain.reverseBetween3(listNode1, 2, 4);
+//        while(cur != null){
+//            System.out.println(cur.val);
+//            cur = cur.next;
+//        }
 
         //（6）删除链表的倒数第N个节点
 //        myChain.removeNthFromEnd(listNode1, 2);
