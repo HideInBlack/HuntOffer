@@ -51,7 +51,7 @@
 > 1. **螺旋矩阵：**螺旋矩阵最重要的就是自定义边界！自定义四个边界！然后从左到右、从上到下、从右到左、从下到上遍历一圈，遍历之后不要忘记边界的缩减！
 > 2. **总结思维导图**
 >
-> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=MWY0NjRmMGFjZmIzNTdkYzc2NmU5MGQ5ZTFjOWY4OThfMnI3S0gwQTdDQzZmTnJIcDJmbkhMREp5U2kzOXRSUkRfVG9rZW46UEZiQmJrSHg0b0FiRk54ekRhMGNNNHhVbnNlXzE2OTczNDc3MTM6MTY5NzM1MTMxM19WNA)
+> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=ODNhYjQzYThjMjcxMzJmMjE5NGYwMjFjMWU0ZTNlMTlfOVZ5ZkdnZkhaRzVUY3U3WE1qczhWbjRzdGZrWlR6U3ZfVG9rZW46UEZiQmJrSHg0b0FiRk54ekRhMGNNNHhVbnNlXzE2OTc0MjE2ODY6MTY5NzQyNTI4Nl9WNA)
 
 **（3）重点题目**
 
@@ -64,7 +64,9 @@
 **（1）理论知识点**
 
 > 1. 链表的结构体定义
-> 2. 
+> 2. 链表的种类主要为：单链表，双链表，循环链表
+> 3. 链表的存储方式：链表的节点在内存中是**分散存储**的，通过**指针连在**一起。
+> 4. 链表操作中一个非常重要的技巧：**虚拟头节点**
 
 **（2）算法知识点**
 
@@ -76,13 +78,21 @@
 >    2. ②采用头插法的话，有一个特征就是那个最开始的值，会一直处在最后面往后走
 >    3. 就是childHead指针本来是头 childEnd指针本来是尾巴，但是翻转之后指针还是跟着走的！！！ 一定记住指针跟着节点走的！所有指针还是可以用的！！！
 > 3. **链表相交：**注意：结点相交的位置不是节点的值相等！而是节点是同一个节点（指针相等）！这个不一样！ 其次可以用哈希值来判断是不是一个结点！！！
-> 4. 王显博
+> 4. **环形链表：**
+>    1. *巧妙利用链表节点的hashCode的唯一值！！！ （不可以用节点值表示唯一，就一定要用hashCode()表示唯一！）*
+>    2. *一直往下走 走一个存储一个结点的 hashCode() 如果此值是存在过的(map的值为2)，则返回此节点，此节点便是环的入口*
+>    3. ①首先是快慢指针 fast一次走两步 slow一次走一步如果有环则一定相遇 
+>    4. ②其次是当相遇时 则一个指针从头结点开始 一个从当前相遇结点开始 第一次相遇的时候就是环形入口！
+> 5. 总结
+>
+> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=MTg0ZmE5NGFhMTE3ODdlMzM2OWVhY2YxNmQ3MTVhZGNfMGl6WDVRWkJSaWZ3bUwzUmZtUmlYNWRkY3FFVWpjaTRfVG9rZW46QmQ1RmJRcGVXb0VhdzV4NVNocWNLWkt4bm9nXzE2OTc0MjE2ODY6MTY5NzQyNTI4Nl9WNA)
 
 **（3）重点题目**
 
 - 链表 [删除排序链表中的重复元素 II](https://leetcode.cn/problems/remove-duplicates-from-sorted-list-ii/)
 - 链表4. [反转链表 II](https://leetcode.cn/problems/reverse-linked-list-ii/) 【面试时不可改变节点值 一定要多做几遍这个！】
 - 链表6. [删除链表的倒数第 N 个结点](https://leetcode.cn/problems/remove-nth-node-from-end-of-list/)【这一题已做出 建议再做一遍 细节较多！】
+- 链表8. [142. 环形链表 II](https://leetcode.cn/problems/linked-list-cycle-ii/)【快慢指针again！】
 
 ### **3.哈希表**
 
@@ -90,11 +100,15 @@
 
 **（2）算法知识点**
 
+**（3）重点题目**
+
 ### **4.字符串**
 
 **（1）理论知识点**
 
 **（2）算法知识点**
+
+**（3）重点题目**
 
 ### **5.双指针**
 
@@ -102,14 +116,20 @@
 
 **（2）算法知识点**
 
+**（3）重点题目**
+
 ### **6.栈与队列**
 
 **（1）理论知识点**
 
 **（2）算法知识点**
 
+**（3）重点题目**
+
 ### **7.二叉树**
 
 **（1）理论知识点**
 
 **（2）算法知识点**
+
+**（3）重点题目**
