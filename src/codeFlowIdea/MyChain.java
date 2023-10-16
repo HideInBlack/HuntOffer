@@ -458,10 +458,32 @@ public class MyChain {
         return null;
     }
 
-    //（8）方法二 环形链表 II
+    //（8）√ 方法二 环形链表 II 【快慢指针方法】 time：2023年10月16日09:33:45 -> 2023年10月16日09:51:14
+    //重点笔记：①首先是快慢指针 fast一次走两步 slow一次走一步如果有环则一定相遇 ②其次是当相遇时 则一个指针从头结点开始 一个从当前相遇结点开始 第一次相遇的时候就是环形入口！
     public ListNode detectCycle2(ListNode head) {
-
-        return null;
+        //第一步：首先使用快慢指针判断是否有环
+        ListNode fast = head;
+        ListNode slow = head;
+        while (true){
+            //先判断fast是否为空
+            //因为fast要一次走两步！所以这里一定是fast和fast.next一起判断！
+            if (fast == null || fast.next == null){//如果fast或者fast.next为空都可以直接返回没有环了
+                return null;
+            }
+            //再往下移动
+            fast = fast.next.next;
+            slow = slow.next;
+            //移动后判断如果相等：就继续往下走找入口点
+            if (fast == slow){
+                //此时一个指针从head开始走 一个开始从当前接结点走 寻找入口结点
+                fast = head;
+                while(fast != slow){
+                    fast = fast.next;
+                    slow = slow.next;
+                }
+                return fast;
+            }
+        }
     }
 
     /**
