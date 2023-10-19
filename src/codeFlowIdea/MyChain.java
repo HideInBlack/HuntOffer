@@ -6,7 +6,7 @@ import util.DzyUtils;
 import java.util.*;
 
 /**
- * codeFlowIdea 代码随想录学习记录 time：2023年10月8日15:53:28 ->
+ * codeFlowIdea 代码随想录学习记录 time：2023年10月8日15:53:28 -> 2023年10月19日18:01:45
  * author：董政宇
  * 第二部分 链表部分：MyChain
  */
@@ -525,9 +525,10 @@ public class MyChain {
                 set.add(n);
             }
 
-            System.out.println("进来了----" + n);
         }
     }
+
+
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
@@ -535,8 +536,15 @@ public class MyChain {
     public static void main(String[] args) {
         MyChain myChain = new MyChain();
 
+        int n = 19;
+        while(n != 0){
+            System.out.println(n%10);
+            n = n/10;
+        }
+
+
         //（8）-（2）快乐数
-        System.out.println(myChain.isHappy(2));
+//        System.out.println(myChain.isHappy(2));
 
         //（4）反转链表 206.
 //        ListNode listNode1 = new ListNode(3);
