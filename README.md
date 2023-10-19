@@ -16,6 +16,8 @@
 > 6. 定期复习，面试前冲刺热题
 >
 > 往返重复，拿出对待高考的态度和方法：先做例题，再做课后题，最后再做各种模拟套题
+>
+> 1. 高频题目链接：[Leetcode各标签高频题目排序](https://ovxmsaoguz.feishu.cn/docx/RHAudENIUoMtLEx5ljncKIgCngf) 
 
 # **二.开始刷题**
 
@@ -51,7 +53,7 @@
 > 1. **螺旋矩阵：**螺旋矩阵最重要的就是自定义边界！自定义四个边界！然后从左到右、从上到下、从右到左、从下到上遍历一圈，遍历之后不要忘记边界的缩减！
 > 2. **总结思维导图**
 >
-> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=ODNhYjQzYThjMjcxMzJmMjE5NGYwMjFjMWU0ZTNlMTlfOVZ5ZkdnZkhaRzVUY3U3WE1qczhWbjRzdGZrWlR6U3ZfVG9rZW46UEZiQmJrSHg0b0FiRk54ekRhMGNNNHhVbnNlXzE2OTc0MjE2ODY6MTY5NzQyNTI4Nl9WNA)
+> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=NjkzZDZiNGZmOTk3YTNhN2UyODhhNWU1NmM2OWYzMDZfWnFiZVpvNmhzTndPUm05VmZlRFZYZVc5WFNidDhyVTJfVG9rZW46UEZiQmJrSHg0b0FiRk54ekRhMGNNNHhVbnNlXzE2OTc3MTk4MjU6MTY5NzcyMzQyNV9WNA)
 
 **（3）重点题目**
 
@@ -83,9 +85,10 @@
 >    2. *一直往下走 走一个存储一个结点的 hashCode() 如果此值是存在过的(map的值为2)，则返回此节点，此节点便是环的入口*
 >    3. ①首先是快慢指针 fast一次走两步 slow一次走一步如果有环则一定相遇 
 >    4. ②其次是当相遇时 则一个指针从头结点开始 一个从当前相遇结点开始 第一次相遇的时候就是环形入口！
-> 5. 总结
+> 5. **循环判断：快慢指针**（fast一次走两步，slow一次走一步）判断是否有循环都可以用快慢指针！或者哈希集合Set
+> 6. 总结
 >
-> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=MTg0ZmE5NGFhMTE3ODdlMzM2OWVhY2YxNmQ3MTVhZGNfMGl6WDVRWkJSaWZ3bUwzUmZtUmlYNWRkY3FFVWpjaTRfVG9rZW46QmQ1RmJRcGVXb0VhdzV4NVNocWNLWkt4bm9nXzE2OTc0MjE2ODY6MTY5NzQyNTI4Nl9WNA)
+> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=YWE5ZTRhYmU0ZWVmMGUzYTliMzFhOWFmNmRlYzI2ZGNfMk9ZbGdkZFJ4RnBRZDA2Z0Z5Yzl4TU11ajd5Y3RsWlJfVG9rZW46QmQ1RmJRcGVXb0VhdzV4NVNocWNLWkt4bm9nXzE2OTc3MTk4MjU6MTY5NzcyMzQyNV9WNA)
 
 **（3）重点题目**
 
@@ -98,9 +101,52 @@
 
 **（1）理论知识点**
 
+> 1. 哈希表（英文为**Hash table**，**散列表**都是指hash table）
+> 2. 哈希表是根据**关键码的值**而直接进行访问的数据结构。
+> 3. 一般哈希表都是用来快速判断**一个元素是否出现集合里**。【只需要O(1)就可以做到】
+> 4. **哈希碰撞**的两种解决方法： 拉链法和线性探测法。
+> 5. 常见的三种**哈希结构**：
+>    1. **数组 ！！**
+>    2. set （集合）
+>    3. map(映射)
+>    4. ```Java
+>       Set<Integer> set= new HashSet<Integer>(); //只对key操作 不可重复
+>       Map<Integer, Integer> map = new HashMap<>(); //对key-value操作 key不可重复 value可重复
+>       ```
+> 6. 当我们遇到了要快速**判断一个元素是否出现集合里**的时候，就要考虑哈希法
+> 7. 如果在做面试题目的时候遇到需要**判断一个元素是否出现过**的场景也应该第一时间想到**哈希法**！
+> 8. Map中存储的就是key-value的键值对，Set中只存储了Key
+>    1. Map: Key-Value 模型【map可以判断此元素是否在集合里面，并且有几个！个数要求】
+>    2. ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=MGZmYmJmODFjODgxZWVhZThmYTMxYzg5NmViZDVlMmRfdTJlMjAyTVFKVzZRNUd5Mmh5UlNOcXdtWU9tM0V1dkhfVG9rZW46RXV1dmJ4TDRjb2E3S1Z4UjNoNWMwRGl0blhHXzE2OTc3MTk4MjU6MTY5NzcyMzQyNV9WNA)
+>
+>    3. Set: 纯 key 模型【set可以判断此元素是否在集合里面 仅此而已】
+>    4. ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=YjQ3OTk2Y2FmN2IyNWEyYTliN2VjZjExNWNiYjcwOGNfTXRJMm9SSnZxS0FNUHd3RDJsbVFYREdaZ3h5YkQwajVfVG9rZW46Q2h6T2JCRDhOb0dHa0h4QVRjMWM4Mk5rbmFjXzE2OTc3MTk4MjU6MTY5NzcyMzQyNV9WNA)
+> 9. **循环判断可以用Set！**
+> 10. 
+
 **（2）算法知识点**
 
+> 1. **== 与equals的区别**：==不仅比较值也比较引用地址。还需要注意的是：
+>    1. 当使用Integer时，Integer 129！= Integer 129的。他们这样是不等的！因为使用Integer时。只能在-127到128内比较。这之外的就不可以使用==判断了。
+> 2. 记住只有**Integer** 记住**-128~127** 是相同的！！！！
+>
+> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=ODIwNTZlODhmNjE4NWRiYTJjZWY1MWNjYjAwMzk2NGNfTUZ1WFZKZnBGTDJrTlYxTHpkV2RwMDJyT2NORkVQcElfVG9rZW46SGFvUGIzNnhIb21iYnV4elpVWmNkQ0g3bk9mXzE2OTc3MTk4MjU6MTY5NzcyMzQyNV9WNA)
+>
+> 1. **字符串相关**：
+>    1. 可以把字符串toCharArray()先拆成char数组，然后再使用Arrays.sort对数组进行排序，再使用new String(char数组)把数组恢复成字符串！【字符串->排序后->字符串】
+>    2. 以及map和list的结合操作！yyds！
+> 2. 这个的应用很精彩！！一定要学到并且会巧妙的用
+>
+> ```Java
+> //根据排序后的字符串在map中取值，没有则new 有则取出来
+> List<String> list = map.getOrDefault(key, new ArrayList<>());
+> list.add(strs[i]);
+> map.put(key, list);
+> ```
+
 **（3）重点题目**
+
+哈希表2. [49. 字母异位词分组](https://leetcode.cn/problems/group-anagrams/) 这一题对Map和List的运用绝了！！！一定again
 
 ### **4.字符串**
 
