@@ -3,9 +3,7 @@ package codeFlowIdea;
 
 import util.DzyUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * codeFlowIdea 代码随想录学习记录 time：2023年10月8日15:53:28 ->
@@ -485,6 +483,51 @@ public class MyChain {
             }
         }
     }
+    //（8）-（1） 环形链表 141. time：2023年10月19日09:37:01 -> 2023年10月19日09:47:28
+    //我的思路：快慢指针 fast一次走两步 slow一次走一步 如果可以相遇 则电脑有环存在
+    //重点笔记：尽量不要在判断条件外进行初始化 要在判断条件内（循环内）先进行移动，然后再进行判断！
+    public boolean hasCycle(ListNode head) {
+        ListNode fast = head;
+        ListNode slow = head;
+        while(fast != null && fast.next != null){
+            fast = fast.next.next;
+            slow = slow.next;
+            if (fast == slow){
+                return true;
+            }
+        }
+        return false;
+    }
+    //（8）-（2）快乐数 time：2023年10月19日10:00:57 -> 2023年10月19日10:30:49
+    //我的思路：确实和环形链表一样 因为要判断这个数是不是出现过，如果出现过直接返回false 否则一直往下走看是不是会出现true
+    public boolean isHappy(int n) {
+        Set<Integer> set = new HashSet<>();
+        set.add(n);
+
+        //取每个位置上数的方法：①可以用字符串 ②可以直接进行取余 但是怎么才可以获得总共有多少位呢
+        while (true){
+            //求各位置之和
+            String str = "";
+            int sum = 0;
+            str = str + n;
+            for (int i = 0; i < str.length(); i++){
+                sum = sum + Integer.parseInt(str.charAt(i)+"")*Integer.parseInt(str.charAt(i)+"");
+            }
+            n = sum;
+            //等于1 其快乐数直接返回
+            if (n == 1){
+                return true;
+            }
+            //进行判断n是否已经存在
+            if (set.contains(n)){
+                return false;
+            }else {
+                set.add(n);
+            }
+
+            System.out.println("进来了----" + n);
+        }
+    }
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
@@ -492,19 +535,22 @@ public class MyChain {
     public static void main(String[] args) {
         MyChain myChain = new MyChain();
 
+        //（8）-（2）快乐数
+        System.out.println(myChain.isHappy(2));
+
         //（4）反转链表 206.
-        ListNode listNode1 = new ListNode(3);
-        ListNode listNode2 = new ListNode(2);
-        ListNode listNode3 = new ListNode(0);
-        ListNode listNode4 = new ListNode(-4);
-        listNode1.next = listNode2;
-        listNode2.next = listNode3;
-        listNode3.next = listNode4;
-        listNode4.next = listNode2;
+//        ListNode listNode1 = new ListNode(3);
+//        ListNode listNode2 = new ListNode(2);
+//        ListNode listNode3 = new ListNode(0);
+//        ListNode listNode4 = new ListNode(-4);
+//        listNode1.next = listNode2;
+//        listNode2.next = listNode3;
+//        listNode3.next = listNode4;
+//        listNode4.next = listNode2;
 
         //（8）测试环形链表
-        ListNode cur = myChain.detectCycle(listNode1);
-        System.out.println(cur.val);
+//        ListNode cur = myChain.detectCycle(listNode1);
+//        System.out.println(cur.val);
 
         //（4）测试反转链表
 //        ListNode cur = myChain.reverseAll(listNode1);
