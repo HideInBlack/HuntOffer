@@ -2,6 +2,10 @@
 
 # **一.刷题间接经验**
 
+1. DZY的算法笔记飞书版：[董政宇的算法笔记](https://ovxmsaoguz.feishu.cn/docx/PA2idKvjxolXkbxzzw8c1HCQnsb) 
+2. 高频题目链接：[Leetcode各标签高频题目排序](https://ovxmsaoguz.feishu.cn/docx/RHAudENIUoMtLEx5ljncKIgCngf) 
+3. 王显博的算法累计：[算法累计](https://kazjvwevgzj.feishu.cn/docx/T6Frdb96io5ZdtxUtCUc8hmBnKe) 
+
 > 先刷  ***剑指offer的题***  再刷 ***leetcode热题100题***  分类刷题（分类顺序 可以按照代码随想录顺序来） 先从常见的数据结构和常见的算法开始 action！
 >
 > 每个标签 大概要做10道题目
@@ -16,8 +20,6 @@
 > 6. 定期复习，面试前冲刺热题
 >
 > 往返重复，拿出对待高考的态度和方法：先做例题，再做课后题，最后再做各种模拟套题
->
-> 1. 高频题目链接：[Leetcode各标签高频题目排序](https://ovxmsaoguz.feishu.cn/docx/RHAudENIUoMtLEx5ljncKIgCngf) 
 
 # **二.开始刷题**
 
@@ -53,7 +55,7 @@
 > 1. **螺旋矩阵：**螺旋矩阵最重要的就是自定义边界！自定义四个边界！然后从左到右、从上到下、从右到左、从下到上遍历一圈，遍历之后不要忘记边界的缩减！
 > 2. **总结思维导图**
 >
-> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=NjkzZDZiNGZmOTk3YTNhN2UyODhhNWU1NmM2OWYzMDZfWnFiZVpvNmhzTndPUm05VmZlRFZYZVc5WFNidDhyVTJfVG9rZW46UEZiQmJrSHg0b0FiRk54ekRhMGNNNHhVbnNlXzE2OTc3MTk4MjU6MTY5NzcyMzQyNV9WNA)
+> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=Y2U1MTllODgzMWU1MzYzNmMyZWI2MGVmMDUzNGFlYzRfZjRPNmxuUmpqTEJtMkpYTzA5T2s2aVFtY2NTeXhOMXNfVG9rZW46UEZiQmJrSHg0b0FiRk54ekRhMGNNNHhVbnNlXzE2OTgwNzEzODk6MTY5ODA3NDk4OV9WNA)
 
 **（3）重点题目**
 
@@ -88,7 +90,7 @@
 > 5. **循环判断：快慢指针**（fast一次走两步，slow一次走一步）判断是否有循环都可以用快慢指针！或者哈希集合Set
 > 6. 总结
 >
-> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=YWE5ZTRhYmU0ZWVmMGUzYTliMzFhOWFmNmRlYzI2ZGNfMk9ZbGdkZFJ4RnBRZDA2Z0Z5Yzl4TU11ajd5Y3RsWlJfVG9rZW46QmQ1RmJRcGVXb0VhdzV4NVNocWNLWkt4bm9nXzE2OTc3MTk4MjU6MTY5NzcyMzQyNV9WNA)
+> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=NjdmMTIwYmY3NTU2OWJhZWVkOTkzNTg0YjhlNTQ4NjJfYTZwUWt3b3JGUkJBWnVDNVo5VlU4RmFzOXpxSHk1blZfVG9rZW46QmQ1RmJRcGVXb0VhdzV4NVNocWNLWkt4bm9nXzE2OTgwNzEzODk6MTY5ODA3NDk4OV9WNA)
 
 **（3）重点题目**
 
@@ -117,10 +119,10 @@
 > 7. 如果在做面试题目的时候遇到需要**判断一个元素是否出现过**的场景也应该第一时间想到**哈希法**！
 > 8. Map中存储的就是key-value的键值对，Set中只存储了Key
 >    1. Map: Key-Value 模型【map可以判断此元素是否在集合里面，并且有几个！个数要求】
->    2. ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=MGZmYmJmODFjODgxZWVhZThmYTMxYzg5NmViZDVlMmRfdTJlMjAyTVFKVzZRNUd5Mmh5UlNOcXdtWU9tM0V1dkhfVG9rZW46RXV1dmJ4TDRjb2E3S1Z4UjNoNWMwRGl0blhHXzE2OTc3MTk4MjU6MTY5NzcyMzQyNV9WNA)
+>    2. ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=MzI5YjNjYjFmMzQ4NzdiMGNkMTA3MjNhNGZlNDZmZTlfdUNJUTdNTHVWZXdJS0JZenRXb00xeWRlSmo5c09yTllfVG9rZW46RXV1dmJ4TDRjb2E3S1Z4UjNoNWMwRGl0blhHXzE2OTgwNzEzODk6MTY5ODA3NDk4OV9WNA)
 >
 >    3. Set: 纯 key 模型【set可以判断此元素是否在集合里面 仅此而已】
->    4. ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=YjQ3OTk2Y2FmN2IyNWEyYTliN2VjZjExNWNiYjcwOGNfTXRJMm9SSnZxS0FNUHd3RDJsbVFYREdaZ3h5YkQwajVfVG9rZW46Q2h6T2JCRDhOb0dHa0h4QVRjMWM4Mk5rbmFjXzE2OTc3MTk4MjU6MTY5NzcyMzQyNV9WNA)
+>    4. ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=Zjg1ODYwNTk2ODU1ODU1ZDFjZDhmNjNhNWJlOWIyODJfb2RyY2MwekUwcU1SR2hNajljblNPZ2FFcEFaQnlWSExfVG9rZW46Q2h6T2JCRDhOb0dHa0h4QVRjMWM4Mk5rbmFjXzE2OTgwNzEzODk6MTY5ODA3NDk4OV9WNA)
 > 9. **循环判断可以用Set！**
 > 10. 
 
@@ -130,7 +132,7 @@
 >    1. 当使用Integer时，Integer 129！= Integer 129的。他们这样是不等的！因为使用Integer时。只能在-127到128内比较。这之外的就不可以使用==判断了。
 > 2. 记住只有**Integer** 记住**-128~127** 是相同的！！！！
 >
-> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=ODIwNTZlODhmNjE4NWRiYTJjZWY1MWNjYjAwMzk2NGNfTUZ1WFZKZnBGTDJrTlYxTHpkV2RwMDJyT2NORkVQcElfVG9rZW46SGFvUGIzNnhIb21iYnV4elpVWmNkQ0g3bk9mXzE2OTc3MTk4MjU6MTY5NzcyMzQyNV9WNA)
+> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=OGU3Mzc0NzBkNGMxNjgxN2VmZTQ0NmNkMGI0M2M3ZDFfWU0wWWt0c2h3NVlqRkJtWDJJNm5tNXUwT0FnSnlOZzFfVG9rZW46SGFvUGIzNnhIb21iYnV4elpVWmNkQ0g3bk9mXzE2OTgwNzEzODk6MTY5ODA3NDk4OV9WNA)
 >
 > 1. **字符串相关**：
 >    1. 可以把字符串toCharArray()先拆成char数组，然后再使用Arrays.sort对数组进行排序，再使用new String(char数组)把数组恢复成字符串！【字符串->排序后->字符串】
@@ -143,6 +145,80 @@
 > list.add(strs[i]);
 > map.put(key, list);
 > ```
+>
+> 1. ***异位词****只关注****字母的个数****是否相同，而不关注字母的顺序*
+> 2. **map的赋值操作**！
+>
+> ```Java
+> //直接这样赋值是map 和 temp跟着一起做改变的 换句话说：map和temp为同一个
+> Map<Character, Integer> temp = map；
+> //这样赋值的话 就是把map里的所有值复制给temp，同时操作temp的值时，map中的值是不会改变的
+> Map<Character, Integer> temp = new HashMap<>();
+> temp.putAll(map);
+> ```
+>
+> 1. **判断两个数组**的所有值**是否是相等的**！
+>
+> ```Java
+> //判断两个数组的数值是否是完全相等的
+> if (Arrays.equals(arrayS, arrayP)){
+>     result.add(left);
+> }
+> ```
+>
+> 1. 相较于哈希map，还是数组的速度会更快！所以要学会**把26个字母映射到数组上来统计个数**的行为！【注意：知道固定多少个key时候可以用数组，不知道多少个key时候可以用哈希map！】
+>
+> ```Java
+> //创建数据26个 并且直接进行赋给 p.charAt(i)-'a'为索引
+> int arrayP[] = new int[26];
+> for (int i = 0; i < p.length(); i++){
+>     arrayP[p.charAt(i)-'a']++;
+> }
+> ```
+>
+> 1. **List、Set转化为int[]数组问题：**
+>
+> ```Java
+> //List转化为int[]数组问题
+> List<Integer> list = new ArrayList<>();
+> //直接list.toArray()的话是转换成的Object[]数组问题，但是我们需要的是int[]数组问题【Java8 api把list转化为int[]数组问题】
+> return list.stream().mapToInt(Integer::intValue).toArray();
+> 
+> //Set转化为int[]数组问题（没有专门的方法只能通过增强for循环）
+> Set<Integer> set = new HashSet<>();
+> set.add(1);set.add(2);set.add(3);
+> for (int element : set){
+>     System.out.println(element);
+> }//output：1 2 3
+> ```
+>
+> 1. **List、Set、Map的直接遍历问题：**
+>
+> ```Java
+> //List遍历【直接用增强for循环】
+> List<Integer> list = new ArrayList<>();
+> list.add(5);list.add(6);list.add(7);
+> for (int element : list){
+>     System.out.println(element);//output：5 6 7
+> }
+> 
+> //Set遍历【直接用增强for循环】
+> Set<Integer> set = new HashSet<>();
+> set.add(1);set.add(2);set.add(3);
+> for (int element : set){
+>     System.out.println(element);//output：1 2 3
+> }
+> 
+> //Map遍历【先用增强for循环遍历map.keySet()，然后接着直接用map.get()遍历所有的值】
+> Map<Integer, Integer> map = new HashMap<>();
+> map.put(0, 0);  map.put(1, 100); map.put(2, 200);
+> for (int element : map.keySet()){
+>     System.out.println(element + " : " + map.get(element));
+> }//0 : 0     1 : 100     2 : 200
+> ```
+>
+> 1. 使用**哈希Set**【set.contains(nums2[i])】可以**在** ***O*****(1) 的时间内判断一个元素是否在集合中**
+> 2. 
 
 **（3）重点题目**
 
