@@ -59,12 +59,80 @@ public class MyHash {
     }
 
     /**
+     * ×超时 (2)-(1) 找到字符串中所有字母异位词 438. time：2023年10月23日18:33:58 -> 2023年10月23日19:08:17
+     * 我的思路：双指针 + 滑动窗口 (异位词只关注字母的个数是否相同，而不关注字母的顺序)
+     */
+    public List<Integer> findAnagrams(String s, String p) {
+        List<Integer> result = new ArrayList<>();
+        if (s.length() < p.length()){
+            return result;
+        }
+        int left = 0; int right = p.length() - 1;
+        Map<Character, Integer> map = new HashMap<>();
+        //先统计所给p中的个数
+        for (int i = 0; i < p.length(); i++){
+            map.put(p.charAt(i), map.getOrDefault(p.charAt(i), 0) + 1);
+        }
+        //System.out.println(map.toString());
+        while (right<s.length()){
+            Map<Character, Integer> temp = new HashMap<>();
+            temp.putAll(map);
+            //遍历窗口内部
+            for (int i = left; i <= right; i++){
+                if (!temp.containsKey(s.charAt(i))){
+                    break;
+                }
+                temp.put(s.charAt(i), temp.getOrDefault(s.charAt(i), 0) - 1);
+                if (temp.get(s.charAt(i)).equals(0)){
+                    temp.remove(s.charAt(i));
+                }
+            }
+            //判断是否为空 为空时是字母异位词
+            if (temp.isEmpty()){
+                result.add(left);
+            }
+            left++;
+            right++;
+        }
+        return result;
+    }
+    // √（相同的思想使用数组尝试一下）上面的方法是使用了hashmap超时了 下面使用一下数组 time：2023年10月23日19:52:48 -> 2023年10月23日20:09:25
+    //重点笔记：数组快在什么地方呢？快在其可以快速判断两个数组是否是相等值的！ + 双指针+滑动固定窗口即可！
+    public List<Integer> findAnagrams2(String s, String p) {
+        List<Integer> result = new ArrayList<>();
+        if (s.length() < p.length()){
+            return result;
+        }
+        int left = 0; int right = p.length() - 1;
+        int arrayP[] = new int[26];
+        for (int i = 0; i < p.length(); i++){
+            arrayP[p.charAt(i)-'a']++;
+        }
+        while (right < s.length()){
+            int arrayS[] = new int[26];
+            for (int i = left; i <= right; i++){
+                arrayS[s.charAt(i)-'a']++;
+            }
+            //判断两个数组的数值是否是完全相等的
+            if (Arrays.equals(arrayS, arrayP)){
+                result.add(left);
+            }
+
+            left++;
+            right++;
+        }
+        return result;
+    }
+
+
+    /**
      * -----------------------------------------------测试-----------------------------------------------
      */
     public static void main(String[] args) {
         MyHash myHash = new MyHash();
 
-
+        //测试 (2)-(1) 找到字符串中所有字母异位词 438.
+        System.out.println(myHash.findAnagrams("baa", "aa").toString());
 
         //测试 (2)有效的字母异位词
 //        System.out.println(myHash.isAnagram("rat", "car"));
