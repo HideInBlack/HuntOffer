@@ -124,6 +124,69 @@ public class MyHash {
         return result;
     }
 
+    /**
+     * √（3）两个数组的交集 349. time： 2023年10月23日20:23:53 -> 2023年10月23日20:37:05
+     * 我的思路：需要用到交集 并且交集每个元素都是唯一的 想到可以使用hashSet试一试 判断个包含不包含
+     */
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Set<Integer> set = new HashSet<>();
+        List<Integer> list = new ArrayList<>();
+        //先把唯一不重复集合给求出来
+        for (int i = 0; i < nums1.length; i++){
+            if (!set.contains(nums1[i])){
+                set.add(nums1[i]);
+            }
+        }
+        //再进行判断 nums2中是否存在
+        for (int i = 0; i < nums2.length; i++){
+            if (set.contains(nums2[i])){
+                list.add(nums2[i]);
+                set.remove(nums2[i]);
+            }
+        }
+        //遍历list赋值给数组返回
+        int[] result = new int[list.size()];
+        int i = 0;
+        for (int element : list){
+            result[i++] = element;
+        }
+
+        //Java8 api把list转化为int[]数组问题
+        return result;
+    }
+
+    // √（3.1）两个数组的交集 II 350. time：2023年10月23日21:52:47 -> 2023年10月23日22:14:30
+    //我的思路：这个涉及到出现的个数，要用map来解决【把两个集合的个数全都统计了，然后进行比较都有的key则是交集，并且谁个数小选谁的个数！】
+    public int[] intersect(int[] nums1, int[] nums2) {
+        Map<Integer, Integer> map1 = new HashMap<>();
+        Map<Integer, Integer> map2 = new HashMap<>();
+        for (int i = 0; i < nums1.length; i++){
+            //统计个数
+            map1.put(nums1[i], map1.getOrDefault(nums1[i], 0) + 1);
+        }
+        for (int i = 0; i < nums2.length; i++){
+            //统计个数
+            map2.put(nums2[i], map2.getOrDefault(nums2[i], 0) + 1);
+        }
+        //那map1的key去map2的key做比较
+        List<Integer> list = new ArrayList<>();
+        for (int key : map2.keySet()){
+            if (map1.containsKey(key)){//如果都有则是交集 取最小的个数
+                int min = 0;
+                if (map1.get(key) < map2.get(key)){
+                    min = map1.get(key);
+                }else {
+                    min = map2.get(key);
+                }
+                for (int j = 1; j <= min; j++){
+                    list.add(key);
+                }
+            }
+        }
+        return list.stream().mapToInt(Integer::intValue).toArray();
+    }
+
+
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
@@ -131,8 +194,21 @@ public class MyHash {
     public static void main(String[] args) {
         MyHash myHash = new MyHash();
 
+//        Set<Integer> set = new HashSet<>();
+//        set.add(1);set.add(2);set.add(3);
+//        for (int element : set){
+//            System.out.println(element);
+//        }
+
+        //Map遍历
+//        Map<Integer, Integer> map = new HashMap<>();
+//        map.put(0, 0);  map.put(1, 100); map.put(2, 200);
+//        for (int element : map.keySet()){
+//            System.out.println(element + " : " + map.get(element));
+//        }
+
         //测试 (2)-(1) 找到字符串中所有字母异位词 438.
-        System.out.println(myHash.findAnagrams("baa", "aa").toString());
+//        System.out.println(myHash.findAnagrams("baa", "aa").toString());
 
         //测试 (2)有效的字母异位词
 //        System.out.println(myHash.isAnagram("rat", "car"));
