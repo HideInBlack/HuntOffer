@@ -186,6 +186,162 @@ public class MyHash {
         return list.stream().mapToInt(Integer::intValue).toArray();
     }
 
+    /**
+     * √（4）快乐数 202. time：2023年10月24日09:30:53 -> 2023年10月24日09:42:37
+     * 我的思路：首先用哈希Set来存储结果 如果出现已经出现过的解 直接返回false 如果结果为1则返回为true
+     */
+    public boolean isHappy(int n) {
+        Set<Integer> set = new HashSet<>();
+        int temp = n;
+        while (true){
+            int sum = 0;
+            while (temp != 0){
+                sum = sum + (temp % 10)*(temp % 10);
+                temp = temp / 10;
+            }
+            if (set.contains(sum)){
+                return false;
+            }
+            if (sum == 1){
+                return true;
+            }
+            set.add(sum);
+            temp = sum;
+        }
+    }
+    // √（4.1）各位相加 258. time：2023年10月24日09:44:55 -> 2023年10月24日09:54:12
+    public int addDigits(int num) {
+        while (num/10 != 0){//temp/10 == 0代表temp此时为个位数
+            int sum = 0;
+            int temp = num;
+            //下面是各位相加过程
+            while (temp != 0){
+                sum = sum + temp % 10;
+                temp = temp / 10;
+            }
+            num = sum;
+        }
+        return num;
+    }
+    //√（4.2）丑数 263. time：2023年10月24日09:55:06 ->2023年10月24日14:05:09
+    //我的思路：从1到根号下n 进行遍历判断 如果n%i=0 则表明i是n的质因数 把所有的质因数都存到哈希Set中进行判断包含与否
+    public boolean isUgly(int n) {
+        if (n <= 0){
+            return false;
+        }
+        Set<Integer> set = new HashSet<>();
+        set.add(2); set.add(3); set.add(5);
+        for (int i = 1; i <= (int) Math.sqrt(n); i++){
+            //如果n%i=0 则表明i是其因数 因此下面还要判断一下其是不是质数
+            if (n % i == 0){
+                if (isPrimeNumber(i) && !set.contains(i) ){//首先其是因数、也是质数 并且还是不包含在2 3 5里面的 可以直接退出返回false
+                    return false;
+                }
+                if (isPrimeNumber(n / i) && !set.contains(n / i)){//同上 只不过处理的是n相对于i的另一个因数
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+    //判断一个数是不是质数【质数，又称素数，是指在大于1的自然数中，除了1和它本身以外不再有其他因数的自然数。】
+    public boolean isPrimeNumber(int n) {
+        //注意：1 不是质数！遇到1直接返回false
+        if (n == 1){
+            return false;
+        }
+        for (int i = 2; i <= (int) Math.sqrt(n); i++){
+            //如果n%i=0 则表明i是其因数
+            if (n % i == 0){
+                return false;
+            }
+        }
+        return true;
+    }
+    //×【超出时间限制】（4.3）264. 丑数 II time：2023年10月24日14:24:28 -> 2023年10月24日14:35:15
+    public int nthUglyNumber(int n) {
+        int count = 0;
+        int num = 1;
+        while (true){
+            if (isUgly(num)){
+                count++;
+            }
+            if (count == n){
+                return num;
+            }
+            num++;
+        }
+    }
+    //方法二 丑数 判断是不是丑数
+    //题解方法思想：若 n 是丑数，则 n 可以写成 n=2^a × 3^b × 5^c  可以对 n 反复除以 2,3,5，直到 n 不再包含质因数 2,3,5。若剩下的数等于 1，则说明 n 不包含其他质因数，是丑数；否则不是丑数。
+
+    public boolean isUgly2(int n){
+        if (n <= 0){
+            return false;
+        }
+        int[] uglyGroup = {2, 3, 5};
+        //绝妙的思想：先除2、3、5中的谁都行！一直都除干净 再判断最后是不是等于1
+        for (int element : uglyGroup){
+            while (n % element == 0){
+                n = n / element;
+            }
+        }
+        return n == 1;
+    }
+    //×【超出时间限制】（4.4）计算质数 204. time：2023年10月24日14:48:25 -> 2023年10月24日14:58:25
+    public int countPrimes(int n) {
+        if (n <= 1){
+            return 0;
+        }
+        int count = 0;
+        int num = 1;
+        while (num < n){
+            if (isPrime(num)){
+                count++;
+            }
+            num++;
+        }
+        return count;
+    }
+    //判断一个数是不是质数
+    public boolean isPrime(int n){
+        if (n <= 1){
+            return false;
+        }
+        for (int i = 2; i <= Math.sqrt(n); i++){
+            if (n % i == 0){//如果有除了1和其本身之外的因数 则其不是质数
+                return false;
+            }
+        }
+        return true;
+    }
+    //√（4.4）题解方法一 计数质数 time：2023年10月24日15:49:13 -> 2023年10月24日16:09:27
+    // 题解思路：申请数组 从第一个质数2出发去填充2*2 2*3 2*4.....等所有质数
+    // 重点笔记：直接初始化数组，使用数组的赋值操作来。无需判断是否为质数，直接从最开始的2、3出发 从倍数出发去填补数组。
+    public int countPrimes2(int n) {
+        int count = 0;
+        int[] array = new int[n];
+        //全部初始化为1
+        Arrays.fill(array, 1);
+        for (int i = 2; i < n; i++){
+            //如果此数为质数则直接进行++
+            if (array[i] == 1){
+                count++;
+                //则此质数的倍数都为合数
+                if ((long)i * i < n){
+                    for (int j = i * i; j < n; j = j + i){//注意 j=j+i 代表着i*i、i*(i+1)、i*(i+2)...
+                        //则令其为合数
+                        array[j] = 0;
+                    }
+                }
+
+            }
+        }
+        return count;
+    }
+
+
 
 
     /**
@@ -193,6 +349,42 @@ public class MyHash {
      */
     public static void main(String[] args) {
         MyHash myHash = new MyHash();
+
+
+
+//        Integer test1 = 128;
+//        Integer test2 = 128;
+//        Integer test3 = 127;
+//        Integer test4 = 127;
+//        System.out.println(test1 == test2);
+//        System.out.println(test1.equals(test2));
+//        System.out.println(test3 == test4);
+//        System.out.println(test3.equals(test4));
+
+        //测试（4.4）
+//        System.out.println(myHash.countPrimes2(499979));
+
+//        System.out.println(499979 * 499979);
+//        System.out.println((long) (499979 * 499979));
+//        System.out.println((long) 499979 * 499979);
+//        System.out.println((long) 499979 * (long)499979);
+
+        //测试（4.3）丑数2
+//        System.out.println(myHash.nthUglyNumber(10));
+
+
+//        System.out.println("开方演示：" + Math.sqrt(9));
+//        System.out.println("平方（n次方）演示：" + Math.pow(3, 2));//这里是3 的 2次方
+//        System.out.println("取绝对值：" + Math.abs(-100));
+//        System.out.println("取最大值：" + Math.max(3, 9));
+//        System.out.println("取最小值：" + Math.min(3, 9));
+
+        //测试 是否为质数
+//        System.out.println(myHash.isPrimeNumber(1));
+//        System.out.println(myHash.isPrimeNumber(2));
+//        System.out.println(myHash.isPrimeNumber(3));
+//        System.out.println(myHash.isPrimeNumber(5));
+//        System.out.println(myHash.isPrimeNumber(9));
 
 //        Set<Integer> set = new HashSet<>();
 //        set.add(1);set.add(2);set.add(3);
