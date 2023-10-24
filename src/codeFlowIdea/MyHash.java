@@ -341,7 +341,121 @@ public class MyHash {
         return count;
     }
 
+    /**
+     * √（5）1.两束之和 time：2023年10月24日18:30:26 -> 2023年10月24日18:41:01
+     * 我的思路：双指针？暴力枚举？
+     */
+    public int[] twoSum(int[] nums, int target) {
+        int[] result = new int[2];
+        for (int i = 0; i < nums.length; i++){
+            for (int j = i + 1; j < nums.length; j++){
+                if (nums[i] + nums[j] == target){
+                    result[0] = i;
+                    result[1] = j;
+                    return result;
+                }
+            }
+        }
+        return result;
+    }
+    // √（5）方法二 两数之和 time：2023年10月24日18:46:46 -> 2023年10月24日18:51:25
+    //使用哈希map 遍历一遍即可
+    public int[] twoSum2(int[] nums, int target) {
+        int[] result = new int[2];
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++){
+            if (map.containsKey(target - nums[i])){
+                result[0] = i;
+                result[1] = map.get(target - nums[i]);
+            }
+            map.put(nums[i], i);
+        }
+        return result;
+    }
 
+    /**
+     * （6）四数相加2 454. time：
+     */
+    public int fourSumCount(int[] nums1, int[] nums2, int[] nums3, int[] nums4) {
+
+        return 0;
+    }
+
+    /**
+     *  √（7）383. 赎金信 time：2023年10月24日19:03:51 -> 2023年10月24日19:16:40
+     * 我的思路：先使用map统计字符个数 然后全包含的时候前者字符的个数要小于后者的个数
+     * 关键操作：1.map统计字符的数量 2.增强for循环遍历map的key
+     */
+    public boolean canConstruct(String ransomNote, String magazine) {
+        Map<Character, Integer> mapRansomNote = new HashMap<>();
+        Map<Character, Integer> mapMagazine = new HashMap<>();
+        //统计个数
+        for (int i = 0; i < ransomNote.length(); i++){
+            mapRansomNote.put(ransomNote.charAt(i), mapRansomNote.getOrDefault(ransomNote.charAt(i), 0) + 1);
+        }
+        for (int i = 0; i < magazine.length(); i++){
+            mapMagazine.put(magazine.charAt(i), mapMagazine.getOrDefault(magazine.charAt(i), 0) + 1);
+        }
+        //挨个取出前者的key 进行与后者比较
+        for (char key : mapRansomNote.keySet()){
+            //如果后者不包含 直接返回false
+            if (!mapMagazine.containsKey(key)){
+                return false;
+            }else if (mapRansomNote.get(key) > mapMagazine.get(key)){//如果后者包含 但是前者的数量比后者多 直接false
+                return false;
+            }
+        }
+        return true;
+    }
+    // √【果然还是数组更快！】（7）方法二 383. 赎金信 数组方法 time：2023年10月24日19:20:54 -> 2023年10月24日19:25:45
+    public boolean canConstruct2(String ransomNote, String magazine) {
+        int[] arrayA = new int[26];
+        int[] arrayB = new int[26];
+        for (int i = 0; i < ransomNote.length(); i++){
+            arrayA[ransomNote.charAt(i) - 'a'] += 1;
+        }
+        for (int i = 0; i < magazine.length(); i++){
+            arrayB[magazine.charAt(i) - 'a'] += 1;
+        }
+        for (int i = 0; i < 26; i++){
+            if (arrayA[i] > arrayB[i]){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * ×【超出时间限制】（8）三数之和 15. time：2023年10月24日19:35:51 -> 2023年10月24日20:00:35
+     * 我的思路：三层for循环、暴力解法、他只需要输出和为0的元组
+     */
+    public List<List<Integer>> threeSum(int[] nums) {
+        //先对数组进行排序
+        Arrays.sort(nums);
+        List<List<Integer>> result = new ArrayList<>();
+        for (int i = 0; i < nums.length; i++){
+            //在第一层的时候判断如果大于0 直接退出循环
+            if (nums[i] > 0){
+                break;
+            }
+            for (int j = i+1; j < nums.length; j++){
+                for (int k = j + 1; k < nums.length; k++){
+                    if (nums[i] + nums[j] + nums[k] == 0){
+                        //这里声明为Integer的！！！ 要在循环内部new 不然一直操作的是一个list
+                        Integer[] tuple = new Integer[3];
+                        tuple[0] = nums[i];
+                        tuple[1] = nums[j];
+                        tuple[2] = nums[k];
+                        Arrays.sort(tuple);
+                        if (!result.contains(Arrays.asList(tuple))){
+                            result.add(Arrays.asList(tuple));
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
 
 
     /**
@@ -350,7 +464,21 @@ public class MyHash {
     public static void main(String[] args) {
         MyHash myHash = new MyHash();
 
+//        int[] test1 = {-1,0,1,2,-1,-4};
+//        myHash.threeSum(test1);
 
+        //list链表的相关操作
+//        List<List<Integer>> list = new ArrayList<>();
+//        List<Integer> childList = new ArrayList<>();
+//        childList.add(1);childList.add(2);childList.add(3);
+//        //存储子链表
+//        list.add(childList);
+//        System.out.println(list);//[[1, 2, 3]]
+//        //改变子链表的值
+//        childList.set(0, 7);
+//        childList.set(1, 7);
+//        childList.set(2, 7);
+//        System.out.println(list);//list存储的也跟着改变了：[[7, 7, 7]]
 
 //        Integer test1 = 128;
 //        Integer test2 = 128;
