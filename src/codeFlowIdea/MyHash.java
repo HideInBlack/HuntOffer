@@ -619,6 +619,7 @@ public class MyHash {
                     }
                     right--;
                 }else {
+                    //都等于0了 那必是最优解直接返回即可
                     return sum;
                 }
             }
@@ -700,7 +701,7 @@ public class MyHash {
     public static void main(String[] args) {
         MyHash myHash = new MyHash();
 
-
+        //哈希-完结打卡
 
         //测试 （9）四数之和
 //        int nums[] = {1,0,-1,0,-2,2};
