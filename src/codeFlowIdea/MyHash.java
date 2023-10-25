@@ -342,7 +342,7 @@ public class MyHash {
     }
 
     /**
-     * √（5）1.两束之和 time：2023年10月24日18:30:26 -> 2023年10月24日18:41:01
+     * √（5）1.两数之和 time：2023年10月24日18:30:26 -> 2023年10月24日18:41:01
      * 我的思路：双指针？暴力枚举？
      */
     public int[] twoSum(int[] nums, int target) {
@@ -439,16 +439,21 @@ public class MyHash {
                 break;
             }
             for (int j = i+1; j < nums.length; j++){
+                if (nums[i] + nums[j]> 0){
+                    break;
+                }
                 for (int k = j + 1; k < nums.length; k++){
+                    if (nums[i] + nums[j] + nums[k] > 0){
+                        break;
+                    }
                     if (nums[i] + nums[j] + nums[k] == 0){
-                        //这里声明为Integer的！！！ 要在循环内部new 不然一直操作的是一个list
-                        Integer[] tuple = new Integer[3];
-                        tuple[0] = nums[i];
-                        tuple[1] = nums[j];
-                        tuple[2] = nums[k];
-                        Arrays.sort(tuple);
-                        if (!result.contains(Arrays.asList(tuple))){
-                            result.add(Arrays.asList(tuple));
+                        //由于先进行了排序所以数组已经有序了 必然是i<j<k
+                        List<Integer> list = new ArrayList<>();
+                        list.add(nums[i]);
+                        list.add(nums[j]);
+                        list.add(nums[k]);
+                        if (!result.contains(list)){
+                            result.add(list);
                         }
                     }
                 }
@@ -456,6 +461,194 @@ public class MyHash {
         }
         return result;
     }
+    //×【解答错误】（8）三数之和 方法二 哈希优化三层循环为双层循环 time：2023年10月25日10:24:33 -> 2023年10月25日11:50:54
+    public List<List<Integer>> threeSum2(int[] nums) {
+        //先对数组进行排序
+        Arrays.sort(nums);
+        List<List<Integer>> result = new ArrayList<>();
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < nums.length; i++) {
+            //在第一层的时候判断如果大于0 直接退出循环
+            if (nums[i] > 0) {
+                break;
+            }
+            for (int j = i + 1; j < nums.length; j++) {
+                if (nums[i] + nums[j] > 0) {
+                    break;
+                }
+                if (set.contains(-(nums[i] + nums[j]))){
+                    //这里声明为Integer的！！！ 要在循环内部new 不然一直操作的是一个list
+                    Integer[] tuple = new Integer[3];
+                    tuple[0] = nums[i];
+                    tuple[1] = nums[j];
+                    tuple[2] = -(nums[i] + nums[j]);
+                    Arrays.sort(tuple);
+                    if (!result.contains(Arrays.asList(tuple))){
+                        result.add(Arrays.asList(tuple));
+                    }
+                    set.remove(-(nums[i] + nums[j]));
+                }else{
+                    set.add(nums[j]);
+                }
+
+
+            }
+        }
+        return result;
+    }
+    //√（8）三数之和 方法三 题解方法 一层遍历 + 双指针 time：2023年10月25日13:25:26 -> 2023年10月25日14:00:27
+    public List<List<Integer>> threeSum3(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        //先进行数组排序因为本方法要在数组有序的情况下进行
+        Arrays.sort(nums);
+        //先进行第一层的遍历固定i 同时定义left、right双指针从i的右边块中的最左边和最右边进行往中间遍历（此相当于第二层和第三层遍历）
+        int left; int right;
+        for (int i = 0; i < nums.length; i++){
+            if (nums[i] > 0){
+                break;
+            }
+            //这里是在剪枝相同的i 但是一定要是 i 与 i-1比，而不能和i+1比
+            if (i != 0 && nums[i] == nums[i-1]){
+                continue;
+            }
+            left = i + 1;
+            right = nums.length - 1;
+            //下面开始移动双指针 直到i与j相遇才停止（这里是要遍历一整遍的！）
+            while (left < right){
+                if (nums[i] + nums[left] + nums[right] > 0){//三数之和大于0 则移动右指针 整体之和会变小
+                    right--;
+                }else if (nums[i] + nums[left] + nums[right] < 0){//三数之和小于0 则移动左指针 整体之和会变大
+                    left++;
+                }else {//三数之和等于0时！保存！
+                    List<Integer> list = new ArrayList<>();
+                    list.add(nums[i]);
+                    list.add(nums[left]);
+                    list.add(nums[right]);
+                    result.add(list);
+                    //此时去重left 和 right操作
+                    while (right > left && nums[left] == nums[left + 1]){
+                        left++;
+                    }
+                    while (right > left && nums[right] == nums[right-1]){
+                        right--;
+                    }
+                    //上面只是移动到最后一个相同的 还是要再往下走一个
+                    left++;
+                    right--;
+                }
+            }
+        }
+        return result;
+    }
+    // √（8.1）16. 最接近的三数之和 time：2023年10月25日14:04:26 -> 2023年10月25日15:01:17
+    // 我的思路：与上一题思路接近（只不过三数之和是求其和为0的tuple有很多， 而这里是求最接近的和就多少！）
+    public int threeSumClosest(int[] nums, int target) {
+        //上来先进行对数组进行排序
+        Arrays.sort(nums);
+        int result = -1;
+        int sum;
+        //最小值的设置有讲究！这里看到target < 10^4 就设置了1万 结果不行 因为还有nums[]的范围！所以要设置为10万！就足够啦
+        int minDifference = 100000;
+        //下面使用单循环 + 双指针进行找最优解
+        int left; int right;
+        for (int i = 0; i < nums.length; i++){
+            left = i + 1;
+            right = nums.length - 1;
+//            //剪枝优化？
+            if (i > 2 && nums[i-2] > 0 && (nums[i] + nums[i-1] + nums[i-2]) > target){
+                break;
+            }
+            //移动双指针
+            while (left < right){
+                sum = nums[i] + nums[left] + nums[right];
+                if(sum < target){
+                    //计算最小差值
+                    if (target - sum < minDifference ){
+                        minDifference = target - sum;
+                        result = sum;
+                    }
+                    left++;
+                }else if (sum > target){
+                    //计算最小差值
+                    if (sum - target < minDifference){
+                        minDifference = sum - target;
+                        result = sum;
+                    }
+                    right--;
+                }else {
+                    return sum;
+                }
+            }
+
+        }
+        return result;
+    }
+
+    /**
+     * √（9）四数之和 18. time：2023年10月25日18:10:03 -> 2023年10月25日18:38:04
+     * 我的思路：两层for循环 + 双指针？ 是的就是这样！
+     * 注意：注意int的溢出 sum建议使用long！！！【不用剪枝优化也可以通过！下面再试一下剪枝优化】
+     * 通过剪枝优化节省了一半的时间： 30ms -> 15ms
+     */
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        //上来先对数组进行排序
+        Arrays.sort(nums);
+        List<List<Integer>> result = new ArrayList<>();
+        int left; int right; long sum;
+        out:
+        for (int i = 0; i < nums.length; i++){
+            //剪枝优化
+            if ((long)nums[i] > 0 && (long)nums[i] > target){
+                break;
+            }
+            //去重复a【这里一定是与前面的比进行去重 不然与后面的比会缺少解 但与前面的比不会】
+            if (i != 0 && nums[i] == nums[i - 1]){
+                continue;
+            }
+            for (int j = i + 1; j < nums.length; j++){
+                //剪枝优化
+                if ((long)nums[i] > 0 && (long)nums[j] > target){
+                    break out;
+                }
+                //去重复b
+                if (j != i + 1 && nums[j] == nums[j - 1]){
+                    continue;
+                }
+                //这里就需要针对第三层、第四层循环使用双指针了
+                left = j + 1;
+                right = nums.length - 1;
+                while (left < right){
+                    //这里会溢出！请使用long类型
+                    sum = (long)nums[i] + nums[j] + nums[left] + nums[right];
+                    if (sum < target){
+                        left++;
+                    } else if (sum > target) {
+                        right--;
+                    } else {
+                        List<Integer> list = new ArrayList<>();
+                        list.add(nums[i]);
+                        list.add(nums[j]);
+                        list.add(nums[left]);
+                        list.add(nums[right]);
+                        result.add(list);
+                        //去重复c、d 循环找到最后一个相同的数字
+                        while (left < right && nums[left] == nums[left + 1]){
+                            left++;
+                        }
+                        while (left < right && nums[right] == nums[right - 1]){
+                            right--;
+                        }
+                        left++;
+                        right--;
+                    }
+                }
+
+            }
+        }
+        return result;
+    }
+
+
 
 
     /**
@@ -463,6 +656,16 @@ public class MyHash {
      */
     public static void main(String[] args) {
         MyHash myHash = new MyHash();
+
+        int nums[] = {1000000000,1000000000,1000000000,1000000000};
+        int sum = nums[0] + nums[1] + nums[2] + nums[3];
+        System.out.println(-294967296 == sum);
+        System.out.println(-294967296 < ((long)nums[0] + nums[1] + nums[2] + nums[3]));
+        System.out.println((long)nums[0] + nums[1] + nums[2] + nums[3]);
+
+        //测试 （9）四数之和
+//        int nums[] = {1,0,-1,0,-2,2};
+//        System.out.println(myHash.fourSum(nums, 0).toString());
 
 //        int[] test1 = {-1,0,1,2,-1,-4};
 //        myHash.threeSum(test1);
