@@ -374,11 +374,54 @@ public class MyHash {
     }
 
     /**
-     * （6）四数相加2 454. time：
+     * ×【错误】（6）454. 四数相加 II time：2023年10月25日19:18:17 -> 2023年10月25日19:48:46
+     * 此题数组为相互独立的四个数组，而三数之和和四数之和都是操作的一个数组不一样！所以此题不可以使用双指针【同一个数组时建议使用双指针】
+     * 所以得此题题解思路是：(两两一组 再用map进行查询)i、j、k、l都是相互独立的 且题目只要求个数！操作性很大 可以使用map来做
+     * √ 题解方法：2023年10月25日19:51:45 -> 2023年10月25日20:11:35
      */
     public int fourSumCount(int[] nums1, int[] nums2, int[] nums3, int[] nums4) {
-
-        return 0;
+        Map<Integer, Integer> map1 = new HashMap<>();
+        Map<Integer, Integer> map2 = new HashMap<>();
+        for (int i = 0; i < nums1.length; i++){
+            for (int j = 0; j < nums2.length; j++){
+                //把数组1和数组2中的和存为key 其数量存为value
+                map1.put(nums1[i] + nums2[j], map1.getOrDefault(nums1[i] + nums2[j], 0) + 1);
+            }
+        }
+        for (int i = 0; i < nums3.length; i++){
+            for (int j = 0; j < nums4.length; j++){
+                //把数组3和数组4中的和也存为key 其数量存为value
+                map2.put(nums3[i] + nums4[j], map2.getOrDefault(nums3[i] + nums4[j], 0) + 1);
+            }
+        }
+        //再进行判断是否两组的key是否有加起来等于0的
+        int count = 0;
+        for (int key : map1.keySet()){
+            if (map2.containsKey(-key)){
+                //此时需要把map1数量和map2数量乘起来 因为你有2个 我有3个 我们一共可以组合2*3=6个
+                count = count + map1.get(key) * map2.get(-key);
+            }
+        }
+        return count;
+    }
+    // √ 方法二 （6）454. 四数相加 II 再遍历第二组时就进行统计
+    public int fourSumCount2(int[] nums1, int[] nums2, int[] nums3, int[] nums4) {
+        Map<Integer, Integer> map1 = new HashMap<>();
+        for (int i = 0; i < nums1.length; i++){
+            for (int j = 0; j < nums2.length; j++){
+                //把数组1和数组2中的和存为key 其数量存为value
+                map1.put(nums1[i] + nums2[j], map1.getOrDefault(nums1[i] + nums2[j], 0) + 1);
+            }
+        }
+        int count = 0;
+        for (int i = 0; i < nums3.length; i++){
+            for (int j = 0; j < nums4.length; j++){
+                if (map1.containsKey(-(nums3[i] + nums4[j]))){
+                    count = count + map1.get(-(nums3[i] + nums4[j]));
+                }
+            }
+        }
+        return count;
     }
 
     /**
@@ -496,7 +539,7 @@ public class MyHash {
         }
         return result;
     }
-    //√（8）三数之和 方法三 题解方法 一层遍历 + 双指针 time：2023年10月25日13:25:26 -> 2023年10月25日14:00:27
+    //√（8）三数之和 方法三 题解方法 一层遍历 + 双指针 +去重操作 time：2023年10月25日13:25:26 -> 2023年10月25日14:00:27
     public List<List<Integer>> threeSum3(int[] nums) {
         List<List<Integer>> result = new ArrayList<>();
         //先进行数组排序因为本方法要在数组有序的情况下进行
@@ -586,8 +629,8 @@ public class MyHash {
 
     /**
      * √（9）四数之和 18. time：2023年10月25日18:10:03 -> 2023年10月25日18:38:04
-     * 我的思路：两层for循环 + 双指针？ 是的就是这样！
-     * 注意：注意int的溢出 sum建议使用long！！！【不用剪枝优化也可以通过！下面再试一下剪枝优化】
+     * 我的思路：两层for循环 + 双指针 + 去重操作？ 是的就是这样！
+     * 注意：注意int的溢出 sum建议使用long！！！【不用剪枝优化也可以通过！下面再试一下剪枝优化√】
      * 通过剪枝优化节省了一半的时间： 30ms -> 15ms
      */
     public List<List<Integer>> fourSum(int[] nums, int target) {
@@ -657,11 +700,7 @@ public class MyHash {
     public static void main(String[] args) {
         MyHash myHash = new MyHash();
 
-        int nums[] = {1000000000,1000000000,1000000000,1000000000};
-        int sum = nums[0] + nums[1] + nums[2] + nums[3];
-        System.out.println(-294967296 == sum);
-        System.out.println(-294967296 < ((long)nums[0] + nums[1] + nums[2] + nums[3]));
-        System.out.println((long)nums[0] + nums[1] + nums[2] + nums[3]);
+
 
         //测试 （9）四数之和
 //        int nums[] = {1,0,-1,0,-2,2};
