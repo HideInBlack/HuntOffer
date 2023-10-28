@@ -1,4 +1,4 @@
-# **HuntOffer****s**
+# HuntOffers
 
 # **一.刷题间接经验**
 
@@ -57,7 +57,7 @@
 > 1. **螺旋矩阵：**螺旋矩阵最重要的就是自定义边界！自定义四个边界！然后从左到右、从上到下、从右到左、从下到上遍历一圈，遍历之后不要忘记边界的缩减！
 > 2. **总结思维导图**
 >
-> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=M2U4ZmJhYWU5ZWM3YjdjOGNmNDY0ZmM5NWY4OWU2ZWVfS0U1Mmo4Ynd6SXdKUERQU2pDbXlZdjllUTBlS0M5SFNfVG9rZW46UEZiQmJrSHg0b0FiRk54ekRhMGNNNHhVbnNlXzE2OTg0NjQ0OTA6MTY5ODQ2ODA5MF9WNA)
+> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=OTdlZTg1YThlYjFjYmY1ZjYzOWUzOWE1YzlkYjM3MDlfaVN5cnRHUWJMbGR5bm03ZkZPZXBOTEpacHY3Z25KZXpfVG9rZW46UEZiQmJrSHg0b0FiRk54ekRhMGNNNHhVbnNlXzE2OTg0NjQ4NDQ6MTY5ODQ2ODQ0NF9WNA)
 
 **（3）重点题目**
 
@@ -92,7 +92,7 @@
 > 5. **循环判断：快慢指针**（fast一次走两步，slow一次走一步）判断是否有循环都可以用快慢指针！或者哈希集合Set
 > 6. 总结
 >
-> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=YzYzNzFkMDljN2Q1ODJiMGFlYzYxNDUzYzEzZjg2NTlfa1REazBZVTNMNnRBQ0xiMmdobDZ6TkFnU3ZVQjhZVENfVG9rZW46QmQ1RmJRcGVXb0VhdzV4NVNocWNLWkt4bm9nXzE2OTg0NjQ0OTA6MTY5ODQ2ODA5MF9WNA)
+> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=NDJmN2IzN2U1ZTFmY2IxM2FjNmFiMGI0MmI5MGY0YjNfa0xZZGg5TFpXcGZ1V1ptOFk5a1hpUnM3NVRhb05NSlVfVG9rZW46QmQ1RmJRcGVXb0VhdzV4NVNocWNLWkt4bm9nXzE2OTg0NjQ4NDQ6MTY5ODQ2ODQ0NF9WNA)
 
 **（3）重点题目**
 
@@ -123,10 +123,10 @@
 > 2. 如果在做面试题目的时候遇到需要**判断一个元素是否出现过**的场景也应该第一时间想到**哈希法**！
 > 3. Map中存储的就是key-value的键值对，Set中只存储了Key
 >    1. Map: Key-Value 模型【map可以判断此元素是否在集合里面，并且有几个！个数要求】
->    2. ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=OWJjYzYzMmZlZjA1NzE2NWE4NTEyMTIyMmQzMjA1NWZfakRZdG9sdFlKRjMzbkFhc0hMV0s2UEd6NmVHWGZKbVJfVG9rZW46RXV1dmJ4TDRjb2E3S1Z4UjNoNWMwRGl0blhHXzE2OTg0NjQ0OTA6MTY5ODQ2ODA5MF9WNA)
+>    2. ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=ZjQ3YjQ0YzRjNTAxYTk4MjU0ZjE5NzU4NjM1NGRlMWFfNUVoOFBMVnY0b1RlcTFsTmh0ek1SMDN6UzFmUE90bjBfVG9rZW46RXV1dmJ4TDRjb2E3S1Z4UjNoNWMwRGl0blhHXzE2OTg0NjQ4NDQ6MTY5ODQ2ODQ0NF9WNA)
 >
 >    3. Set: 纯 key 模型【set可以判断此元素是否在集合里面 仅此而已】
->    4. ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=N2RiNjgxY2Q0YTQyMGFiNTI2Zjk0ZTNlYzljZmIxYjBfbnl4UGJKdGZNM0lYM093SzhTZnhWaGwwMkRXS2oxVlRfVG9rZW46Q2h6T2JCRDhOb0dHa0h4QVRjMWM4Mk5rbmFjXzE2OTg0NjQ0OTA6MTY5ODQ2ODA5MF9WNA)
+>    4. ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=OGRmNzk4MjRkMTBjYjFhYzhhMDNkOTU0Yjc2OGQ1OTJfb3Q1NXRDY2JXU2I0N2Fja2NNWHNLbW83aldIUEg1QWtfVG9rZW46Q2h6T2JCRDhOb0dHa0h4QVRjMWM4Mk5rbmFjXzE2OTg0NjQ4NDQ6MTY5ODQ2ODQ0NF9WNA)
 > 4. **循环判断可以用Set！**
 > 5. 
 
@@ -515,15 +515,15 @@
 > 2. 栈是先进后出。
 > 3. **Stack 栈**的使用 **Stack<Integer> s = new Stack();**
 >
-> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=MTZmMTNkMzQ4ZTBmM2I3ZDJkMmU5OWMwZDQwMjk5NDdfRnRCUXNZSWhVcUs1bEVKRDVvWHU2VGw5ZnYwcFBpT2hfVG9rZW46U3VlTGJkVERJb1lhUXp4cDVCZ2N0Y2hpbjVlXzE2OTg0NjQ0OTA6MTY5ODQ2ODA5MF9WNA)
+> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=MmZjMjIxZjUwMmQyYmNmYzM0N2U4N2I4Y2JhZjFiMGVfQ2kzVmJlcWw3eE41eDJ4dlJUVE1qM2RSeXdJRDdFR2FfVG9rZW46U3VlTGJkVERJb1lhUXp4cDVCZ2N0Y2hpbjVlXzE2OTg0NjQ4NDQ6MTY5ODQ2ODQ0NF9WNA)
 >
 > 1. **Queue 队列**的使用 **Queue<Integer> q = new LinkedList<>();**
 >
-> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=YjkzNTFhYzA2OWEzODdlMzI4ZjIwYjBjZWJlNDhhMDVfU2s4RFVScW42VjE5TnlUUWJ0dGRsZkRiTm9hNFVlM2FfVG9rZW46T0x2cmJtR1YzbzZGNkV4M0dEc2N0YXZtbmlWXzE2OTg0NjQ0OTA6MTY5ODQ2ODA5MF9WNA)
+> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=MzE2ZjlkODc1MWUxOTJiZjVjNmI1ODNjYjc3ZDEwNGZfM2xOc2pQMnpyTk01aWVMZWdoYzFHRnZWWDRrTEh6bTJfVG9rZW46T0x2cmJtR1YzbzZGNkV4M0dEc2N0YXZtbmlWXzE2OTg0NjQ4NDQ6MTY5ODQ2ODQ0NF9WNA)
 >
 > 1. **Deque(双端队列)** **Deque deque = new LinkedList()**【允许两头都进，两头都出，这种队列叫双端队列（Double Ended Queue）】
 >
-> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=ZTJjZGM2ZGQ0ZDc5ZDZiNjg1N2YxM2Y3M2VlYjIwZDJfTDFzdHRyZXdiVlZhU3hhSXNFUTNwc1BoZFpSMGZ5Um9fVG9rZW46WEtkMmJVVTFSbzB0Wmt4ZmZNOWNkRzJZbkljXzE2OTg0NjQ0OTA6MTY5ODQ2ODA5MF9WNA)
+> ![img](https://ovxmsaoguz.feishu.cn/space/api/box/stream/download/asynccode/?code=Yjg0Y2M0MjJjNTFhMDAzYTdhZDBmMWFkODIwOTU4N2Zfclo1OXp6MzhtWTQ0V2lZZ3JrMnZRRjI1N0pJRUJCS1lfVG9rZW46WEtkMmJVVTFSbzB0Wmt4ZmZNOWNkRzJZbkljXzE2OTg0NjQ4NDQ6MTY5ODQ2ODQ0NF9WNA)
 >
 > 1、Queue只能从队尾插入，从对头删除。
 >
