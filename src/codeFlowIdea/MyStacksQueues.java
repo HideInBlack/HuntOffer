@@ -155,13 +155,130 @@ public class MyStacksQueues {
         return result;
     }
     /**
-     * （6）150. 逆波兰表达式求值 time：2023年10月28日20:36:12 ->
+     * （6）150. 逆波兰表达式求值 time：2023年10月29日09:28:59 -> 2023年10月29日09:47:25
+     * 我的思路：其实就是用栈的思想来进行计算：1.遇到数字就输入 遇到计算符号就排出两个字符进行计算（第一个排出放计算符右边 第二个排出放左边）
+     *  2.计算之后再压入到栈中 直到栈空产生结果
      */
     public int evalRPN(String[] tokens) {
-
-        return 0;
+        Stack<Integer> stack = new Stack<>();
+        Set<String> set = new HashSet<>();
+        set.add("+"); set.add("-"); set.add("*"); set.add("/");
+        int x; int y; int result;
+        for (String token : tokens) {
+            if (set.contains(token)) {//代表是字符 此时要排除两个元素进行计算
+                y = stack.pop();
+                x = stack.pop();
+                if (Objects.equals(token, "+")) {
+                    result = x + y;
+                } else if (Objects.equals(token, "-")) {
+                    result = x - y;
+                } else if (Objects.equals(token, "*")) {
+                    result = x * y;
+                } else {
+                    result = x / y;
+                }
+                stack.push(result);
+            } else {//否则是数字直接进行压入到栈中
+                stack.push(Integer.parseInt(token));
+            }
+        }
+        return stack.pop();
     }
 
+    /**
+     * ×【超出时间限制】（7）239. 滑动窗口最大值 time：2023年10月29日10:18:12 -> 2023年10月29日10:40:06
+     * 我的思路：试一试直接进行k个的排序然后得出最大值
+     * 无优化之前：37 / 51 个通过的测试用例【超出时间限制】
+     * 优化之后：47 / 51 个通过的测试用例【超出时间限制】
+     */
+    public int[] maxSlidingWindow0(int[] nums, int k) {
+        if (k >= nums.length){
+            int[] result = new int[1];
+            Arrays.sort(nums);
+            result[0] = nums[nums.length - 1];
+            return result;
+        }
+        int[] result = new int[nums.length + 1 - k];
+        int[] temp = new int[k];
+        for (int i = 0; i <= nums.length - k; i++){
+
+            //搞一手优化
+            if (i != 0 && i + k -1 < nums.length){
+                if (nums[i + k -1] >= result[i -1]){
+                    result[i] = nums[i + k -1];
+                }else if (nums[i - 1] != result[i - 1] && nums[i + k -1] < result[i - 1]) {
+                    //划走的值不是最大值 并且新加入的值比最大值还小
+                    result[i] = result[i - 1];
+                }else {
+                    int count = 0;
+                    for (int j = i; j < i + k; j++){
+                        temp[count++] = nums[j];
+                    }
+                    Arrays.sort(temp);
+                    result[i] = temp[k - 1];
+                }
+            }else {
+                int count = 0;
+                for (int j = i; j < i + k; j++){
+                    temp[count++] = nums[j];
+                }
+                Arrays.sort(temp);
+                result[i] = temp[k - 1];
+            }
+
+        }
+        return result;
+    }
+    //方法二 题解方法【单调队列】 （7）239. 滑动窗口最大值 time：2023年10月29日14:21:31 -> 2023年10月29日15:01:50
+    //整体方法：1.先进行移动（除第一个元素之外） 2.再进行push 3.最后取出最大值
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        if (k == nums.length){
+            int[] result = new int[1];
+            Arrays.sort(nums);
+            result[0] = nums[nums.length - 1];
+            return result;
+        }
+        int result[] = new int[nums.length - k + 1];
+        //单调队列 永远存储着从大到小的元素 直接访问第一个元素 就是最大值
+        Deque<Integer> deque = new LinkedList<>();
+        //先把i=0的初始化:先进行入队列
+        for (int i = 0; i < k; i++){
+            pushQueue(deque, nums[i]);
+        }
+        result[0] = deque.getFirst();
+
+        //从i=1开始
+        for (int i = 1; i <= nums.length - k; i++){
+            //先进行移动 如果移动元素就是最大值 就出队
+            if (nums[i - 1] == deque.getFirst()){
+                deque.removeFirst();
+            }
+            //再进行对新加入的i+k-1进行push操作
+            pushQueue(deque, nums[i + k - 1]);
+
+            result[i] = deque.getFirst();
+        }
+        return result;
+    }
+    //push当前元素进入单调递减队列【单调队列的入队操作！抽象出来就可以了】
+    private void pushQueue(Deque<Integer> deque, int current){
+        if (deque.isEmpty()){
+            deque.addLast(current);
+        }else {
+            if (deque.getLast() >= current){
+                deque.addLast(current);
+            }else {//尾元素小于要入队元素 则出栈直到其大于等于
+                while (!deque.isEmpty() && deque.getLast() < current){
+                    deque.removeLast();
+                }
+                deque.addLast(current);
+            }
+        }
+    }
+    //方法三 题解方法优先队列（大顶堆）
+    public int[] maxSlidingWindow2(int[] nums, int k) {
+        return new int[]{1, 2};
+    }
 
 
     /**
@@ -169,8 +286,9 @@ public class MyStacksQueues {
      */
     public static void main(String[] args) {
         MyStacksQueues myStacksQueues = new MyStacksQueues();
+        System.out.println(Integer.parseInt("201") + 3);
 
-        System.out.println(myStacksQueues.removeDuplicates2("aaaa"));
+//        System.out.println(myStacksQueues.removeDuplicates2("aaaa"));
         //测试
 //        Character[] characters = new Character[]{'a', 'b', 'c'};
 //        System.out.println(characters.length);
