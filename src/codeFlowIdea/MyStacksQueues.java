@@ -280,13 +280,133 @@ public class MyStacksQueues {
         return new int[]{1, 2};
     }
 
+    /**
+     * （7.1）76. 最小覆盖子串 time：2023年10月30日10:14:08- >
+     */
+    public String minWindow(String s, String t) {
+        return "";
+    }
+
+    /**
+     * √（8）347. 前 K 个高频元素 time：2023年10月30日10:48:31 -> 2023年10月30日11:03:27 2023年10月30日13:51:58 -> 2023年10月30日13:56:14
+     */
+    public int[] topKFrequent(int[] nums, int k) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++){
+            map.put(nums[i], map.getOrDefault(nums[i], 0) + 1);
+        }
+
+        //循环找出前k个
+        int result[] = new int[k];
+        for (int i = 0; i < k; i++){
+            //这里先默认最大的为第一个
+            int max = -100009;
+            for (int key : map.keySet()){
+                if (map.get(key) >= max){
+                    max = map.get(key);
+                    result[i] = key;
+                }
+            }
+            map.remove(result[i]);
+        }
+        return result;
+    }
+    //（8.1）题解方法二 【优先级队列（大小顶堆）】 time：2023年10月30日15:10:54 ->
+    //重点笔记：为什么使用大顶堆 而不是直接排序 因为大顶堆带着数组一起来排序（而排序只能排自己）
+    public int[] topKFrequent1(int[] nums, int k){
+        Map<Integer, Integer> map = new HashMap<>();
+        //先使用map遍历直接进行统计个数
+        for (int i = 0; i < nums.length; i++){
+            map.put(nums[i], map.getOrDefault(nums[i], 0) + 1);
+        }
+        //然后下面使用优先权队列（大顶堆找出前k个）
+        //先是初始化大顶堆
+        PriorityQueue<int[]> priorityQueue = new PriorityQueue<>(new Comparator<int[]>() {//使用自定义的Comparator进行控制大顶堆还是小顶堆
+            @Override
+            public int compare(int[] o1, int[] o2) {//这里的精髓就在于所有的数组对象可以根据其中某一个值进行排序
+                return o2[1] - o1[1];//这里2、1代表着降序 也就是大顶堆
+            }
+        });
+        //使用增强for循环来创建大顶堆（给大顶堆输入值）
+        for (int key : map.keySet()){
+            //每次要新建一个数组输入其中 数组的新建赋值初始化！new int[]{1， 2}
+            priorityQueue.add(new int[]{key, map.get(key)});//其实就相当于输入了一个二元组
+        }
+        //再取出前k个 因为要前k个高的
+        int result[] = new int[k];
+        for (int i = 0; i < k; i++){
+            //priorityQueue.poll()每次排出的是他的数组 而我要他的key 他的key在第一个位置
+            result[i] = priorityQueue.poll()[0];
+        }
+        return result;
+    }
+    /**
+     * (8.2) 692. 前K个高频单词
+     */
+    public List<String> topKFrequent(String[] words, int k) {
+        return null;
+    }
+    /**
+     * （8.3）215. 数组中的第K个最大元素 time：2023年10月30日16:01:51 -> 2023年10月30日16:12:32
+     * 重点笔记：想到快排了 但是具体忘记什么思想了！
+     */
+    public int findKthLargest(int[] nums, int k) {
+        Arrays.sort(nums);
+        return nums[nums.length - k];
+    }
+    //方法二（8.3）215. 数组中的第K个最大元素 正经做法 time：2023年10月30日16:25:30 ->
+    //使用堆排序来试试
+    public int findKthLargest2(int[] nums, int k) {
+        PriorityQueue<Integer> priorityQueue = new PriorityQueue<>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o2 - o1;//降序
+            }
+        });
+        //构建大顶堆
+        for (int num : nums){
+            priorityQueue.add(num);
+        }
+        //排出大顶堆(排出前四个 那第5个直接取出来)
+        for (int i = 1; i <= k - 1; i++){
+            priorityQueue.poll();
+        }
+        return priorityQueue.peek();
+    }
+    //方法三 快排的经典思想
+    public int findKthLargest3(int[] nums, int k) {
+        return 0;
+    }
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
      */
     public static void main(String[] args) {
         MyStacksQueues myStacksQueues = new MyStacksQueues();
-        System.out.println(Integer.parseInt("201") + 3);
+
+
+
+//        //测试 comparator接口中的compare 升序和降序的返回值
+//        //【例子中展示的比较器用在数组排序中，也可以用在优先级队列（大小顶锥）中！】
+//        Integer[] nums = new Integer[]{1, 4, 3, 5, 2, 7, 6};
+//        Arrays.sort(nums, new Comparator<Integer>() {
+//            @Override
+//            public int compare(Integer o1, Integer o2) {
+//                return o1 - o2;//升序
+//            }
+//        });//升序[1, 2, 3, 4, 5, 6, 7]
+//
+//        Arrays.sort(nums, new Comparator<Integer>() {
+//            @Override
+//            public int compare(Integer o1, Integer o2) {
+//                return o2 - o1;//降序
+//            }
+//        });//降序[7, 6, 5, 4, 3, 2, 1]
+
+//        int nums[] = {1,1,1,2,2,3};
+//        System.out.println(Arrays.toString(myStacksQueues.topKFrequent(nums, 2)));
+
+//        System.out.println(Integer.parseInt("201") + 3);
 
 //        System.out.println(myStacksQueues.removeDuplicates2("aaaa"));
         //测试
