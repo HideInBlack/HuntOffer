@@ -275,13 +275,41 @@ public class MyStacksQueues {
             }
         }
     }
-    //方法三 题解方法优先队列（大顶堆）
+    // √ 方法三 题解方法优先队列（大顶堆）（7）239. 滑动窗口最大值 time：2023年10月31日20:07:08 -> 2023年10月31日20:50:03
+        //重点笔记：此思路使用大顶堆来解决滑动窗口的问题很巧妙！因为大顶堆可以存储对象（在这里存储的数组），就可以把下标也存进去
+        //当每每想取出最大值时，可以判断其下标在不在滑动窗口里，如果不在就一直排出堆顶就可以了！
     public int[] maxSlidingWindow2(int[] nums, int k) {
-        return new int[]{1, 2};
+        int result[] = new int[nums.length - k + 1];
+        //先初始化一个大顶堆
+        PriorityQueue<int[]> priorityQueue = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o2[1] - o1[1];//降序表示为大顶堆
+            }
+        });
+        for (int i = 0; i <= nums.length - k; i++){
+
+            if ( i == 0){//i=0时 先进行初始化大顶堆
+                for (int j = 0; j < k; j++){
+                    priorityQueue.add(new int[]{j, nums[j]});
+                }
+                result[i] = priorityQueue.peek()[1];
+            }else {//i != 0时候
+                //入堆
+                priorityQueue.add(new int[]{i - 1 + k, nums[i - 1 + k]});
+                //取最大值：当堆顶元素的key不在窗口内 就一直出堆 直到其在窗口内
+                while (priorityQueue.peek()[0] < i || priorityQueue.peek()[0] > i + k - 1){
+                    priorityQueue.poll();
+                }
+                result[i] = priorityQueue.peek()[1];
+            }
+        }
+
+        return result;
     }
 
     /**
-     * （7.1）76. 最小覆盖子串 time：2023年10月30日10:14:08- >
+     * （7.1）76. 最小覆盖子串 较难
      */
     public String minWindow(String s, String t) {
         return "";
@@ -341,13 +369,59 @@ public class MyStacksQueues {
         return result;
     }
     /**
-     * (8.2) 692. 前K个高频单词
+     * √ (8.2) 692. 前K个高频单词 time：2023年10月31日15:57:30 -> 2023年10月31日16:31:00
+     * 我的思路：1.首选直接使用大顶堆输出前k个即可 2.但是难点在于如果是有相同的出现频率则按照字典顺序排序（直接使用字符串的哈希编码进行排序）
      */
-    public List<String> topKFrequent(String[] words, int k) {
-        return null;
+    public List<String> topKFrequentString(String[] words, int k) {
+        //先对数组直接进行一个排序
+        Map<String, Integer> map = new HashMap<>();
+        //先使用map统计一遍个数
+        for (int i = 0; i < words.length; i++){
+            map.put(words[i], map.getOrDefault(words[i], 0) + 1);
+        }
+        PriorityQueue<Map.Entry<String, Integer>> priorityQueue = new PriorityQueue<>(new Comparator<Map.Entry<String, Integer>>() {
+            @Override
+            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                if (o1.getValue() == o2.getValue()){//如果value值相等时按照key升序（也就是字典排序），否则按照value进行降序
+                    return o1.getKey().compareTo(o2.getKey());//1 compareTo 2 返回的是1-2
+                }else {//否则按照value进行降序
+                    return o2.getValue() - o1.getValue();
+                }
+            }
+        });
+        //构建大顶堆
+        for (Map.Entry<String, Integer> entry : map.entrySet()){
+            priorityQueue.add(entry);
+        }
+        List<String> list = new ArrayList<>();
+        //输出前k个
+        for (int i = 0; i < k; i++){
+            list.add(priorityQueue.poll().getKey());
+        }
+        return list;
+
+//        //再使用优先级队列（大顶堆）进行输出
+//        //首先进行初始化大顶堆
+//        PriorityQueue<String[]> priorityQueue = new PriorityQueue<>(new Comparator<String[]>() {
+//            @Override
+//            public int compare(String[] o1, String[] o2) {
+//                return Objects.equals(o1[1], o2[1]) ? o1[0].compareTo(o2[0]) : Integer.parseInt(o2[1]) - Integer.parseInt(o1[1]);//大顶堆是降序
+//            }
+//        });
+//        //构建大顶堆
+//        for (String key : map.keySet()){
+//            priorityQueue.add(new String[]{key, String.valueOf(map.get(key))});
+//        }
+//        //输出前k个
+//        List<String> result = new ArrayList<>();
+//        for (int i = 0; i < k; i++){
+//            result.add(priorityQueue.poll()[0]);
+//        }
+//        return result;
     }
+
     /**
-     * （8.3）215. 数组中的第K个最大元素 time：2023年10月30日16:01:51 -> 2023年10月30日16:12:32
+     * √（8.3）215. 数组中的第K个最大元素 time：2023年10月30日16:01:51 -> 2023年10月30日16:12:32
      * 重点笔记：想到快排了 但是具体忘记什么思想了！
      */
     public int findKthLargest(int[] nums, int k) {
@@ -385,6 +459,10 @@ public class MyStacksQueues {
         MyStacksQueues myStacksQueues = new MyStacksQueues();
 
 
+//        String testString[] = {"i","love","leetcode","i","love","coding"};
+//        Arrays.sort(testString);
+//        System.out.println(Arrays.toString(testString));
+//        myStacksQueues.topKFrequentString(testString, 2);
 
 //        //测试 comparator接口中的compare 升序和降序的返回值
 //        //【例子中展示的比较器用在数组排序中，也可以用在优先级队列（大小顶锥）中！】
