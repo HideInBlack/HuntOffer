@@ -3,6 +3,7 @@ package codeFlowIdea;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * codeFlowIdea 代码随想录学习记录 time：2023年11月1日21:21:36 ->
@@ -32,6 +33,28 @@ public class MyBinaryTree {
             inorderSee(root.right, list);
         }
     }
+    //方法二 (2.1) 94. 二叉树的中序遍历 time：2023年11月1日22:10:41 -> 2023年11月1日22:23:38
+    public List<Integer> inorderTraversal2(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        Stack<TreeNode> stack = new Stack<>();
+        if (root == null){
+            return result;
+        }
+        //这个时候需要借助指针来进行遍历操作入栈 而出栈只是用来访问元素
+        TreeNode current = root;
+        while (current != null || !stack.isEmpty()){
+            if (current != null){
+                stack.push(current);
+                current = current.left;
+            }else if (!stack.isEmpty()){
+                current = stack.pop();
+                result.add(current.val);
+                //出栈完要往右走了！因为是中序 是左中右
+                current = current.right;
+            }
+        }
+        return result;
+    }
 
     /**
      * （2.2）144. 二叉树的前序遍历 time：2023年11月1日21:34:59 -> 2023年11月1日21:38:44
@@ -52,6 +75,30 @@ public class MyBinaryTree {
             preorderSee(root.right, list);
         }
     }
+    //方法二 非递归前序遍历 time：2023年11月1日21:54:58 -> 2023年11月1日22:06:53
+    public List<Integer> preorderTraversal2(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        //根节点为空时要先做判断！
+        if (root == null){
+            return list;
+        }
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+        while (!stack.isEmpty()){
+            //先进行出栈,出栈之时便是访问之后
+            TreeNode temp = stack.pop();//temp缓存出栈元素
+            list.add(temp.val);
+            //先右再左的压入到栈中 这样出栈时才是先左才右
+            if (temp.right != null){//如果出栈元素的右孩子不为空 则进栈
+                stack.push(temp.right);
+            }
+            if (temp.left != null){
+                stack.push(temp.left);
+            }
+        }
+        return list;
+
+    }
 
     /**
      * (2.3) 145. 二叉树的后序遍历 time：2023年11月1日21:38:38 -> 2023年11月1日21:41:47
@@ -68,9 +115,32 @@ public class MyBinaryTree {
             list.add(root.val);
         }
     }
-    //方法二 (2.3) 145. 二叉树的后序遍历 非递归方法 time：2023年11月1日21:44:29 ->
+    //方法二 (2.3) 145. 二叉树的后序遍历 非递归方法 time：2023年11月1日22:23:58 -> 2023年11月1日22:47:03
+    //重点笔记：1.后序遍历和前序遍历的迭代思路一样！直接进行入栈出栈，然后再入栈其左右孩子即可。只不过后序需要用前序来做 然后翻转（其中的先左还是先右还有一点不一样！） 2.而中序遍历的迭代方法需要用到遍历节点！较难
     public List<Integer> postorderTraversal2(TreeNode root) {
-        return null;
+        List<Integer> list = new ArrayList<>();
+        if (root == null){
+            return list;
+        }
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+        //先进行先序遍历 TLR
+        while (!stack.isEmpty()){
+            //出栈之时 访问之时
+            TreeNode cur = stack.pop();
+            list.add(cur.val);
+            if (cur.left != null){//先左后右！
+                stack.push(cur.left);
+            }
+            if (cur.right != null){
+                stack.push(cur.right);
+            }
+        }
+        List<Integer> list2 = new ArrayList<>();
+        for (int i = list.size() - 1; i >= 0; i--){
+            list2.add(list.get(i));
+        }
+        return list2;
     }
 
 
@@ -80,6 +150,7 @@ public class MyBinaryTree {
      * -----------------------------------------------测试-----------------------------------------------
      */
     public static void main(String[] args) {
+        MyBinaryTree myBinaryTree = new MyBinaryTree();
 
     }
 }
