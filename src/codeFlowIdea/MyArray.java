@@ -2,10 +2,7 @@ package codeFlowIdea;
 
 import util.DzyUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * codeFlowIdea 代码随想录学习记录 time：2023年9月23日15:06:14 -> 2023年10月8日15:53:08
@@ -458,9 +455,14 @@ public class MyArray {
     public static void main(String[] args) {
         MyArray myArray = new MyArray();
 
+        int nums[] = {3,2,1,5,6,4};
+        myArray.quickSort(nums, 0, nums.length - 1);
+        System.out.println(Arrays.toString(nums));
+
+
         //(6)-(1) 螺旋矩阵
-        int[][] matrix = {{1,2,3,4}, {5,6,7,8}, {9,10,11,12}};
-        System.out.println((myArray.spiralOrder(matrix)).toString());
+//        int[][] matrix = {{1,2,3,4}, {5,6,7,8}, {9,10,11,12}};
+//        System.out.println((myArray.spiralOrder(matrix)).toString());
 
         //（6）螺旋矩阵II
 //        DzyUtils.printDoubleArray(myArray.generateMatrix(4));
