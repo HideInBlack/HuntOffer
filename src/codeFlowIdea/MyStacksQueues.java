@@ -1,5 +1,6 @@
 package codeFlowIdea;
 
+import javax.print.attribute.standard.NumberUp;
 import java.util.*;
 
 /**
@@ -368,6 +369,34 @@ public class MyStacksQueues {
         }
         return result;
     }
+    //方法三 小顶堆 347. 前 K 个高频元素 time：2023年11月1日20:35:55 -> 2023年11月1日20:49:13
+    public int[] topKFrequent2(int[] nums, int k){
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int num : nums){
+            map.put(num, map.getOrDefault(num, 0) + 1);
+        }
+        PriorityQueue<Map.Entry<Integer, Integer>> priorityQueue = new PriorityQueue<>(new Comparator<Map.Entry<Integer, Integer>>() {
+            @Override
+            public int compare(Map.Entry<Integer, Integer> o1, Map.Entry<Integer, Integer> o2) {
+                return o1.getValue() - o2.getValue();//小顶堆
+            }
+        });
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()){
+            if (priorityQueue.size() < k){
+                priorityQueue.add(entry);
+            }else {//小顶堆中有k个时 先加一个再排出去一个(就还剩k个)
+                priorityQueue.add(entry);
+                priorityQueue.poll();
+            }
+        }
+        int result[] = new int[k];
+        int count = 0;
+        while (!priorityQueue.isEmpty()){
+            result[count++] = priorityQueue.poll().getKey();
+        }
+        return result;
+    }
+
     /**
      * √ (8.2) 692. 前K个高频单词 time：2023年10月31日15:57:30 -> 2023年10月31日16:31:00
      * 我的思路：1.首选直接使用大顶堆输出前k个即可 2.但是难点在于如果是有相同的出现频率则按照字典顺序排序（直接使用字符串的哈希编码进行排序）
@@ -428,7 +457,7 @@ public class MyStacksQueues {
         Arrays.sort(nums);
         return nums[nums.length - k];
     }
-    //方法二（8.3）215. 数组中的第K个最大元素 正经做法 time：2023年10月30日16:25:30 ->
+    // √ 方法二（8.3）215. 数组中的第K个最大元素 正经做法 time：2023年10月30日16:25:30 -> 2023年10月30日16:35:30
     //使用堆排序来试试
     public int findKthLargest2(int[] nums, int k) {
         PriorityQueue<Integer> priorityQueue = new PriorityQueue<>(new Comparator<Integer>() {
@@ -447,9 +476,208 @@ public class MyStacksQueues {
         }
         return priorityQueue.peek();
     }
-    //方法三 快排的经典思想
+    //方法三 快排的经典思想 time：2023年11月1日14:19:26 -> 2023年11月1日14:58:12
     public int findKthLargest3(int[] nums, int k) {
-        return 0;
+        //快排思想走起
+        int left = 0; int right = nums.length - 1;
+        int query = nums.length - k;
+        //调用递归函数
+        return quickSortQuery(nums, left, right, query);
+    }
+    //快速排序的递归方法
+    private int quickSortQuery(int[] nums, int left, int right, int query){
+        //递归停止条件是left >= right 时就会停止返回
+
+        //取第一个值为待查询值
+        int current = nums[left];
+        int i = left; int j = right;
+        //开始一层快排
+        while (i < j){
+            //先从右边往左边走
+            while (i < j && nums[j] > current){
+                j--;
+            }
+            if (i < j){
+                nums[i] = nums[j]; nums[j] = current;
+                i++;
+            }
+            //再从左边往右走
+            while (i < j && nums[i] < current){
+                i++;
+            }
+            if (i < j){
+                nums[j] = nums[i]; nums[i] = current;
+                j--;
+            }
+        }
+        //开始左边和右边 这地方就需要修改了 因为我们不需要对整个排序
+        if (query < i && left <= i - 1){
+            return quickSortQuery(nums, left, i - 1, query);
+        }else if (query > i && i + 1 <= right){
+            return quickSortQuery(nums, i + 1, right, query);
+        }else {//否则 代码找到了直接进行返回
+            return nums[i];
+        }
+    }
+
+    private void quickSort(int[] nums, int left, int right){
+        if (left < right) {
+            //取第一个值为待查询值
+            int current = nums[left];
+            int i = left;
+            int j = right;
+            //开始一层快排
+            while (i < j) {
+                //先从右边往左边走
+                while (i < j && nums[j] > current) {
+                    j--;
+                }
+                if (i < j){
+                    nums[i] = nums[j];
+                    nums[j] = current;
+                    i++;
+                }
+                //再从左边往右走
+                while (i < j && nums[i] < current) {
+                    i++;
+                }
+                if (i < j){
+                    nums[j] = nums[i];
+                    nums[i] = current;
+                    j--;
+                }
+            }
+            quickSort(nums, left, i - 1);
+            quickSort(nums, i + 1, right);
+        }
+    }
+
+    /**
+     * √ （8.4）451. 根据字符出现频率排序 time：2023年11月1日11:09:02 -> 2023年11月1日11:22:14
+     * 我的思路：肯定是要使用map来统计出现的次数，再根据优先级队列排序后，次数组合成新的字符串
+     */
+    public String frequencySort(String s) {
+        Map<Character, Integer> map = new HashMap<>();
+        //先进行统计个数
+        for (int i = 0; i < s.length(); i++){
+            map.put(s.charAt(i), map.getOrDefault(s.charAt(i), 0) + 1);
+        }
+        //再进行根据map 利用大顶堆按照value次数进行排序
+        PriorityQueue<Map.Entry<Character, Integer>> priorityQueue = new PriorityQueue<>(new Comparator<Map.Entry<Character, Integer>>() {
+            @Override
+            public int compare(Map.Entry<Character, Integer> o1, Map.Entry<Character, Integer> o2) {
+                return o2.getValue() - o1.getValue();//降序排序
+            }
+        });
+        //构建大顶堆
+        for (Map.Entry<Character, Integer> entry : map.entrySet()){
+            priorityQueue.add(entry);
+        }
+        //按从大到小排出所有的entry 然后进行组合新的字符串
+        StringBuilder result = new StringBuilder();
+        int count = 0;
+        while (!priorityQueue.isEmpty()){
+            for (int i = 0; i < priorityQueue.peek().getValue(); i++){
+                result.append(priorityQueue.peek().getKey());
+            }
+            priorityQueue.poll();
+        }
+        return result.toString();
+    }
+    // √ 方法二 使用collections.sort() time：2023年11月1日14:01:36 -> 2023年11月1日14:13:15
+    public String frequencySort2(String s) {
+        Map<Character, Integer> map = new HashMap<>();
+        //先进行统计个数
+        for (int i = 0; i < s.length(); i++){
+            map.put(s.charAt(i), map.getOrDefault(s.charAt(i), 0) + 1);
+        }
+        List<Character> list = new ArrayList<>(map.keySet());
+        Collections.sort(list, new Comparator<Character>() {
+            @Override
+            public int compare(Character o1, Character o2) {
+                return map.get(o2) - map.get(o1);//降序 而且是按照不在list中的（list之外的map中的value）来排序
+            }
+        });
+        StringBuilder result = new StringBuilder();
+        for (char element : list){
+            result.append(String.valueOf(element).repeat(Math.max(0, map.get(element))));
+        }
+        return result.toString();
+    }
+
+    /**
+     * √ 刚发现一个快排的bug 再来一遍快排 time：2023年11月1日16:05:32 -> 2023年11月1日16:21:58
+     * 递归实现快速排序！
+     */
+    private void quickSortAgain(int[] nums, int left, int right){
+        int leftCur = left; int rightCur = right; int value = nums[left];
+        while (leftCur < rightCur){
+            //先从右往左查询
+            while (leftCur < rightCur && nums[rightCur] > value){
+                rightCur--;
+            }
+            //一定要做这个判断因为 rigthCur有可能会出去
+            if (leftCur < rightCur){
+                nums[leftCur] = nums[rightCur];
+                nums[rightCur] = value;
+                leftCur++;
+            }
+
+            while (leftCur < rightCur && nums[leftCur] < value){
+                leftCur++;
+            }
+            if (leftCur < rightCur){
+                nums[rightCur] = nums[leftCur];
+                nums[leftCur] = value;
+                right--;
+            }
+        }
+        if (left < leftCur - 1){
+        quickSortAgain(nums, left, leftCur - 1);
+        }
+        if (leftCur + 1 < right){
+        quickSortAgain(nums, leftCur + 1, right);
+        }
+    }
+
+    /**
+     * 快排扩展 414. 第三大的数 time：2023年11月1日16:23:53 -> 2023年11月1日17:04:41
+     * 堆排序可以做
+     */
+    public int thirdMax(int[] nums) {
+        Arrays.sort(nums);
+        int count = 1;
+        for (int i = nums.length - 1; i >= 0; i--){
+            if (i != nums.length - 1 && nums[i] != nums[i + 1]){
+                count++;
+                if (count == 3){
+                    return nums[i];
+                }
+            }
+        }
+        return nums[nums.length - 1];
+    }
+    //方法二 414. 第三大的数 试一下堆排序 time：2023年11月1日19:24:14 -> 2023年11月1日19:34:11
+    //我的思路：只需要维护前k个大的数就可以 用小顶堆 这样一直出堆的就是最小的 而留下的就是最大的k个！
+    public int thirdMax2(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < nums.length; i++){
+            set.add(nums[i]);
+        }
+        PriorityQueue<Integer> priorityQueue = new PriorityQueue<>();
+        for (int key : set){
+            priorityQueue.add(key);
+        }
+        if (priorityQueue.size() < 3){
+            while (priorityQueue.size() > 1){
+                priorityQueue.poll();
+            }
+            return priorityQueue.peek();
+        }
+        while (priorityQueue.size() > 3){
+            priorityQueue.poll();
+        }
+        return priorityQueue.peek();
     }
 
     /**
@@ -458,6 +686,13 @@ public class MyStacksQueues {
     public static void main(String[] args) {
         MyStacksQueues myStacksQueues = new MyStacksQueues();
 
+        int nums[] = {-2147483648,1,1};
+        Arrays.sort(nums);
+        System.out.println(Arrays.toString(nums));
+
+//        myStacksQueues.findKthLargest3(nums, 2);
+//        myStacksQueues.quickSort(nums, 0, nums.length - 1);
+//        System.out.println(Arrays.toString(nums));
 
 //        String testString[] = {"i","love","leetcode","i","love","coding"};
 //        Arrays.sort(testString);
