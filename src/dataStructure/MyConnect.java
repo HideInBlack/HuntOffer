@@ -27,6 +27,28 @@ public class MyConnect {
         return root;
     }
 
+    /**
+     * （5.8）117. 填充每个节点的下一个右侧节点指针 II time：2023年11月2日16:24:46 ->
+     */
+    public Node connect2(Node root) {
+        Queue<Node> queue = new LinkedList<>();
+        if (root == null) return null;
+        queue.add(root);
+        while (!queue.isEmpty()){
+            int len = queue.size();
+            for (int i = 0; i < len; i++){
+                Node cur = queue.poll();
+                if (i == len - 1){//每行的最后一个一定要做特殊处理！
+                    cur.next = null;
+                }else {
+                    cur.next = queue.peek();
+                }
+                if (cur.left != null) queue.add(cur.left);
+                if (cur.right != null) queue.add(cur.right);
+            }
+        }
+        return root;
+    }
 
 }
 class Node {
