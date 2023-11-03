@@ -660,12 +660,169 @@ public class MyBinaryTree {
     }
 
     /**
-     * （9）方法二 递归求 104. 二叉树的最大深度
+     * √（9）方法二 递归求 104. 二叉树的最大深度
      */
     public int maxDepth2(TreeNode root) {
-
-        return 0;
+        int maxDep = 0;
+        return maxDepthD(root, 0);
     }
+    //递归先序遍历求最大深度
+    private int maxDepthD(TreeNode root, int maxDep){
+        if (root != null){
+            maxDep += 1;
+            return Math.max(maxDepthD(root.left, maxDep), maxDepthD(root.right, maxDep));
+        }
+        //当前结点为空时 直接返回原参数高度
+        return maxDep;
+    }
+
+    /**
+     * √（9.1）559. N 叉树的最大深度 time：2023年11月3日19:10:47 -> 2023年11月3日19:22:18
+     * 递归方法 + 大顶堆 搞定 下面试一下层次遍历
+     */
+    public int maxDepthN(Node root) {
+        int maxDepth = 0;
+        return maxN(root, 0);
+    }
+    private int maxN(Node root, int maxDepth){
+        if (root != null){
+            maxDepth += 1;
+            //正好使用一下大顶堆 练习一下大顶堆取最大值
+            PriorityQueue<Integer> priorityQueue = new PriorityQueue<>(new Comparator<Integer>() {
+                @Override
+                public int compare(Integer o1, Integer o2) {
+                    return o2 - o1;//降序 所以是大顶堆
+                }
+            });
+            for (int i = 0; i < root.children.size(); i++){
+                priorityQueue.add(maxN(root.children.get(i), maxDepth));
+            }
+            if (priorityQueue.isEmpty()) return maxDepth;
+            else return priorityQueue.poll();
+        }else {
+            return maxDepth;
+        }
+    }
+    // √ 方法二 层序遍历n叉树 来求最大深度 2023年11月3日19:22:18 -> 2023年11月3日19:27:01
+    public int maxDepth9(Node root) {
+        if (root == null) return 0;
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(root);
+        int height = 0;
+        while (!queue.isEmpty()){
+            height++;
+            int len = queue.size();
+            for (int i = 0; i < len; i++){
+                Node cur = queue.poll();
+                //把所有的孩子入对
+                for (int j = 0; j < cur.children.size(); j++){
+                    queue.add(cur.children.get(j));
+                }
+            }
+        }
+        return height;
+    }
+
+    /**
+     * √（10）111. 二叉树的最小深度 time：2023年11月3日19:29:22 -> 2023年11月3日19:59:16
+     *  求最小深度的递归需要注意一些！
+     */
+    public int minDepth8(TreeNode root) {
+        if (root == null) return 0;
+        int minDepth = 0;
+        return min8(root, minDepth);
+    }
+    //递归求二叉树的最小深度
+    private int min8(TreeNode root, int curDepth){
+        //这个递归要特殊一些
+        curDepth += 1;
+        if (root.left == null && root.right == null) return curDepth;
+        if (root.left != null && root.right == null){//此时只有左孩子不为空
+            return min8(root.left, curDepth);
+        }else if (root.right != null && root.left == null){
+            return min8(root.right, curDepth);
+        } else if (root.left != null && root.right != null) {
+            return Math.min(min8(root.left, curDepth), min8(root.right, curDepth));
+        }
+        return -1;
+    }
+
+    /**
+     * （11）222. 完全二叉树的节点个数 time：2023年11月3日20:04:28 -> 2023年11月3日20:09:04
+     */
+    public int countNodes(TreeNode root) {
+        if (root == null) return 0;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        int count = 0;
+        while (!queue.isEmpty()){
+            int len = queue.size();
+            count += len;
+            for (int i = 0; i < len; i++){
+                TreeNode cur = queue.poll();
+                if (cur.left != null) queue.add(cur.left);
+                if (cur.right != null) queue.add(cur.right);
+            }
+        }
+        return count;
+    }
+
+    /**
+     * （12）110. 平衡二叉树 time：2023年11月3日20:13:20 -> 2023年11月3日20:30:13
+     * 我的思路：针对每一个节点 遍历求其左右孩子的最大深度 再求其绝对值判断
+     */
+    public boolean isBalanced(TreeNode root) {
+        if (root != null){
+            boolean cur = false;
+            //获得当前结点的结果
+            if (Math.abs(getMaxDepth(root.left, 0) - getMaxDepth(root.right, 0)) <= 1){
+                cur = true;
+            }else {//这里其实可以直接return false 进行优化！
+                return false;
+            }
+            boolean left = isBalanced(root.left);
+            boolean right = isBalanced(root.right);
+            return left && right;
+        }
+        return true;
+    }
+    //递归遍历求最大深度
+    private int getMaxDepth(TreeNode root, int curDepth){
+        if (root != null){
+            curDepth += 1;
+            return Math.max(getMaxDepth(root.left, curDepth), getMaxDepth(root.right, curDepth));
+        }
+        return curDepth;
+    }
+
+    /**
+     * √（13）257. 二叉树的所有路径 time：2023年11月3日21:05:11 -> 2023年11月3日21:17:55
+     */
+    public List<String> binaryTreePaths(TreeNode root) {
+        //我先都用list存起来不然不方便
+        List<String> result = new ArrayList<>();
+        binaryTree(root, new StringBuilder(), result);
+        return result;
+    }
+    //递归遍历
+//    public void binaryTree(TreeNode root, String curPath, List<String> result) {
+//        if (root != null){
+//            curPath = curPath + "->" + root.val;
+//            if (root.left == null & root.right == null) result.add(curPath.substring(2));//如果是叶子节点才添加到结果中
+//            binaryTree(root.left, curPath, result);
+//            binaryTree(root.right, curPath, result);
+//        }
+//    }
+    //我试一下 StringBuilder
+    public void binaryTree(TreeNode root, StringBuilder curPath, List<String> result) {
+        if (root != null){
+            curPath.append("->" + root.val);
+            if (root.left == null & root.right == null) result.add(curPath.substring(2));//如果是叶子节点才添加到结果中
+            binaryTree(root.left, new StringBuilder(curPath), result);
+            binaryTree(root.right, new StringBuilder(curPath), result);
+        }
+    }
+
 
 
     /**
