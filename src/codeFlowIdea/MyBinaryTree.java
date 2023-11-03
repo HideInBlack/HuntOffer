@@ -260,7 +260,7 @@ public class MyBinaryTree {
         return result;
     }
     /**
-     * （5.3）199. 二叉树的右视图 time：2023年11月2日14:16:42 -> 2023年11月2日14:23:27
+     * √（5.3）199. 二叉树的右视图 time：2023年11月2日14:16:42 -> 2023年11月2日14:23:27
      *  我的思路：使用层次遍历 每次在这一层的时候 只留下最后一个值（或者说只保存最后一个值即可）
      */
     public List<Integer> rightSideView(TreeNode root) {
@@ -285,7 +285,7 @@ public class MyBinaryTree {
         return list;
     }
     /**
-     * （5.4）637. 二叉树的层平均值 time：2023年11月2日14:26:19 -> 2023年11月2日14:34:50
+     * √（5.4）637. 二叉树的层平均值 time：2023年11月2日14:26:19 -> 2023年11月2日14:34:50
      */
     public List<Double> averageOfLevels(TreeNode root) {
         List<Double> list = new ArrayList<>();
@@ -306,7 +306,7 @@ public class MyBinaryTree {
         return list;
     }
     /**
-     * （5.5）429. N 叉树的层序遍历 time：2023年11月2日15:31:51 -> 2023年11月2日15:38:25
+     * √（5.5）429. N 叉树的层序遍历 time：2023年11月2日15:31:51 -> 2023年11月2日15:38:25
      */
     public List<List<Integer>> levelOrder(Node root) {
         List<List<Integer>> result = new ArrayList<>();
@@ -331,7 +331,7 @@ public class MyBinaryTree {
         return result;
     }
     /**
-     * （5.6）515. 在每个树行中找最大值 time：2023年11月2日15:39:09 -> 2023年11月2日15:47:03
+     * √（5.6）515. 在每个树行中找最大值 time：2023年11月2日15:39:09 -> 2023年11月2日15:47:03
      */
     public List<Integer> largestValues(TreeNode root) {
         List<Integer> list = new ArrayList<>();
@@ -354,7 +354,7 @@ public class MyBinaryTree {
         return list;
     }
     /**
-     * （5.7）116. 填充每个节点的下一个右侧节点指针 time：2023年11月2日15:58:06 -> 2023年11月2日16:13:32
+     * √（5.7）116. 填充每个节点的下一个右侧节点指针 time：2023年11月2日15:58:06 -> 2023年11月2日16:13:32
      * 此题目在dataStructure 文件夹下的MyConnect类中
      */
 //    public dataStructure.Node connect(dataStructure.Node root) {
@@ -377,7 +377,7 @@ public class MyBinaryTree {
 //        return root;
 //    }
     /**
-     * （5.8）117. 填充每个节点的下一个右侧节点指针 II time：2023年11月2日16:24:46 -> 2023年11月2日16:28:05
+     *  √（5.8）117. 填充每个节点的下一个右侧节点指针 II time：2023年11月2日16:24:46 -> 2023年11月2日16:28:05
      */
 //    public dataStructure.Node connect2(dataStructure.Node root) {
 //        Queue<dataStructure.Node> queue = new LinkedList<>();
@@ -399,7 +399,7 @@ public class MyBinaryTree {
 //        return root;
 //    }
     /**
-     *（5.9）104. 二叉树的最大深度 time：2023年11月2日16:28:52 -> 2023年11月2日16:34:41
+     * √（5.9）104. 二叉树的最大深度 time：2023年11月2日16:28:52 -> 2023年11月2日16:34:41
      * 我的思路：可以使用层次遍历 直接取出其深度
      */
     public int maxDepth(TreeNode root) {
@@ -421,7 +421,7 @@ public class MyBinaryTree {
         return count;
     }
     /**
-     * （5.10）111. 二叉树的最小深度 time：2023年11月2日16:36:18 -> 2023年11月2日16:45:30
+     * √（5.10）111. 二叉树的最小深度 time：2023年11月2日16:36:18 -> 2023年11月2日16:45:30
      * 我的思路：直接进行层次遍历 当层次遍历的时候最先找到一个节点是叶子节点时 直接进行返回层数即可
      */
     public int minDepth(TreeNode root) {
@@ -448,10 +448,223 @@ public class MyBinaryTree {
         return -1;
     }
     /**
-     * （6）226. 翻转二叉树 time：
+     * √（6）226. 翻转二叉树 time：2023年11月3日09:19:17 -> 2023年11月3日09:31:33
+     *  我的思路：递归实现：如果当前树不是叶子节点 就反转其左右孩子 叶子节点时不用处理即可
      */
     public TreeNode invertTree(TreeNode root) {
+        if(root == null) return root;
+        invert(root);
         return root;
+    }
+    //使用先序遍历 遍历每一个节点 翻转其
+    private void invert(TreeNode treeNode){
+        //如果当前结点是空节点 直接返回
+        if (treeNode != null && (treeNode.left != null || treeNode.right != null)){//如果不是空节点 才有左右孩子 再判断其是否是叶子节点（叶子结点不需要翻转其左右孩子 直接返回）
+            TreeNode tempLeft = treeNode.left;
+            TreeNode tempRight = treeNode.right;
+            //翻转当前结点的左右孩子
+            treeNode.left = tempRight;
+            treeNode.right = tempLeft;
+            //再继续往下遍历
+            invert(treeNode.left);
+            invert(treeNode.right);
+        }
+    }
+    // √ 翻转二叉树 方法二  来吧！先序遍历 试一下统一迭代法 time：2023年11月3日09:41:46 -> 2023年11月3日09:53:05
+    public TreeNode invertTree2(TreeNode root) {
+        if (root == null) return null;
+
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+        while (!stack.isEmpty()){
+            //先出栈一个
+            TreeNode cur = stack.pop();
+            if (cur != null){//如果出栈元素 不为空 则继续入栈 不做遍历等操作
+                if (cur.right != null) stack.push(cur.right);
+                if (cur.left != null) stack.push(cur.left);
+                stack.push(cur);
+                stack.push(null);//空指针作为标记
+            }else {//如果出栈是空指针 则开始操作空指针的下一个结点！
+                cur = stack.pop();
+                if (cur.left != null || cur.right != null){//如果其不是叶子节点 就需要翻转
+                    TreeNode left = cur.left;
+                    TreeNode right = cur.right;
+                    cur.left = right;
+                    cur.right = left;
+                }
+            }
+        }
+        return root;
+    }
+    // √ 翻转二叉树 方法三 层序遍历 time：2023年11月3日09:54:22 -> 2023年11月3日10:00:10
+    public TreeNode invertTree3(TreeNode root) {
+        if (root == null) return null;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()){
+            //来嘛  继续以行为单位吧
+            int len = queue.size();
+            for (int i = 0; i < len; i++){
+                TreeNode cur = queue.poll();
+                if (cur.left != null) queue.add(cur.left);
+                if (cur.right != null) queue.add(cur.right);
+                //下面再做 翻转操作
+                if (cur.left != null || cur.right != null){
+                    TreeNode left = cur.left;
+                    TreeNode right = cur.right;
+                    cur.left = right;
+                    cur.right = left;
+                }
+            }
+        }
+        return root;
+    }
+
+    /**
+     * √ 589. N 叉树的前序遍历 time：2023年11月3日10:05:59 -> 2023年11月3日10:13:21
+     */
+    public List<Integer> preorder(Node root) {
+        List<Integer> list = new ArrayList<>();
+        preorderD(root, list);
+        return list;
+    }
+    // N 叉树的先序遍历 TLR
+    private void preorderD(Node root, List<Integer> list){//1.递归三要素第一 传入参数、返回类型的确定
+        if (root != null){//2.递归三要素第二 递归的终止条件
+            //3.递归三要素第三 递归的单层逻辑
+            list.add(root.val);
+            for (int i = 0; i < root.children.size(); i++){
+                preorderD(root.children.get(i), list);
+            }
+        }
+    }
+
+    /**
+     * 590. N 叉树的后序遍历 time：2023年11月3日10:14:03 -> 2023年11月3日10:19:41
+     */
+    public List<Integer> postorder(Node root) {
+        List<Integer> list = new ArrayList<>();
+        postorderD(root, list);
+        return list;
+    }
+    //递归的后续遍历 LRT
+    private void postorderD(Node root, List<Integer> list){
+        if (root != null){//2.递归三要素第二 递归的终止条件
+            //3.递归三要素第三 递归的单层逻辑
+            for (int i = 0; i < root.children.size(); i++){
+                postorderD(root.children.get(i), list);
+            }
+            list.add(root.val);
+        }
+    }
+
+    /**
+     * （8）101. 对称二叉树 time：2023年11月3日15:33:26 -> 2023年11月3日16:12:12
+     * 我的思路：判断二叉树是不是对称的 1.先翻转二叉树 2.翻转之后如果还是一样的结构一样的数值那就是对称的
+     */
+    public boolean isSymmetric(TreeNode root) {
+        TreeNode newOne = new TreeNode(root.val);
+        //先复制出一个一模一样的树出来
+        copyTree(root, newOne);
+        //然后再反转这个复制的树
+        invertTree(newOne);
+        //再递归遍历一遍看一下 这两个树的结构内容 是否都一样
+
+        return twoTree(root, newOne);
+    }
+    //递归遍历两棵树
+    private boolean twoTree(TreeNode root, TreeNode newOne){
+        if (root != null && newOne != null){
+            if (root.val != newOne.val) return false;
+            //其实这里体现的就是后序遍历的思想！先进左 再进右边 最后返回
+            return twoTree(root.left, newOne.left) && twoTree(root.right, newOne.right);
+        }else if (root != null && newOne == null){
+            return false;
+        }else if (root == null && newOne != null){
+            return false;
+        }
+        return true;
+    }
+    //复制一个完全一样的二叉树出来
+    private void copyTree(TreeNode root, TreeNode newOne){
+        if (root != null){
+            if (root.left != null){
+                TreeNode newOne1 = new TreeNode(root.left.val);
+                newOne.left = newOne1;
+                copyTree(root.left, newOne.left);
+            }
+            if (root.right != null){
+                TreeNode newOne2 = new TreeNode(root.right.val);
+                newOne.right = newOne2;
+                copyTree(root.right, newOne.right);
+            }
+
+        }
+    }
+    // √ 方法二 题解方法 101. 对称二叉树 time：2023年11月3日16:21:37 -> 2023年11月3日16:29:49
+    public boolean isSymmetric2(TreeNode root) {
+        return twoSymmetricTree(root.left, root.right);
+    }
+    //递归遍历判断两个是否是对称树
+    private boolean twoSymmetricTree(TreeNode left, TreeNode right){
+        if (left != null && right != null){
+            if (left.val != right.val) return false;
+            //其实这里体现的就是后序遍历的思想！先进左 再进右边 最后返回
+            //这里一定是这样：1.左子树往左走时，右子树往右走  2.左子树往右走时，右子树往左走
+            return twoSymmetricTree(left.left, right.right) && twoSymmetricTree(left.right, right.left);
+        }else if (left != null && right == null){//条件判断不要去判断当前的节点的左子树或者右子树，而是要在外面判断，只需要判断当前结点
+            return false;
+        }else if (left == null && right != null){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * （8.1）100. 相同的树 time：2023年11月3日16:54:30 -> 2023年11月3日17:02:39
+     */
+    public boolean isSameTree(TreeNode p, TreeNode q) {
+        if (p != null && q != null){
+            //这里有一个好处就是 如果不同直接进行返回 就不需要继续往下遍历了 节省时间
+            if (p.val != q.val) return false;
+            return isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
+        }else if (p != null && q == null){
+            return false;
+        }else if (p == null && q != null){
+            return false;
+        }else {
+            //都为空时 就需要返回true
+            return true;
+        }
+    }
+
+    /***
+     * （8.2）572. 另一棵树的子树 time：2023年11月3日17:03:03 -> 2023年11月3日17:14:55
+     * 我的思路：遍历每个节点 从当前节点和另一棵树进行判断是不是相同的树
+     */
+    public boolean isSubtree(TreeNode root, TreeNode subRoot) {
+        //先就是一个常规的递归遍历
+        if (root != null){
+            //再进行优化一下 （下面注释中的是正确的答案）
+            if (isSameTree(root, subRoot)) return true;
+            return isSubtree(root.left, subRoot) || isSubtree(root.right, subRoot);
+
+//            boolean cur = isSameTree(root, subRoot);
+//            boolean left = isSubtree(root.left, subRoot);
+//            boolean right = isSubtree(root.right, subRoot);
+//            //只要找到一个就可以！
+//            return cur || left || right;
+        }else {
+            return false;
+        }
+    }
+
+    /**
+     * （9）方法二 递归求 104. 二叉树的最大深度
+     */
+    public int maxDepth2(TreeNode root) {
+
+        return 0;
     }
 
 
