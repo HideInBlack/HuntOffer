@@ -823,6 +823,71 @@ public class MyBinaryTree {
         }
     }
 
+    /**
+     *（15）404. 左叶子之和 time：2023年11月4日10:17:13 -> 2023年11月4日10:30:28
+     * 递归思想 熟练掌握！牛逼！
+     * 我的方法很巧妙：从当前结点往左右孩子走的时候 传递一个key表明它是左孩子还是右孩子就可以啦！
+     */
+    public int sumOfLeftLeaves(TreeNode root) {
+        return sumOfLeft(root, 0, 0);
+    }
+    //递归遍历所有的左叶子节点 然后求和【在这里自定义一个key的意思是说：如果是其父节点的左孩子 那就直接为1，不是则为0 来传递信息】
+    public int sumOfLeft(TreeNode root, int key, int sum) {
+        if (root != null){
+            if (root.left == null && root.right == null && key == 1) return sum += root.val;
+            return sumOfLeft(root.left, 1, sum) + sumOfLeft(root.right, 0, sum);
+        }
+        return sum;
+    }
+
+    /**
+     * （16）513. 找树左下角的值 time：2023年11月4日10:38:36 -> 2023年11月4日10:44:13
+     * 我的思路：这一题岂不是简单的要死？直接进行层序遍历去最后一层的第一个值就可以了
+     */
+    public int findBottomLeftValue(TreeNode root) {
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        int result = -1;
+        while (!queue.isEmpty()){
+            int len = queue.size();
+            //取出最后一层的第一个值
+            result = queue.peek().val;
+            for (int i = 0; i < len; i++){
+                TreeNode cur = queue.poll();
+                if (cur.left != null) queue.add(cur.left);
+                if (cur.right != null) queue.add(cur.right);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * （17）112. 路径总和 time：2023年11月4日10:48:42 -> 2023年11月4日11:08:52
+     *  我的思路：那么这一题就切切实实的使用到回溯了【其实并没有使用回溯！不用回溯也可以啊！就直接只用先序遍历往下走就可以了】
+     */
+    public boolean hasPathSum(TreeNode root, int targetSum) {
+        return pathSum(root, targetSum, 0);
+    }
+    //直接使用先序遍历 进行往下走就可以啊！
+    private boolean pathSum(TreeNode root, int targetSum, int curSum){
+        if (root != null){
+            curSum += root.val;
+            if (curSum == targetSum && root.right == null && root.left == null) return true;
+            boolean left = pathSum(root.left, targetSum, curSum);
+            boolean right = pathSum(root.right, targetSum, curSum);
+            //思考这里为什么用|| 因为找到一个就可以了！
+            return left || right;
+        }
+        //这种就是要特别注意 叶子结点应该返回什么？
+        return false;
+    }
+
+    /**
+     * （17.1）113. 路径总和 II time：
+     */
+    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+        return null;
+    }
 
 
     /**
