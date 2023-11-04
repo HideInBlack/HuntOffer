@@ -883,11 +883,145 @@ public class MyBinaryTree {
     }
 
     /**
-     * （17.1）113. 路径总和 II time：
+     * √（17.1）113. 路径总和 II time：2023年11月4日13:49:10 -> 2023年11月4日14:22:57
+     * 重点笔记：在递归里面要使用list时，一定要注意！是想让其共享(共享就直接list)，还是不共享(不共享就new ArrayList<>(curList))！
      */
-    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+    public List<List<Integer>> pathSum2(TreeNode root, int targetSum) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> curList = new ArrayList<>();
+        pathSumAll(root, targetSum, curList, result);
+        return result;
+    }
+    //对于list这种 在递归中要想不共享 就要进行回溯方法！并且二维list添加时记得new 因为一维改动 二维也会改动
+    private void pathSumAll(TreeNode root, int targetSum, List<Integer> curList, List<List<Integer>> result){
+        if (root != null){
+            //把当前值加入到路径
+            curList.add(root.val);
+            int sum = 0;
+            int len = curList.size();
+            //求和当前路径
+            for (int i = 0; i < len; i++){
+                sum += curList.get(i);
+            }
+            if (sum == targetSum && root.left == null && root.right == null) result.add(new ArrayList<>(curList)); //中
+            pathSumAll(root.left, targetSum, curList, result); //左
+            //对于list 就需要进行回溯了
+            if (curList.size() != len) curList.remove(curList.size() - 1); //回溯
+            pathSumAll(root.right, targetSum, curList, result); //右
+            //这里也是需要回溯！
+            if (curList.size() != len) curList.remove(curList.size() - 1); //回溯
+        }
+    }
+    // √ 递归方法二 如果我不使用回溯呢 直接new list是否可行？ time：2023年11月4日14:35:08 -> 2023年11月4日14:42:52
+    private void pathSumAll2(TreeNode root, int targetSum, int curSum, List<Integer> curList, List<List<Integer>> result){
+        if (root != null){
+            curSum += root.val;
+            curList.add(root.val);
+            //如果和相等 并且是叶子节点时 直接加入到2维list
+            if (curSum == targetSum && root.left == null && root.right == null) result.add(curList); //中
+            pathSumAll2(root.left, targetSum, curSum, new ArrayList<>(curList), result); //左
+            pathSumAll2(root.right, targetSum, curSum, new ArrayList<>(curList), result); //右
+        }
+    }
+
+    /**
+     * ×（18）106. 从中序与后序遍历序列构造二叉树 time：2023年11月4日15:01:04 -> 2023年11月4日15:13:26
+     */
+    public TreeNode buildTree0(int[] inorder, int[] postorder) {
         return null;
     }
+    // √ 题解方法 106. 从中序与后序遍历序列构造二叉树 time：2023年11月4日15:35:32 -> 2023年11月4日16:05:34
+    //整体思路：1.首先是后续遍历的最后一个值是根节点 2.要根据后续遍历的最后一个值去中序遍历中找到然后进行分组，分成的左右组个数是一定是相同的，利用这个特性可以顺利把后续分组（中序的好分组，找到值就是分组成功了） 3.最后往两边进行递归创建即可
+    public TreeNode buildTree(int[] inorder, int[] postorder) {
+        //首先把中序遍历集中到map中 方便查询
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < inorder.length; i++){
+            //记住这里要把位置存为value！
+            map.put(inorder[i], i);
+        }
+        return buildTreeMidAfter(inorder, 0, inorder.length - 1, postorder, 0, postorder.length - 1, map);
+    }
+    //中序和后序创建树的递归方法
+    private TreeNode buildTreeMidAfter(int[] inorder, int leftIn, int rightIn, int[] postorder, int leftPost, int rightPost, Map<Integer, Integer> map){
+        if (leftIn > rightIn || leftPost > rightPost){
+            return null;
+        }
+        //先创建新节点
+        TreeNode newOne = new TreeNode(postorder[rightPost]);
+        //1.首先找到中序遍历根节点的位置
+        int rootPosition = map.get(postorder[rightPost]);
+        //2.获得中序遍历中左分组长度
+        int len = rootPosition - leftIn;
+        //3.往下继续递归
+        newOne.left = buildTreeMidAfter(inorder, leftIn, rootPosition - 1, postorder, leftPost, leftPost + len - 1, map);
+        newOne.right = buildTreeMidAfter(inorder, rootPosition + 1, rightIn, postorder, leftPost + len, rightPost - 1, map);
+        return newOne;
+    }
+
+    /**
+     * √（18.1）105. 从前序与中序遍历序列构造二叉树 time：2023年11月4日16:14:00 -> 2023年11月4日16:33:19
+     */
+    public TreeNode buildTreeB(int[] preorder, int[] inorder) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < inorder.length; i++){
+            map.put(inorder[i], i);
+        }
+        return buildTreeMidBefore(inorder, 0, inorder.length - 1, preorder, 0, preorder.length - 1, map);
+    }
+    private TreeNode buildTreeMidBefore(int[] inorder, int leftIn, int rightIn, int[] preorder, int leftPre, int rightPre, Map<Integer, Integer> map){
+        if (leftIn <= rightIn && leftPre <= rightPre){
+            TreeNode newOne = new TreeNode(preorder[leftPre]);
+            //1.先在中序遍历中找到根节点位置
+            int position = map.get(preorder[leftPre]);
+            //2.计算其在中序遍历中的左分组的长度
+            int len = position - leftIn;
+            //往下进行递归
+            newOne.left = buildTreeMidBefore(inorder, leftIn, position - 1, preorder, leftPre + 1, leftPre + len, map);//左分组
+            newOne.right = buildTreeMidBefore(inorder, position + 1, rightIn, preorder, leftPre + len + 1, rightPre, map);//右分组
+
+            return newOne;
+        }else {//否则就是叶子节点返回为null
+            return null;
+        }
+    }
+
+    /**
+     * √（19）654. 最大二叉树 time：2023年11月4日16:48:57 -> 2023年11月4日17:04:21
+     */
+    public TreeNode constructMaximumBinaryTree(int[] nums) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++){
+            map.put(nums[i], i);
+        }
+        return recursionMaximumBinaryTree(nums, 0, nums.length - 1, map);
+    }
+    //recursion 最大二叉树的递归函数
+    private TreeNode recursionMaximumBinaryTree(int[] nums, int left, int right, Map<Integer, Integer> map){
+        if (left <= right){
+            //1.先利用堆排序取出最大值
+            PriorityQueue<Integer> priorityQueue = new PriorityQueue<>(new Comparator<Integer>() {
+                @Override
+                public int compare(Integer o1, Integer o2) {
+                    return o2 - o1;//降序取出最大值
+                }
+            });
+            for (int i = left; i <= right; i++){
+                priorityQueue.add(nums[i]);
+            }
+            //2.再创建新节点
+            TreeNode newOne = new TreeNode(priorityQueue.peek());
+            //3.找到最大值的位置 方便进行分组
+            int position = map.get(priorityQueue.peek());
+            //4.进行递归
+            newOne.left = recursionMaximumBinaryTree(nums, left, position - 1, map);
+            newOne.right = recursionMaximumBinaryTree(nums, position + 1, right, map);
+            return newOne;
+        }else {
+            return null;
+        }
+    }
+
+
 
 
     /**
@@ -896,6 +1030,24 @@ public class MyBinaryTree {
     public static void main(String[] args) {
         MyBinaryTree myBinaryTree = new MyBinaryTree();
 
+        //测试 二维list就算已经添加了一维list 若一维改动 二维还是会跟着改动
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> list = new ArrayList<>();
+        list.add(1); list.add(2); list.add(3); list.add(4);
+        result.add(list);
+        System.out.println(result); // [[1, 2, 3, 4]]
+        //改动一维 二维会跟着改动（就算已经添加进去）
+        list.remove(3);
+        System.out.println(result); // [[1, 2, 3]]
+
+        //测试 一下list删除操作
+//        List<Integer> list = new ArrayList<>();
+//        list.add(1); list.add(2); list.add(3); list.add(3); list.add(3); list.add(3); list.add(3); list.add(3);
+//        System.out.println(list);
+//        for (int i = list.size() - 1; i >= 2; i--){
+//            list.remove(i);
+//        }
+//        System.out.println(list);
     }
 }
 
