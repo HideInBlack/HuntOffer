@@ -1021,7 +1021,169 @@ public class MyBinaryTree {
         }
     }
 
+    /**
+     * 106. 从中序与后序遍历序列构造二叉树 time：2023年11月12日15:16:41 -> 2023年11月12日15:36:49
+     */
+    public TreeNode buildTreeAgain(int[] inorder, int[] postorder) {
+        Map<Integer, Integer> map = new HashMap<>();
+        //先把中序遍历的值放到map中，方便查询
+        for (int i = 0; i < inorder.length; i++){
+            map.put(inorder[i], i);//需要根据值来找位置
+        }
+        return midAndBack(inorder, 0, inorder.length - 1, postorder, 0, postorder.length - 1, map);
+    }
+    public TreeNode midAndBack(int[] inorder, int inLeft, int inRight, int[] postorder, int postLeft, int postRight, Map<Integer, Integer> map){
+        if (inLeft <= inRight && postLeft <= postRight){
+            int position = map.get(postorder[postRight]);
+            int length = position - inLeft;
+            //先创建当前结点
+            TreeNode treeNode = new TreeNode(postorder[postRight]);
+            treeNode.left = midAndBack(inorder, inLeft, position - 1, postorder, postLeft, postLeft + length - 1, map);
+            treeNode.right = midAndBack(inorder, position + 1, inRight, postorder, postLeft + length, postRight - 1, map);
+            return treeNode;
+        }else {
+            return null;
+        }
+    }
 
+    /**
+     * （21）617. 合并二叉树 time：2023年11月12日15:46:19 -> 2023年11月12日15:57:37
+     */
+    public TreeNode mergeTrees(TreeNode root1, TreeNode root2) {
+        return merge(root1, root2);
+    }
+    public TreeNode merge(TreeNode root1, TreeNode root2){
+        if (root1 != null && root2 != null){
+            TreeNode treeNode = new TreeNode(root1.val + root2.val);
+            treeNode.left = merge(root1.left, root2.left);
+            treeNode.right = merge(root1.right, root2.right);
+            return treeNode;
+        } else if (root1 != null) {
+            TreeNode treeNode = new TreeNode(root1.val);
+            treeNode.left = merge(root1.left, null);
+            treeNode.right = merge(root1.right, null);
+            return treeNode;
+        } else if (root2 != null) {
+            TreeNode treeNode = new TreeNode(root2.val);
+            treeNode.left = merge(null, root2.left);
+            treeNode.right = merge(null, root2.right);
+            return treeNode;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * （22）700. 二叉搜索树中的搜索 time：2023年11月12日20:10:27 -> 2023年11月12日20:15:59
+     */
+    public TreeNode searchBST(TreeNode root, int val) {
+        if (root != null){
+            if (root.val == val) return root;
+            if (root.val < val) return searchBST(root.right, val);
+            return searchBST(root.left, val);
+        }else {
+            return null;
+        }
+    }
+
+    /**
+     * ×【75 / 83 个通过的测试用例】（23）98. 验证二叉搜索树 time：2023年11月12日20:17:32 -> 2023年11月12日20:34:00
+     * 我的思路：遍历一遍看看是不是每一个节点都满足条件（从其父节点那里接受信息）
+     */
+    public boolean isValidBST(TreeNode root) {
+        return validBST(root.left, root.val, 0) && validBST(root.right, root.val, 1);
+    }
+    //其中parentValue是父节点的值，key=0 代表其是其父节点的左孩子，如果key=1代表其是其父节点的右孩子
+    private boolean validBST(TreeNode root, int parentValue, int key){
+        if (root != null){
+            //中 （判断当前节点）
+            if (root.val == parentValue) return false;
+            if (root.val < parentValue && key == 1) return false;
+            if (root.val > parentValue && key == 0) return false;
+            //左 + 右
+            return validBST(root.left, root.val, 0) && validBST(root.right, root.val, 1);
+        }else {
+            //空节点直接就是true的！
+            return true;
+        }
+    }
+    //方法二 我的思路：保证是是否为二叉搜索树 要保证中序遍历是有序的？1.先获取中序遍历 2.在进行验证 time: 2023年11月12日20:34:00 -> 2023年11月12日20:43:28
+    public boolean isValidBST2(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        midSee(root, list);
+        for (int i = 0; i < list.size() - 1; i++){
+            //永远是当前的值 和 下一个值比较
+            if (list.get(i) >= list.get(i + 1)) return false;
+        }
+        return true;
+    }
+    //中序遍历二叉树 LTR
+    private void midSee(TreeNode root, List<Integer> list){
+        if (root != null){
+            midSee(root.left, list);
+            list.add(root.val);
+            midSee(root.right, list);
+        }
+    }
+
+    /**
+     * （24）530. 二叉搜索树的最小绝对差 time：2023年11月12日20:48:19 -> 2023年11月12日20:56:29
+     *  我的思路：直接进行中序遍历 然后求两两之间的差值（绝对值） 然后保留最小的即可。
+     */
+    public int getMinimumDifference(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        midSee(root, list);
+        //先取第一组差值为最小差值
+        int minDiff = Math.abs(list.get(0) - list.get(1));
+        for (int i = 0; i < list.size() - 1; i++){
+            //永远是当前的值 和 下一个值比较
+            minDiff = Math.min(minDiff, Math.abs(list.get(i) - list.get(i + 1)));
+        }
+        return minDiff;
+    }
+
+    /**
+     * （25）501. 二叉搜索树中的众数 time：2023年11月12日20:58:56 -> 2023年11月12日21:18:46
+     *  我的思路：先进行中序遍历（二叉搜索树离不开中序遍历的！） 排序+大顶堆！无敌
+     */
+    public int[] findMode(TreeNode root) {
+
+        Map<Integer, Integer> map = new HashMap<>();
+        midSee2(root, map);
+        PriorityQueue<Map.Entry<Integer, Integer>> priorityQueue = new PriorityQueue<>(new Comparator<Map.Entry<Integer, Integer>>() {
+            @Override
+            public int compare(Map.Entry<Integer, Integer> o1, Map.Entry<Integer, Integer> o2) {
+                return o2.getValue() - o1.getValue();//降序 大顶堆
+            }
+        });
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()){
+            priorityQueue.add(entry);
+        }
+        List<Integer> result = new ArrayList<>();
+        int value = priorityQueue.peek().getValue();
+        result.add(priorityQueue.poll().getKey());
+        while (!priorityQueue.isEmpty() && priorityQueue.peek().getValue() == value){
+            result.add(priorityQueue.poll().getKey());
+        }
+        int[] resultArray = new int[result.size()];
+        for (int i = 0; i < result.size(); i++){
+            resultArray[i] = result.get(i);
+        }
+        return resultArray;
+
+    }
+    private void midSee2(TreeNode root, Map<Integer, Integer> map){
+        if (root != null){
+            midSee2(root.left, map);
+            map.put(root.val, map.getOrDefault(root.val, 0) + 1);
+            midSee2(root.right, map);
+        }
+    }
+    //（25）方法二 一次遍历！
+    public int[] findMode2(TreeNode root) {
+
+        return null;
+    }
 
 
     /**
