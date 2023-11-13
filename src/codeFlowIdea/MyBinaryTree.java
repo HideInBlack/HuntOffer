@@ -1179,11 +1179,203 @@ public class MyBinaryTree {
             midSee2(root.right, map);
         }
     }
-    //（25）方法二 一次遍历！
-    public int[] findMode2(TreeNode root) {
 
+    /**
+     * √【思路不错 但是有点耗时】（26）236. 二叉树的最近公共祖先 time：2023年11月13日16:21:18 -> 2023年11月13日17:09:04
+     *  我的思路：使用层次遍历 进行从根节点遍历到最先出现其中某一个节点的这一层，结束，此时的最终可以同时遍历到两个节点的根节点为最近祖先
+     */
+    boolean isP = false; boolean isQ = false;
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        //下面进行层序遍历
+        TreeNode commonAncestor = root;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()){
+            int len = queue.size();
+            for (int i = 0; i < len; i++){
+                TreeNode cur = queue.poll();
+                if (cur.left != null) queue.add(cur.left);
+                if (cur.right != null) queue.add(cur.right);
+                //每次判定前重置
+                isP = false; isQ = false;
+                judgeIsParent(cur, p.val, q.val);
+                if (isP && isQ) commonAncestor = cur;
+
+                //如果访问到其中任意一个值直接进行结束
+                if (cur.val == p.val || cur.val == q.val) {
+                    queue.clear();
+                    break ;
+                }
+            }
+        }
+        return commonAncestor;
+    }
+    //使用递归遍历 遍历以此节点为根节点 是否可以同时遍历到两个节点
+    public void judgeIsParent(TreeNode root, int pValue, int qValue){
+        if (root != null){
+            if (root.val == pValue) isP = true;
+            if (root.val == qValue) isQ = true;
+            if (isP && isQ) return;
+            judgeIsParent(root.left, pValue, qValue);
+            judgeIsParent(root.right, pValue, qValue);
+        }
+    }
+    // √ 方法二 真正的考法！自底向上的遍历（正是后序遍历呀！LRT！回溯！）
+    //重要笔记：1.后序遍历就是正宗的回溯！先访问其左右孩子，再访问本结点！2.就算找到节点也要一直往上回溯传递，通过节点一个个返回到最上面！
+    public TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
+        return commonAncestor(root, p, q);
+    }
+    //先进行一个后序遍历
+    public TreeNode commonAncestor(TreeNode root, TreeNode p, TreeNode q){
+        if (root != null){
+            TreeNode left = commonAncestor(root.left, p, q);// 左
+            TreeNode right = commonAncestor(root.right, p, q);// 右
+            if (root.val == p.val) return p; // 中
+            if (root.val == q.val) return q;
+            if (left != null && right != null) return root;
+            if (left == null && right != null) return right;
+            if (left != null && right == null) return left;
+            if (left == null && right == null) return null;
+            return null;
+        }else {
+            return null;
+        }
+    }
+
+    /**
+     * √（27） 235. 二叉搜索树的最近公共祖先 time：2023年11月13日18:52:59 -> 2023年11月13日19:03:41
+     */
+    public TreeNode lowestCommonAncestor6(TreeNode root, TreeNode p, TreeNode q) {
+        if (root != null){
+            TreeNode left = lowestCommonAncestor6(root.left, p, q);
+            TreeNode right = lowestCommonAncestor6(root.right, p, q);
+            if (root == p) return p;
+            if (root == q) return q;
+            if (left != null && right != null) return root;
+            if (left != null) return left;
+            if (right != null) return right;
+            return null;//都为空的时候 就直接返回空
+        }else {
+            return null;
+        }
+    }
+    // √ 方法二 思考二叉搜索树的特性！time：2023年11月13日19:13:22 -> 2023年11月13日19:42:42
+    //重要笔记：1.二叉搜索树的特征是左子树一定都比其小，右子树上的一定都比其大 2.因此就有一个特性是从上往下遍历（先序遍历TLR），遇到的第一个在其范围内的节点就是其公共祖先！
+    // 3.所以此题非常巧妙，利用性质！无需进行(后序遍历)回溯！ 先序遍历可以解决更快！
+    TreeNode result7;
+    public TreeNode lowestCommonAncestor7(TreeNode root, TreeNode p, TreeNode q) {
+        int min = Math.min(p.val, q.val);
+        int max = Math.max(p.val, q.val);
+        commonAncestor7(root, min, max);
+        return result7;
+    }
+    //先序遍历 TLR
+    public void commonAncestor7(TreeNode root, int min, int max){
+        if (root != null){
+            if (root.val >= min && root.val <= max){
+                result7 = root;
+                return;
+            }
+            if (max < root.val) commonAncestor7(root.left, min, max);
+            if (min > root.val) commonAncestor7(root.right, min, max);
+        }
+    }
+
+    /**
+     * √（29）701. 二叉搜索树中的插入操作 time：2023年11月13日20:28:48 -> 2023年11月13日20:45:28
+     *  我的思路：每次都把节点插入到叶子节点处？ 定义一个key来表示是其父节点的左孩子还是右孩子！【0：左 / 1：右】
+     */
+    public TreeNode insertIntoBST(TreeNode root, int val) {
+        if (root == null) return new TreeNode(val);
+        if (root.val > val) insert(root.left, val, root, 0);
+        if (root.val < val) insert(root.right, val, root, 1);
+        return root;
+    }
+    //要利用到父节点（上一个节点）所以可以使用指针pre
+    private void insert(TreeNode root, int val, TreeNode pre, int key){
+        if (root != null){
+            if (root.val > val) insert(root.left, val, root, 0);
+            if (root.val < val) insert(root.right, val, root, 1);
+        }else {
+            //到达叶子节点时，就是要插入的时候
+            TreeNode newNode = new TreeNode(val);
+            if (key == 0) pre.left = newNode;
+            if (key == 1) pre.right = newNode;
+        }
+    }
+    // √ 方法二 改进递归
+    public TreeNode insertIntoBST2(TreeNode root, int val) {
+        if (root == null) return new TreeNode(val);
+        insert2(root, val);
+        return root;
+    }
+    private void insert2(TreeNode root, int val){
+        if (root != null){
+            if (root.val > val && root.left == null) root.left = new TreeNode(val);
+            if (root.val < val && root.right == null) root.right = new TreeNode(val);
+            if (root.val > val && root.left != null) insert2(root.left, val);
+            if (root.val < val && root.right != null) insert2(root.right, val);
+        }
+    }
+
+    /**
+     * ×【有思路，但无编码思路】（30）450. 删除二叉搜索树中的节点 time：2023年11月13日20:57:12 -> 2023年11月13日21:20:26
+     * √ 方法二（题解方法） 继续做 time：2023年11月13日21:31:59 -> 2023年11月13日22:05:48
+     */
+    public TreeNode deleteNode(TreeNode root, int key) {
+        //使用一个哨兵结点！！！
+        TreeNode newNode = new TreeNode(0);
+        newNode.left = root;
+        deleteNodeD(newNode.left, key, newNode, 0);
+        return newNode.left;
+    }
+    private void deleteNodeD(TreeNode root, int key, TreeNode pre, int leftOrRight){//leftOrRight=0 时表示是其父节点的左孩子
+        if (root != null){
+            if (root.val == key){
+                //进行删除操作
+                if (root.left == null && root.right == null){//1.为叶子节点时：直接进行删除
+                    if (leftOrRight == 0) pre.left = null;
+                    if (leftOrRight == 1) pre.right = null;
+                }else if (root.left != null && root.right == null){//2.左孩子不为空时：直接删除，左孩子补上
+                    if (leftOrRight == 0) pre.left = root.left;
+                    if (leftOrRight == 1) pre.right = root.left;
+                } else if (root.right != null && root.left == null) {//3.右孩子不为空时：直接删除，右孩子补上
+                    if (leftOrRight == 0) pre.left = root.right;
+                    if (leftOrRight == 1) pre.right = root.right;
+                }else { //4.都不为空时：直接删除，其右孩子当头结点，左孩子放到右孩子的最左边的节点的左叶子处。
+                    TreeNode left = root.left;
+                    TreeNode right = root.right;
+                    TreeNode rightLeftest = getLeftest(right);
+                    //把左子树插入到右子树的最左边
+                    rightLeftest.left = left;
+                    //把右子树接入到原树中
+                    if (leftOrRight == 0) pre.left = right;
+                    if (leftOrRight == 1) pre.right = right;
+                }
+            }else if (key < root.val){
+                deleteNodeD(root.left, key, root, 0);//左边
+            }else {
+                deleteNodeD(root.right, key, root, 1);//右边
+            }
+        }
+    }
+    //找到当前节点的最左边的节点
+    private TreeNode getLeftest(TreeNode root){
+        while (root.left != null){
+            root = root.left;
+        }
+        return root;
+    }
+
+    /**
+     * （31）669. 修剪二叉搜索树 time：2023年11月13日22:18:50 ->
+     */
+    public TreeNode trimBST(TreeNode root, int low, int high) {
         return null;
     }
+
+
+
 
 
     /**
