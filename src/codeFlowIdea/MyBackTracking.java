@@ -91,15 +91,102 @@ public class MyBackTracking {
     }
 
     /**
-     *
+     * √（7）39. 组合总和 time：2023年11月14日19:53:10 -> 2023年11月14日20:44:31
+     * 我的思路：
      */
+    List<List<Integer>> combinationSumResult = new ArrayList<>();
+    List<Integer> combinationSumList = new ArrayList<>();
+    int sum = 0;
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        combinationSumBackTrack(candidates, target, 0);
+        return combinationSumResult;
+    }
+    private void combinationSumBackTrack(int[] candidates, int target, int startIndex){
+        if (sum > target){//终止条件为：递归了最大可以次数
+            return;
+        }
 
+        for (int i = startIndex; i < candidates.length; i++){
+            sum += candidates[i];//处理结果
+            combinationSumList.add(candidates[i]);
+            if (sum == target) combinationSumResult.add(new ArrayList<>(combinationSumList));//处理结果
+
+            if (sum >= target){//剪枝优化
+                sum -= candidates[i];//回溯
+                combinationSumList.remove(combinationSumList.size() - 1);
+                return;
+            }
+            combinationSumBackTrack(candidates, target, i);//递归
+            sum -= candidates[i];//回溯
+            combinationSumList.remove(combinationSumList.size() - 1);
+        }
+    }
+
+    /**
+     * × 【172 / 176 个通过的测试用例】（8） 40. 组合总和 II time：2023年11月14日22:12:15 -> 2023年11月14日22:33:38
+     * 重要笔记：所以我们要去重的是同一树层上的“使用过”，同一树枝上的都是一个组合里的元素，不用去重！
+     * √ 看了题解，添加了去重的剪枝优化之后！做对了
+     */
+    List<List<Integer>> combinationSum2Result = new ArrayList<>();
+    List<Integer> combinationSum2Path = new ArrayList<>();
+    int cb2Sum = 0;
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        combinationSum2BackTracking(candidates, target, 0);
+        return combinationSum2Result;
+    }
+    private void combinationSum2BackTracking(int[] candidates, int target, int startIndex){
+        if (cb2Sum > target){//回溯的终止条件
+            return;
+        }
+        //所以我们要去重的是同一树层上的“使用过”，同一树枝上的都是一个组合里的元素，不用去重！！！！
+        for (int i = startIndex; i < candidates.length; i++){
+            //去重的剪枝优化
+            if (i != startIndex && candidates[i] == candidates[i - 1]){
+                continue;
+            }
+            cb2Sum += candidates[i]; // 处理结果
+            combinationSum2Path.add(candidates[i]);
+            if (cb2Sum == target) combinationSum2Result.add(new ArrayList<>(combinationSum2Path));
+
+            if (cb2Sum >= target){//剪枝优化
+                cb2Sum -= candidates[i]; // 回溯
+                combinationSum2Path.remove(combinationSum2Path.size() - 1);
+                return;
+            }
+
+            combinationSum2BackTracking(candidates, target, i + 1);//递归：因为不重复，所以要i+1开始
+            cb2Sum -= candidates[i]; // 回溯
+            combinationSum2Path.remove(combinationSum2Path.size() - 1);
+        }
+    }
+
+    /**
+     * （9） 131.分割回文串 time：
+     */
+    public List<List<String>> partition(String s) {
+        return null;
+    }
 
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
      */
     public static void main(String[] args) {
-
+        Set<List<Integer>> set = new HashSet<>();
+        List<Integer> list1 = new ArrayList<>();
+        List<Integer> list2 = new ArrayList<>();
+        list1.add(1); list1.add(2); list1.add(3);
+        list2.add(1); list2.add(3); list2.add(2);
+        list2.sort(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o1- o2;
+            }
+        });
+        set.add(list1);
+        set.add(list2);
+        System.out.println(set.stream().toList());
     }
 }
