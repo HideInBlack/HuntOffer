@@ -4,7 +4,7 @@ package codeFlowIdea;
 import java.util.*;
 
 /**
- * codeFlowIdea 代码随想录学习记录 time：2023年11月1日21:21:36 ->
+ * codeFlowIdea 代码随想录学习记录 time：2023年11月1日21:21:36 -> 2023年11月14日15:43:52
  * author：董政宇
  * 第七部分 二叉树部分：MyBinaryTree
  */
@@ -1368,13 +1368,176 @@ public class MyBinaryTree {
     }
 
     /**
-     * （31）669. 修剪二叉搜索树 time：2023年11月13日22:18:50 ->
+     *  × 【不能完全示例通过】（31）669. 修剪二叉搜索树 time：2023年11月14日11:50:06 -> 2023年11月14日12:07:54
+     *  我的思路：中序遍历 + 删除二叉搜索树中的节点
      */
+    // √ 题解方法！ 无需借助父节点，直接进行返回！【这里使用的是每一次都把当前结点返回！来相当于删除操作】
     public TreeNode trimBST(TreeNode root, int low, int high) {
-        return null;
+        if (root != null){
+            if (root.val < low) {
+                TreeNode nextNode = root.right;//这一步骤就相当于删除了当前结点以及其左孩子，然后继续对其右孩子操作
+                TreeNode success = trimBST(nextNode, low, high);
+                return success;
+            }else if (root.val > high) {
+                TreeNode nextNode = root.left;//这一步骤就相当于删除了当前结点以及其右孩子，然后继续对其做孩子进行删除操作
+                TreeNode success = trimBST(nextNode, low, high);
+                return success;
+            }else {// 否则在范围之内 需要保留的时候
+                root.left = trimBST(root.left, low, high);
+                root.right = trimBST(root.right, low, high);
+                return root;
+            }
+        }else {
+            return null;
+        }
     }
 
+    // √ again ! 删除二叉树中的指定结点  time：2023年11月14日10:56:54 -> 2023年11月14日11:49:37
+    private TreeNode deleteNode(TreeNode root, TreeNode target){
+        //哨兵结点
+        TreeNode head = new TreeNode(-1);
+        head.left = root;
+        deleteNodeInBST(head.left, target, head, true);
+        return head.left;
+    }
+    private void deleteNodeInBST(TreeNode root, TreeNode target, TreeNode pre, boolean isLeft) {
+        if (root != null) {
+            if (root.val == target.val) {
+                //删除此节点操作
+                if (root.left == null && root.right == null) {//1.为叶子节点时
+                    if (isLeft) {
+                        pre.left = null;
+                    } else {
+                        pre.right = null;
+                    }
+                } else if (root.left != null && root.right == null) {//2.左孩子不为空，左孩子补上
+                    if (isLeft) {
+                        pre.left = root.left;
+                    } else {
+                        pre.right = root.left;
+                    }
+                } else if (root.left == null && root.right != null) {//3.右孩子不为空.右孩子补上
+                    if (isLeft) {
+                        pre.left = root.right;
+                    } else {
+                        pre.right = root.right;
+                    }
+                } else if (root.left != null && root.right != null) {//4.左右孩子都不为空时，把左孩子移到右子树的最左边
+                    TreeNode leftChild = root.left;
+                    TreeNode rightChild = root.right;
+                    TreeNode leftest = rightChild;
+                    while (leftest.left != null) {
+                        leftest = leftest.left;
+                    }
+                    leftest.left = leftChild;
+                    if (isLeft) {
+                        pre.left = rightChild;
+                    } else {
+                        pre.right = rightChild;
+                    }
+                }
+            } else if (root.val < target.val) {
+                deleteNodeInBST(root.right, target, root, false);
+            } else if (root.val > target.val) {
+                deleteNodeInBST(root.left, target, root, true);
+            }
+        }
+    }
 
+    /**
+     *  √（32）108. 将有序数组转换为二叉搜索树 time：2023年11月14日14:12:43 -> 2023年11月14日14:37:21
+     *  我的思路：不断进行取之间的值然后二分 递归
+     */
+    public TreeNode sortedArrayToBST(int[] nums) {
+        //先创建好根节点
+        int position = (nums.length - 1) / 2;
+        TreeNode root = new TreeNode(nums[position]);
+        buildBST(nums, 0, position - 1, root, true);//左子树
+        buildBST(nums, position + 1, nums.length - 1, root, false);//右子树
+        return root;
+    }
+    private void buildBST(int[] nums, int leftIndex, int rightIndex, TreeNode pre, boolean isLeft){
+        if (leftIndex <= rightIndex){
+            int position = (leftIndex + rightIndex) / 2;
+            TreeNode newCode = new TreeNode(nums[position]);
+            //当前结点接上父节点
+            if (isLeft){
+                pre.left = newCode;
+            }else {
+                pre.right = newCode;
+            }
+            //构建左子树
+            buildBST(nums, leftIndex, position - 1, newCode, true);
+            //构建右子树
+            buildBST(nums, position + 1, rightIndex, newCode, false);
+        }
+    }
+    // √ 方法二 使用参数返回的形式构建 time：2023年11月14日14:43:57 -> 2023年11月14日14:49:22
+    public TreeNode sortedArrayToBST2(int[] nums) {
+        return buildBST2(nums, 0, nums.length - 1);
+    }
+    private TreeNode buildBST2(int[] nums, int leftIndex, int rightIndex){
+        if (leftIndex <= rightIndex){
+            int position = (leftIndex + rightIndex) / 2;
+            TreeNode root = new TreeNode(nums[position]);
+            root.left = buildBST2(nums, leftIndex, position - 1);
+            root.right = buildBST2(nums, position + 1, rightIndex);
+            return root;
+        }else {
+            return null;
+        }
+    }
+
+    /**
+     * √（33）538. 把二叉搜索树转换为累加树 time：2023年11月14日14:55:39 -> 2023年11月14日15:22:21
+     *  我的思路: 两种方法1.首先中序遍历获得所有的值，然后把每一个节点值计算出来，然后再遍历一遍赋值
+     *  √ 方法2.直接进行反着的中序遍历（RTL）,这样一边遍历，一边计算总和值，然后一边赋值即可
+     */
+    public TreeNode convertBST(TreeNode root) {
+        oppositeMidSee(root, 0);
+        return root;
+    }
+    //逆中序(RTL)遍历获取所有得值
+    private int oppositeMidSee(TreeNode root, int sum){
+        if (root != null){
+            int rightSum = oppositeMidSee(root.right, sum);//右
+            rightSum += root.val;//中
+            root.val = rightSum;
+            int leftSum = oppositeMidSee(root.left, rightSum);//左
+            return leftSum;
+        }else {
+            return sum;
+        }
+    }
+
+    /**
+     * √ Again 450. 删除二叉搜索树中的节点 time：2023年11月14日13:21:49 -> 2023年11月14日13:38:49
+     */
+    public TreeNode deleteNodeA(TreeNode root, int key) {
+        if (root != null){
+            if (root.val == key){
+                //删除操作
+                if (root.left == null && root.right == null) return null;
+                if (root.left != null && root.right == null) return root.left;
+                if (root.left == null && root.right != null) return root.right;
+                if (root.left != null && root.right != null){
+                    TreeNode leftChild = root.left;
+                    TreeNode rightChild = root.right;
+                    TreeNode rightLeftest = rightChild;
+                    while (rightLeftest.left != null){
+                        rightLeftest = rightLeftest.left;
+                    }
+                    rightLeftest.left = leftChild;
+                    return rightChild;
+                }
+            }
+            if (root.val < key) root.right = deleteNodeA(root.right, key);//如果在右边 则左边的子树是不需要变得
+            if (root.val > key) root.left = deleteNodeA(root.left, key);//如果在左边，则右边的子树也是不需要改变的
+            return root;
+        }else {
+            return null;
+        }
+    }
 
 
 
