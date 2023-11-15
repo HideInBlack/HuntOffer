@@ -163,10 +163,132 @@ public class MyBackTracking {
     }
 
     /**
-     * （9） 131.分割回文串 time：
+     *  √（9） 131.分割回文串 time：2023年11月15日15:02:19 -> 2023年11月15日15:57:22
+     * 我的思路：1.先把问题抽象成树结构！ 2.再构思回溯的模版
      */
+    List<List<String>> partitionResult = new ArrayList<>();
+    List<String> partitionPath = new ArrayList<>();
     public List<List<String>> partition(String s) {
-        return null;
+        char[] string = s.toCharArray();
+        partitionBackTracking(string, 0);
+        return partitionResult;
+    }
+    private void partitionBackTracking(char[] string, int startIndex){
+        if (startIndex == string.length){//回溯终止条件
+            //能走到这里的必定都是回文，直接添加
+            partitionResult.add(new ArrayList<>(partitionPath));
+            return;
+        }
+        for (int i = startIndex; i < string.length; i++){
+            //此时的i是 分别有组合个 startIndex->i 字符串加入到path中
+            StringBuilder curAdd = new StringBuilder();
+            for (int j = startIndex; j <= i; j++){
+                curAdd.append(string[j]);
+            }
+            //剪枝优化：如果不是回文直接跳过！ 由于没有加入到结果中，所以不需要回溯
+            if (!isPalindrome(curAdd.toString())) continue; // 这里是continue！要跳过！不能直接返回！直接返回for循环后面的就不可以运行了
+            //如果是回文，则需要加入到结果中
+            partitionPath.add(curAdd.toString()); // 1.处理结果
+            partitionBackTracking(string, i + 1); // 2.递归
+            partitionPath.remove(partitionPath.size() - 1); // 3.回溯
+        }
+    }
+    private boolean isPalindrome(String string){
+        int halfLength = string.length() / 2;
+        for (int i = 0; i < halfLength; i++){
+            if (string.charAt(i) != string.charAt(string.length() - 1 - i)) return false;
+        }
+        return true;
+    }
+
+    /**
+     * √（10）93. 复原 IP 地址 time：2023年11月15日19:30:23 -> 2023年11月15日20:17:31
+     * 我的思路：1.切割问题-> 组合问题 2.抽象化为树结构
+     */
+    List<String> trueResult = new ArrayList<>();
+    List<List<String>> restoreIpAddressesResult = new ArrayList<>();
+    List<String> restoreIpAddressesPath = new ArrayList<>();
+    public List<String> restoreIpAddresses(String s) {
+        restoreIpBackTracking(s, 0);
+        for (List<String> list : restoreIpAddressesResult) {
+            StringBuilder pathStr = new StringBuilder();
+            pathStr.append(list.get(0)).append(".").append(list.get(1)).append(".").append(list.get(2)).append(".").append(list.get(3));
+            trueResult.add(pathStr.toString());
+        }
+        return trueResult;
+    }
+    private void restoreIpBackTracking(String s, int startIndex){
+        if (startIndex == s.length()){ // 终止条件
+            if (restoreIpAddressesPath.size() == 4) restoreIpAddressesResult.add(new ArrayList<>(restoreIpAddressesPath));
+            return;
+        }
+        for (int i = startIndex; i < s.length(); i++){
+            //剪枝优化
+            if (restoreIpAddressesPath.size() == 4) return;
+            String curStr = s.substring(startIndex, i + 1);//左闭右开
+            int curVal = Integer.parseInt(curStr);
+            //剪枝优化
+            if (curVal > 255){//无需往下递归，也不需要同层往下遍历
+                break;
+            }
+            // 符合条件 加入path中
+            restoreIpAddressesPath.add(curStr); // 1.处理结果
+            restoreIpBackTracking(s, i + 1); // 2.递归
+            restoreIpAddressesPath.remove(restoreIpAddressesPath.size() - 1); // 3.回溯
+            //剪枝优化
+            if (curStr.equals("0")){//如果第一个是0的话，其同一层的后面的都不需要往下走了
+                break;
+            }
+        }
+    }
+
+    /**
+     * （11） 78. 子集 time：2023年11月15日20:34:41 -> 2023年11月15日20:50:09
+     * 我的思路：直接进行回去，每次走一条路径path时，都将其存入到结果中。
+     */
+    List<List<Integer>> subsetsResult = new ArrayList<>();
+    List<Integer> subsetsPath = new ArrayList<>();
+    public List<List<Integer>> subsets(int[] nums) {
+        subsetsBackTracking(nums, 0);
+        subsetsResult.add(new ArrayList<>());//添加空子集
+        return subsetsResult;
+    }
+    private void subsetsBackTracking(int[] nums, int startIndex){
+        if (startIndex == nums.length){ // 终止条件：遍历完的时候 就是终止的时候
+            return;
+        }
+        for (int i = startIndex; i < nums.length; i++){
+            subsetsPath.add(nums[i]); // 1.处理结果
+            subsetsResult.add(new ArrayList<>(subsetsPath)); // 因为是子集，所以每添加一个path路径 都将成为一个新的子集，所以都将加入到最终的结果里
+            subsetsBackTracking(nums, i + 1); // 2.递归 （从当前结点的后面一个开始遍历！因为前面的都遍历过了！）
+            subsetsPath.remove(subsetsPath.size() - 1); // 3.回溯
+        }
+    }
+
+    /**
+     * （12）90. 子集 II time：2023年11月15日21:24:37 -> 2023年11月15日21:39:14
+     * 我的思路：原数据中会有重复，但解集 不能 包含重复的子集。表明: 需要对同一树层进行去重！
+     */
+    List<List<Integer>> subsetsWithDupResult = new ArrayList<>();
+    List<Integer> subsetsWithDupPath = new ArrayList<>();
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        //涉及到去重操作，所以要先对数组进行排序
+        Arrays.sort(nums);
+        subsetsWithDupBackTracking(nums, 0);
+        //加入每一个都有的空集！！！
+        subsetsWithDupResult.add(new ArrayList<>());
+        return subsetsWithDupResult;
+    }
+    private void subsetsWithDupBackTracking(int[] nums, int startIndex){
+        if (startIndex == nums.length) return;// 1.终止条件：遍历完就是
+        for (int i = startIndex; i < nums.length; i++){
+            //同一树层的去重操作
+            if (i != startIndex && nums[i] == nums[i - 1]) continue; //当此数值与前一个值相等时，跳过到下一个（第一个值除外）
+            subsetsWithDupPath.add(nums[i]); //2.处理结果
+            subsetsWithDupResult.add(new ArrayList<>(subsetsWithDupPath));//因为求得是子集，所以是树上的每一个节点，所以每每新添加了一个值就需要添加到结果集中
+            subsetsWithDupBackTracking(nums, i + 1);//3.进入递归
+            subsetsWithDupPath.remove(subsetsWithDupPath.size() - 1);
+        }
     }
 
 
@@ -174,19 +296,11 @@ public class MyBackTracking {
      * -----------------------------------------------测试-----------------------------------------------
      */
     public static void main(String[] args) {
-        Set<List<Integer>> set = new HashSet<>();
-        List<Integer> list1 = new ArrayList<>();
-        List<Integer> list2 = new ArrayList<>();
-        list1.add(1); list1.add(2); list1.add(3);
-        list2.add(1); list2.add(3); list2.add(2);
-        list2.sort(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                return o1- o2;
-            }
-        });
-        set.add(list1);
-        set.add(list2);
-        System.out.println(set.stream().toList());
+        MyBackTracking myBackTracking = new MyBackTracking();
+
+
+        System.out.println(myBackTracking.restoreIpAddresses("25525511135"));
+
+
     }
 }
