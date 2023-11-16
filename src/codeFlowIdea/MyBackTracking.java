@@ -243,7 +243,7 @@ public class MyBackTracking {
     }
 
     /**
-     * （11） 78. 子集 time：2023年11月15日20:34:41 -> 2023年11月15日20:50:09
+     * √（11） 78. 子集 time：2023年11月15日20:34:41 -> 2023年11月15日20:50:09
      * 我的思路：直接进行回去，每次走一条路径path时，都将其存入到结果中。
      */
     List<List<Integer>> subsetsResult = new ArrayList<>();
@@ -266,7 +266,7 @@ public class MyBackTracking {
     }
 
     /**
-     * （12）90. 子集 II time：2023年11月15日21:24:37 -> 2023年11月15日21:39:14
+     *  √（13）90. 子集 II time：2023年11月15日21:24:37 -> 2023年11月15日21:39:14
      * 我的思路：原数据中会有重复，但解集 不能 包含重复的子集。表明: 需要对同一树层进行去重！
      */
     List<List<Integer>> subsetsWithDupResult = new ArrayList<>();
@@ -291,6 +291,152 @@ public class MyBackTracking {
         }
     }
 
+    /**
+     *  √（14） 491. 递增子序列 time：2023年11月16日09:58:32 -> 2023年11月16日10:26:33
+     *  重要笔记：两种去重的思路： 1.直接存入set结果集进行总结果去重 2.使用set标记已经使用的节点，进行同一树层去重！
+     */
+    List<List<Integer>> findSubsequencesResult = new ArrayList<>();
+    List<Integer> findSubsequencesPath = new ArrayList<>();
+    public List<List<Integer>> findSubsequences(int[] nums) {
+        findSubsequencesBackTracking(nums, 0);
+        return findSubsequencesResult;
+    }
+    private void findSubsequencesBackTracking(int[] nums, int startIndex){
+        if (startIndex == nums.length) {// 1.终止条件：遍历完了就停止
+            return;
+        }
+        Set<Integer> used = new HashSet<>();
+        for (int i = startIndex; i < nums.length; i++){
+            //剪枝优化
+            if (used.contains(nums[i])) continue;//对于使用过的直接进行过滤
+            used.add(nums[i]);
+            //path为空时，直接添加
+            if (findSubsequencesPath.isEmpty()){
+                findSubsequencesPath.add(nums[i]); // 2.处理结果
+                findSubsequencesBackTracking(nums, i + 1); // 3.进入递归
+                findSubsequencesPath.remove(findSubsequencesPath.size() - 1); // 4.回溯
+            }else if (nums[i] >= findSubsequencesPath.get(findSubsequencesPath.size() - 1)){//当path不为空时，且当前元素大于path中的最后一个元素时，才添加到结果集中【这表明其才是递增的】
+                //方法二：对于不是有序的数组，怎么对其同一层进行去重！
+                findSubsequencesPath.add(nums[i]); // 2.处理结果
+                findSubsequencesResult.add(new ArrayList<>(findSubsequencesPath));
+                findSubsequencesBackTracking(nums, i + 1); // 3.进入递归
+                findSubsequencesPath.remove(findSubsequencesPath.size() - 1); // 4.回溯
+            }
+        }
+    }
+
+    /**
+     * √（15）46. 全排列 time：2023年11月16日14:57:20 -> 2023年11月16日15:16:53
+     * 我的思路：可以看到此时就是排列问题了！其实排列就是有顺序的组合 也就是需要遍历叶子节点！
+     * 我使用了标记法：遍历过一个数就把他变成12，遇到12就不遍历！退出递归时要还原回溯！
+     * 题解使用了used 数组进行标记！一样的！
+     */
+    List<List<Integer>> permuteResult = new ArrayList<>();
+    List<Integer> permutePath = new ArrayList<>();
+    boolean[] used  = new boolean[10];
+    public List<List<Integer>> permute(int[] nums) {
+        permuteBackTracking(nums);
+        return permuteResult;
+    }
+    private void permuteBackTracking(int[] nums){
+        if (permutePath.size() == nums.length){ // 1.终止条件：访问到每一个叶子节点
+            permuteResult.add(new ArrayList<>(permutePath));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++){
+            if (used[i]) continue;
+//            if (nums[i] == 12) continue;
+            permutePath.add(nums[i]); // 2.处理结果
+            used[i] = true;
+//            nums[i] = 12; // 本来路径上访问过的都设置为12， 只要是=12的 都不需要访问
+            permuteBackTracking(nums); // 3.递归
+            used[i] = false;
+//            nums[i] = permutePath.get(permutePath.size() - 1); // 退出时，要还原这个值！
+            permutePath.remove(permutePath.size() - 1); // 4.回溯
+
+        }
+    }
+
+    /**
+     * （16）47. 全排列 II time：2023年11月16日15:24:29 -> 2023年11月16日15:46:30
+     * 我的思路：这里的去重就是需要 同一小树层进行去重了
+     */
+    List<List<Integer>> permuteUniqueResult = new ArrayList<>();
+    List<Integer> permuteUniquePath = new ArrayList<>();
+    boolean[] permuteUniqueUsed = new boolean[10];
+    public List<List<Integer>> permuteUnique(int[] nums) {
+
+        permuteUniqueBackTracking(nums);
+        return permuteUniqueResult;
+    }
+    private void permuteUniqueBackTracking(int[] nums){
+        if (permuteUniquePath.size() == nums.length){ // 终止条件
+            permuteUniqueResult.add(new ArrayList<>(permuteUniquePath));
+            return;
+        }
+        Set<Integer> set = new HashSet<>();//对同一小树层进行去重
+        for (int i = 0; i < nums.length; i++){
+            //(1) 先判断此结点在path中有没有使用过
+            if (permuteUniqueUsed[i]) continue;
+
+            //(2) 再对同一小树层进行去重
+            if (set.contains(nums[i])) continue;
+            set.add(nums[i]);
+            permuteUniquePath.add(nums[i]); // 1.处理结果
+            permuteUniqueUsed[i] = true;//标记为已使用：这是在树枝上的
+            permuteUniqueBackTracking(nums); // 2.进入递归
+            permuteUniquePath.remove(permuteUniquePath.size() - 1); //3.回溯
+            permuteUniqueUsed[i] = false;
+        }
+    }
+
+    /**
+     *  ×【超出时间限制：11 / 81 个通过的测试用例】（19）332. 重新安排行程 time：2023年11月16日18:02:13 -> 2023年11月16日18:54:14
+     *  最新的：80 / 81 个通过的测试用例（超出时间限制！）
+     */
+    List<List<String>> findItineraryResult = new ArrayList<>();
+    List<String> findItineraryPath = new ArrayList<>();
+    boolean[] usedTickets = new boolean[301];
+    boolean find = false;
+    public List<String> findItinerary(List<List<String>> tickets) {
+        //解决不掉死循环！那就先排序 在寻找！找到一个就返回！’
+        Collections.sort(tickets, new Comparator<List<String>>() {
+            @Override
+            public int compare(List<String> o1, List<String> o2) {
+                return o1.get(1).compareTo(o2.get(1));
+            }
+        });
+        //必须从JFK出发，先把其加入到path中
+        findItineraryPath.add("JFK");
+        findItineraryBackTracking(tickets);
+        return findItineraryResult.get(0);
+    }
+    private void findItineraryBackTracking(List<List<String>> tickets){
+        if (find) return;//使用只找到一个就返回！来解决死循环！
+        if (findItineraryPath.size() == tickets.size() + 1){ // 1.终止条件是：所有的票都用光的时候
+            findItineraryResult.add(new ArrayList<>(findItineraryPath));
+            find = true;
+            return;
+        }
+        for (int i = 0; i < tickets.size(); i++){
+            //寻找 tickets票中的出发点为path中的最后一站的起始点
+            if (!usedTickets[i] && Objects.equals(tickets.get(i).get(0), findItineraryPath.get(findItineraryPath.size() - 1))){
+                usedTickets[i] = true;
+                findItineraryPath.add(tickets.get(i).get(1)); // 1.处理结果
+                findItineraryBackTracking(tickets); // 2.递归
+                usedTickets[i] = false;
+                findItineraryPath.remove(findItineraryPath.size() - 1); // 3.回溯
+            }
+        }
+    }
+
+    /**
+     *  51. N 皇后
+     */
+    public List<List<String>> solveNQueens(int n) {
+        return null;
+    }
+
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
@@ -299,7 +445,8 @@ public class MyBackTracking {
         MyBackTracking myBackTracking = new MyBackTracking();
 
 
-        System.out.println(myBackTracking.restoreIpAddresses("25525511135"));
+        //测试 复原ip
+//        System.out.println(myBackTracking.restoreIpAddresses("25525511135"));
 
 
     }
