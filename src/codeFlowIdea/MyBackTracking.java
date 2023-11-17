@@ -522,23 +522,115 @@ public class MyBackTracking {
         return true;
     }
 
+    /**
+     * √（21）37. 解数独 time：2023年11月17日15:31:51 -> 2023年11月17日16:35:14
+     *  题目已经表明是 9*9 的数独盘
+     *  重要笔记：1.一定要抽象成树！想起楚应该怎么往下分支！此题递归就是往下一个空格处递归！
+     *  2.此题的深度便是所有的空格处，横向广度便是0-9个数字字符！
+     *  3.终止条件：找到叶子节点！（遍历到最后一个结点！）
+     *
+     */
+    char[][] solveSudokuResult = new char[9][9];
+    public void solveSudoku(char[][] board) {
+        solveSudokuBackTracking(board, 0, 0);
+        for (int x = 0; x < 9; x++) { //二维数组的复制 建议直接使用for循环
+            System.arraycopy(solveSudokuResult[x], 0, board[x], 0, 9);
+        }
+    }
+    private void solveSudokuBackTracking(char[][] board, int curLine, int curRow){
+
+        //寻找从当前位置的第一个空格
+        int goI = curLine; int goJ = curRow;
+        out:
+        for (int i = curLine; i < 9; i++){
+            for (int j = 0; j < 9; j++){
+                if (i == 8 && j == 8 && board[i][j] != '.'){// 如果i、j都走到最后一个数 并且最后一个数还不是'.'，那就返回了
+                    for (int x = 0; x < 9; x++) {
+                        System.arraycopy(board[x], 0, solveSudokuResult[x], 0, 9);
+                    }
+                    return;
+                }
+                if (board[i][j] == '.'){
+                    goI = i;
+                    goJ = j;
+                    break out;
+                }
+            }
+        }
+        //已经找到当前的第一个空格（goi,goj） 开始操作！
+        for (int num = 1; num <= 9; num++){ // 这是数字
+            char number = Integer.toString(num).charAt(0);
+            //三个条件都满足的时候 放入数独中
+            if (canPutLine(board, goI, goJ, number) && canPutRow(board, goI, goJ, number) && canPutNine(board, goI, goJ, number)){
+                board[goI][goJ] = number;// 1.处理结果
+                solveSudokuBackTracking(board, goI, goJ);// 2.进入递归
+                board[goI][goJ] = '.'; // 3.回溯
+            }
+        }
+    }
+    private boolean canPutNine(char[][] board, int targetI, int targetJ, char number){
+        int startI = targetI / 3 * 3;
+        int startJ = targetJ / 3 * 3;
+        for (int i = startI; i < startI + 3; i++){
+            for (int j = startJ; j < startJ + 3; j++){
+                if (board[i][j] == number) return false;
+            }
+        }
+        return true;
+    }
+    private boolean canPutLine(char[][] board, int targetI, int targetJ, char number){
+        char line[] = board[targetI];
+        for (int i = 0; i < 9; i++){
+            if (line[i] == number) return false;
+        }
+        return true;
+    }
+    private boolean canPutRow(char[][] board, int targetI, int targetJ, char number){
+        for (int i = 0; i < 9; i++){
+            if (board[i][targetJ] == number) return false;
+        }
+        return true;
+    }
+
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
      */
     public static void main(String[] args) {
         MyBackTracking myBackTracking = new MyBackTracking();
+        int test1[] = new int[2];
+        test1[0] = 1;
+        test1[1] = 1;
+        int test2[] = test1.clone();
+        System.out.println(Arrays.toString(test2));
+        test1[0] = 7;
+        System.out.println(Arrays.toString(test1));
+        System.out.println(Arrays.toString(test2));
+        int test3[][] = new int[2][2];
+        int test4[][] = test3.clone();
+        test3[0][0] = 18;
+        test3[0][1] = 7;
+        System.out.println(Arrays.toString(test3[0]));
+        System.out.println(Arrays.toString(test4[0]));
 
-        int[][] checkerboard = new int[4][4];
+//        int result = 5 / 3 * 3;
+//        System.out.println(result);
+//        int test1 = 6;
+//        System.out.println((char) test1);
+//
+//        System.out.println(Integer.toString(test1).charAt(0) == '6');
+//
+//        char[][] checkerboard = new char[9][9];
+//        checkerboard[3][4] = '6';
+//        checkerboard[5][7] = '8';
+//        checkerboard[4][8] = '6';
+//        for (char[] child : checkerboard){
+//            System.out.println(Arrays.toString(child));
+//        }
+////        System.out.println(myBackTracking.canPutNine(checkerboard, 3, 6, '6'));
+////        System.out.println(myBackTracking.canPutLine(checkerboard, 5, 3, '8'));
+//        System.out.println(myBackTracking.canPutRow(checkerboard, 5, 7, '8'));
 
-        checkerboard[2][2] = 1;
-        for (int[] child : checkerboard){
-            System.out.println(Arrays.toString(child));
-        }
-//        System.out.println(myBackTracking.canLine(checkerboard, 0, 0));
-//        System.out.println(myBackTracking.canRow(checkerboard, 0, 2));
-        System.out.println(myBackTracking.canSide(checkerboard, 1, 1));
-        System.out.println(myBackTracking.canSide(checkerboard, 3, 1));
 
         //测试 复原ip
 //        System.out.println(myBackTracking.restoreIpAddresses("25525511135"));
