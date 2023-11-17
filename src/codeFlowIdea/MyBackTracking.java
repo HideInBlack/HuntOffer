@@ -431,10 +431,95 @@ public class MyBackTracking {
     }
 
     /**
-     *  51. N 皇后
+     *  51. N 皇后 time：2023年11月17日09:43:27 -> 10:30:00  2023年11月17日14:01:15 -> 2023年11月17日14:44:26
+     *  我的思路：把每一行可以排放的位置抽象成每一个树枝，整体抽象成树的结构 从0-n-1层
      */
+    List<List<String>> solveNQueensResult = new ArrayList<>();
+    List<String> solveNQueensPath = new ArrayList<>();//path路径里存放的是每一行皇后列的位置！
     public List<List<String>> solveNQueens(int n) {
-        return null;
+        //先初始化棋盘
+        int[][] checkerboard = new int[n][n];
+        StringBuilder lineStr = new StringBuilder();
+        lineStr.append(".".repeat(checkerboard.length));
+        solveNQueensBackTracking(checkerboard, 0, lineStr.toString());
+        return solveNQueensResult;
+    }
+    private void solveNQueensBackTracking(int[][] checkerboard, int curLine, String lineString){
+        if (curLine > checkerboard.length) return;
+        if (solveNQueensPath.size() == checkerboard.length){ // 1.终止条件
+            solveNQueensResult.add(new ArrayList<>(solveNQueensPath));
+            return;
+        }
+        for (int i = 0; i < checkerboard.length; i++){
+            //只有三种条件都满足的时候 才可以插入
+            if (canLine(checkerboard, curLine, i) && canRow(checkerboard, curLine, i) && canSide(checkerboard, curLine, i)){
+                checkerboard[curLine][i] = 1;//把棋子放下
+                StringBuilder lineStr = new StringBuilder(lineString);
+                lineStr.setCharAt(i, 'Q');
+                solveNQueensPath.add(lineStr.toString()); // 2.处理结果
+                solveNQueensBackTracking(checkerboard, curLine + 1, lineString); // 3.进入递归
+                solveNQueensPath.remove(solveNQueensPath.size() - 1); // 4.进入递归
+                checkerboard[curLine][i] = 0;// 回溯
+            }
+        }
+    }
+    //判断是否同一行只有其一个
+    private boolean canLine(int[][] checkerboard, int targetI, int targetJ){
+        //只取出其所在的行的这个一维数组
+        int[] lineArray = checkerboard[targetI];
+        for (int j : lineArray) {
+            if (j == 1) return false;
+        }
+        return true;
+    }
+    //判断是否同一列只有其一个
+    private boolean canRow(int[][] checkerboard, int targetI, int targetJ){
+        for (int[] ints : checkerboard) {
+            if (ints[targetJ] == 1) return false;
+        }
+        return true;
+    }
+    //判断是否同两条斜线上是否只有其一个
+    private boolean canSide(int[][] checkerboard, int targetI, int targetJ){
+        //不需要多麻烦，直接分四个方向开始遍历即可 （别乱想方法）
+
+        //1.从当前结点往左上走
+        int i1 = targetI; int j1 = targetJ;
+        while (i1 != 0 && j1 != 0){//有一个=0的时候就停止，就代表着到了最左边或者最上边
+            if (checkerboard[i1][j1] == 1) return false;
+            i1--;
+            j1--;
+        }
+        if (checkerboard[i1][j1] == 1) return false;
+
+        //2.从当前结点往右下走
+        int i2 = targetI; int j2 = targetJ;
+        while (i2 != checkerboard.length - 1 && j2 != checkerboard.length - 1){
+            if (checkerboard[i2][j2] == 1) return false;
+            i2++;
+            j2++;
+        }
+        if (checkerboard[i2][j2] == 1) return false;
+
+        //3.从当前结点往左下走
+        int i3 = targetI; int j3 = targetJ;
+        while (i3 != checkerboard.length - 1 && j3 != 0){
+            if (checkerboard[i3][j3] == 1) return false;
+            i3++;
+            j3--;
+        }
+        if (checkerboard[i3][j3] == 1) return false;
+
+        //4.从当前结点往右上走
+        int i4 = targetI; int j4 = targetJ;
+        while (i4 != 0 && j4 != checkerboard.length - 1){
+            if (checkerboard[i4][j4] == 1) return false;
+            i4--;
+            j4++;
+        }
+        if (checkerboard[i4][j4] == 1) return false;
+        //最后没有一个那就直接返回为true
+        return true;
     }
 
 
@@ -444,6 +529,16 @@ public class MyBackTracking {
     public static void main(String[] args) {
         MyBackTracking myBackTracking = new MyBackTracking();
 
+        int[][] checkerboard = new int[4][4];
+
+        checkerboard[2][2] = 1;
+        for (int[] child : checkerboard){
+            System.out.println(Arrays.toString(child));
+        }
+//        System.out.println(myBackTracking.canLine(checkerboard, 0, 0));
+//        System.out.println(myBackTracking.canRow(checkerboard, 0, 2));
+        System.out.println(myBackTracking.canSide(checkerboard, 1, 1));
+        System.out.println(myBackTracking.canSide(checkerboard, 3, 1));
 
         //测试 复原ip
 //        System.out.println(myBackTracking.restoreIpAddresses("25525511135"));
