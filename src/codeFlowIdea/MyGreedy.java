@@ -92,10 +92,53 @@ public class MyGreedy {
             }
         }
     }
-    //题解方法：贪心做法！
+    //题解方法：贪心做法！time：2023年11月20日15:59:40 -> 2023年11月20日16:22:45
+    //重要笔记：贪心的思想：那就是每一个坡度上只保留两个峰值，所有的峰值加起来
+    // √ 我的思路：先对数组进行去重，连续的相同的都进行去掉，保存到list中，然后找真正的峰值，也就是比两边都大的，或者比两边都小的，最后再+2
+    //此题的关键在于能否把题目抽象成波浪线、峰值！
     public int wiggleMaxLength(int[] nums) {
-        return 0;
+        //总之找真正的峰值
+        List<Integer> list = new ArrayList<>();
+        //对连续相等元素的去重操作
+        for (int i = 0; i < nums.length; i++){
+            //对连续相同元素的后面的进行去重
+            if (i != 0 && nums[i] == nums[i - 1]) continue;
+            list.add(nums[i]);
+        }
+        //特殊值处理
+        if (list.size() == 1) return 1;
+        //统计峰值
+        int peakValue = 0;
+        for (int i = 0; i < list.size(); i++){
+            //(list.get(i) - list.get(i - 1)) * (list.get(i + 1) - list.get(i)) < 0 这个表明i 要么是最高峰值，要么是最低峰值
+            if (i != 0 && i != list.size() - 1 && (list.get(i) - list.get(i - 1)) * (list.get(i + 1) - list.get(i)) < 0){
+                peakValue++;
+            }
+        }
+        peakValue = peakValue + 2;//只统计了中间的峰值，但其中最后还有两边的端点。
+        return peakValue;
     }
+
+    /**
+     * ×【无思路！】（4） 53. 最大子数组和 time：2023年11月20日16:29:27 -> 2023年11月20日16:53:53
+     */
+    // √ 题解方法 time：2023年11月20日17:47:35 -> 2023年11月20日18:02:21
+    //主要笔记：算法确实很简单，但是这一题确实难！很难想
+    public int maxSubArray(int[] nums) {
+        int curSum = 0;
+        int maxSum = Integer.MIN_VALUE;
+        for (int i =0; i < nums.length; i++){
+            curSum += nums[i];
+            maxSum = Math.max(curSum, maxSum);
+            if (curSum <= 0) curSum = 0; //如果curSum比0还小，那就重新计算count！重新计算其位置
+        }
+        return maxSum;
+    }
+
+
+
+
+
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
