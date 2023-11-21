@@ -135,7 +135,176 @@ public class MyGreedy {
         return maxSum;
     }
 
+    /**
+     * √（6） 122. 买卖股票的最佳时机 II time：2023年11月21日19:38:09 -> 2023年11月21日20:05:31
+     * 我的思路：贪心的思想：我每一个能获得利的过程我都不放过，这样我就可以利益最大化
+     * 其实此题感觉和摆动序列也很像：我只需要找到序列中每一个最低谷底值和每一个最高峰值即可！
+     * 步骤：1.第一步需要去重，把整个序列都变成只有谷底和峰值的序列 2.求出每一个上升方向的峰值-谷底值 求和
+     */
+    public int maxProfit(int[] prices) {
+        List<Integer> list = new ArrayList<>();
+        //1.先进行去重，形成只有峰值、谷底值的摆动序列
+        for (int i = 0; i < prices.length; i++){
+            if ( i != 0 && prices[i] == prices[i - 1]) continue;
+            list.add(prices[i]);
+        }
 
+        //2.对每一个上升方向的差值进行求和
+        int sumProfit = 0;
+        for (int i = 0; i < list.size(); i++){
+            //首先是有两种计算方式的：第一种是只需要计算max-min，第二种就是如果当前比前一个值大那就直接大的-小的 求和（每一个）
+            //选择第2种，更好实现和理解
+            if (i != 0 && list.get(i) > list.get(i - 1)){
+                sumProfit += list.get(i) - list.get(i - 1);
+            }
+        }
+        return sumProfit;
+    }
+    // √ 方法二【不需要去重的方式】 （6） 122. 买卖股票的最佳时机 II time：2023年11月21日20:06:06 -> 2023年11月21日20:08:46
+    //啊？ 一个for循环搞定了？？？还真就那么简单
+    public int maxProfit2(int[] prices) {
+        int sumProfit = 0;
+        for (int i = 0; i < prices.length; i++){
+            if ( i != 0 && prices[i] > prices[i - 1]){
+                sumProfit += prices[i] - prices[i - 1];
+            }
+        }
+        return sumProfit;
+    }
+
+    /**
+     * √（7） 55. 跳跃游戏 time：2023年11月21日20:11:18 -> 2023年11月21日20:25:54
+     *  我的思路：定义一个curJumpStep，不断让curJumpStep取最大的，然后一直往后
+     *  这一题目的关键是：可以跳的最大步数，但并不是一定要跳的步数，你只需要往后每一个都遍历，然后贪心的每一个都选择当前可以跳的最大步数就可以了！
+     */
+    public boolean canJump(int[] nums) {
+        //还剩余可以跳的步数
+        int curJumpStep = nums[0];
+        for (int i = 0; i < nums.length; i++){
+            if (i == 0){
+                curJumpStep = nums[i];
+            }else {
+                curJumpStep--;//可以跳的步数首先减一个
+                if (curJumpStep < 0) return false;//如果跳到当前步数为负的，那直接失败
+                curJumpStep = Math.max(curJumpStep, nums[i]);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * ×【41 / 109 个通过的测试用例】（8） 45. 跳跃游戏 II time：2023年11月21日20:33:35 -> 2023年11月21日21:01:43
+     * 错误：并无法保证怎样能够确定跳最小次数呢
+     */
+    public int jump(int[] nums) {
+        int curStep = nums[0];
+        int jumpCount = 0;
+        for (int i = 0; i < nums.length; i++){
+            if (i == 0){
+                curStep = nums[i];
+            }else {
+                curStep--;
+                if (i == nums.length - 1){
+                    return ++jumpCount;//到最后一个了，不管大不大都要跳一次
+                }
+                if (curStep < nums[i]){
+                    jumpCount++;//这里才表明跳了一次
+                    curStep = nums[i];
+                }
+            }
+        }
+        return jumpCount;
+    }
+    // √ 方法二 题解方法 time：2023年11月21日21:18:50 -> 2023年11月21日21:32:54
+    //题解方法的思路：当超出当前最大范围的时候就需要步数+1
+    //重要笔记：其关键思想就是只要超过当前的最大范围就+1；同时也要记住下一步的最大范围下标；以及最后一个位置的特殊处理！
+    public int jump2(int[] nums) {
+        //nums中只有一个数的情况的特殊处理！！
+        if (nums.length == 1) return 0;
+
+        int jumpCount = 0;
+        int curMaxIndex = nums[0];
+        int nextMaxIndex = 0;
+        for (int i = 0; i < nums.length; i++){
+            //往前走的每一步都需要计算下一步的最大范围
+            nextMaxIndex = Math.max(nums[i] + i, nextMaxIndex); // 这一步也很神奇，不断着在更新着下一步的最大步数
+
+            //这一步是最后一个节点的特殊处理(因为就算最后一个结点不超过，也需要+1并返回)
+            if (i == nums.length - 1) return ++jumpCount;
+
+            //如果i等于当前的最大范围，则需要步数加1，并更新当前步数
+            if (i == curMaxIndex){
+                jumpCount++;
+                curMaxIndex = nextMaxIndex;
+            }
+        }
+        return jumpCount;
+    }
+
+    /**
+     * √（9） 1005. K 次取反后最大化的数组和 time：2023年11月21日21:56:41 -> 2023年11月21日22:32:02
+     * 我的思路：1.先对数组进行排序 2.从前往后每次都取最小的数变成正数，这样转正后就是最大的 3.如果没有负数了，就把所有的转变正负的机会留给最小的正数或者0
+     * 简单是挺简单的，但是坑有点多
+     */
+    public int largestSumAfterKNegations(int[] nums, int k) {
+        //1.首先数组排序
+        Arrays.sort(nums);
+        //2.开始遍历操作
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++){
+            if (nums[i] < 0 && k > 0){ // 前面所有k个负数进行取反求和的操作
+                sum += (-nums[i]);
+                k--;
+            }else if (k == 0){ //如果k=0，表示没有翻转机会了
+                sum += nums[i];
+            } else if (k > 0 && nums[i] >= 0) { //如果k没用完，但是负数已经被翻转完了
+                if (k % 2 == 0) sum += nums[i];//双数为原值
+                if (k % 2 == 1) {
+                    //！！！正数的第一个其实需要特殊判断，看一下负数的最后一个和正数的最后一个到底应该让谁为负数
+                    if (i == 0){
+                        sum += (-nums[i]);//双数为其相反值
+                    }else if (i != 0 && nums[i] > Math.abs(nums[i - 1])){
+                        sum += nums[i];//当前正数取原值
+                        sum -= 2 * Math.abs(nums[i - 1]);
+                    } else if (i != 0 && nums[i] <= Math.abs(nums[i - 1])) {
+                        sum += (-nums[i]);//双数为其相反值
+                    }
+                }
+                k = 0;//操作完后直接令其为0
+            }
+        }
+        //3.如果遍历完了 k却还没用完
+        if (k > 0){
+            if (k % 2 == 0) sum += nums[nums.length - 1];//双数为原值
+            if (k % 2 == 1) sum -= 2 * Math.abs(nums[nums.length - 1]);
+        }
+        return sum;
+    }
+    // × 【明天在研究！！！】方法二 题解方法 按照绝对值进行排序！这个十分方便了就
+    public int largestSumAfterKNegations2(int[] nums, int k) {
+        Integer[]  numsArray= new Integer[nums.length];
+        for (int i = 0; i < nums.length; i++){
+            numsArray[i] = nums[i];
+        }
+        Arrays.sort(numsArray, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return Math.abs(o2) - Math.abs(o1);
+            }
+        });
+        int sum = 0;
+        for (int i = 0; i < numsArray.length; i++){
+            if (numsArray[i] < 0 && k > 0){
+                sum += (-numsArray[i]);
+                k--;
+            }else {
+                sum += numsArray[i];
+            }
+        }
+        //如果遍历完了 k却还没用完
+        if (k % 2 == 1) sum = sum - numsArray[numsArray.length - 1] + (-numsArray[numsArray.length - 1]);
+        return sum;
+    }
 
 
 
@@ -145,7 +314,23 @@ public class MyGreedy {
      */
     public static void main(String[] args) {
         MyGreedy myGreedy = new MyGreedy();
-        //测试 摆动序列
+        //测试 带有负数的排序
+        int nums[] = {2,-3,-1,5,-4};
+        Arrays.sort(nums);
+        System.out.println(Arrays.toString(nums));
+
+        //按照数值的绝对值，对数组进行排序！
+        Integer[]  numsArray= new Integer[nums.length];
+        for (int i = 0; i < nums.length; i++){
+            numsArray[i] = nums[i];
+        }
+        Arrays.sort(numsArray, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return Math.abs(o2) - Math.abs(o1);
+            }
+        });
+        System.out.println(Arrays.toString(numsArray));
 
     }
 }
