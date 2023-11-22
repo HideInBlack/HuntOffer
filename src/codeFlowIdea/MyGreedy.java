@@ -1,6 +1,8 @@
 package codeFlowIdea;
 
 import java.util.*;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * codeFlowIdea 代码随想录学习记录 time：2023年11月17日21:33:13 ->
@@ -280,12 +282,9 @@ public class MyGreedy {
         }
         return sum;
     }
-    // × 【明天在研究！！！】方法二 题解方法 按照绝对值进行排序！这个十分方便了就
+    // √ 方法二 题解方法 按照绝对值进行排序！这个十分方便了就
     public int largestSumAfterKNegations2(int[] nums, int k) {
-        Integer[]  numsArray= new Integer[nums.length];
-        for (int i = 0; i < nums.length; i++){
-            numsArray[i] = nums[i];
-        }
+        Integer[] numsArray = Arrays.stream(nums).boxed().toArray(Integer[]::new);
         Arrays.sort(numsArray, new Comparator<Integer>() {
             @Override
             public int compare(Integer o1, Integer o2) {
@@ -302,9 +301,178 @@ public class MyGreedy {
             }
         }
         //如果遍历完了 k却还没用完
-        if (k % 2 == 1) sum = sum - numsArray[numsArray.length - 1] + (-numsArray[numsArray.length - 1]);
+        if (k % 2 == 1){
+            if(numsArray[numsArray.length - 1] > 0){//需要先判断最后一个数字是正的还是负的
+                sum = sum - 2 * numsArray[numsArray.length - 1];//这里就是正的
+            }else{
+                sum = sum + 2 * numsArray[numsArray.length - 1];//这里就是负的
+            }
+
+        }
         return sum;
     }
+
+    /**
+     *  ×【超时 34 / 40 个通过的测试用例】（11） 134. 加油站 time：2023年11月22日12:42:49 -> 2023年11月22日13:05:37
+     * 我的思路：暴力解
+     *  √ 题解方法：i从0开始累加rest[i]，和记为curSum，一旦curSum小于零，说明[0, i]区间都不能作为起始位置，因为这个区间选择任何一个位置作为起点，
+     * 到i这里都会断油，那么起始位置从i+1算起，再从0计算curSum。
+     * 此题关键：！！！一旦[0，i] 区间和为负数，起始位置就可以是i+1
+     */
+    int endIndex = -1;//1.endIndex = -1表示初始化 2.endIndex = -2表示可以宣布直接失败了 3.endIndex != -1, != -2,那就是下一步新开始查询的点！
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+//        if (Arrays.stream(gas).sum() < Arrays.stream(cost).sum()) return -1;
+        for (int i = 0; i < gas.length; i++){
+            if (canCircuit(gas, cost, i)){
+                return i;
+            }else {
+                if (endIndex != -1) i = endIndex;//从当前0-i范围都不能作为起始位置，从endIndex的下一个值开始
+                if (endIndex == -2) return -1;
+            }
+        }
+        return -1;
+    }
+    private boolean canCircuit(int[] gas, int[] cost, int startIndex){
+        int allGas = 0;
+        //判断后半段路是否可以走通
+        for (int i = startIndex; i < gas.length; i++){
+            allGas += gas[i];//先计算总共剩余多少油
+            allGas -= cost[i];//在这里判断是否可以往下走一步
+            if(allGas < 0) {
+                //这里是最关键的一步！
+                endIndex = i;
+                return false;
+            }
+        }
+        //判断前半段路是否可以走通
+        for (int i = 0; i < startIndex; i++){
+            allGas += gas[i];//先计算总共剩余多少油
+            allGas -= cost[i];//在这里判断是否可以往下走一步
+            if(allGas < 0) {
+                endIndex = -2;//都饶了一圈重新回到开始了，所以如果还没找到，那就是整个都找不到，直接返回-2，代表可以表示失败了！
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * ×【无思路】（12）135. 分发糖果 time：2023年11月22日19:42:45 -> 2023年11月22日20:24:16
+     * 题解方法：最关键的思路：要保证相邻的孩子获得评分最高，1.先从左往右得出右孩子比左孩子大的结果（先只看一个方向） 2.再从右往左得出左孩子比右孩子大的结果（这是第二个方向）
+     *  3. 最后只需要两个里面去最大的就可以两边都兼顾了！
+     */
+    // √ 题解方法 两边兼顾法
+    public int candy(int[] ratings) {
+        int[] leftToRight = new int[ratings.length];
+        int[] rightToLeft = new int[ratings.length];
+        //1.从左往右遍历，找到比较右孩子比左孩子大的
+        for (int i = 0; i < ratings.length; i++){
+            if (i != 0 && ratings[i] > ratings[i - 1]){
+                leftToRight[i] = leftToRight[i - 1] + 1;
+            }else {
+                leftToRight[i] = 1;
+            }
+        }
+        //2.从右往左遍历，找到比较左孩子比右孩子大的
+        for (int i = ratings.length - 1; i >= 0; i--){
+            if (i != ratings.length - 1 && ratings[i] > ratings[i + 1]){
+                rightToLeft[i] = rightToLeft[i + 1] + 1;
+            }else {
+                rightToLeft[i] = 1;
+            }
+        }
+        //3.第三步：分别取出两个里面最大的 总和就是最少糖果数目
+        int sum = 0;
+        for (int i = 0; i < ratings.length; i++){
+            sum += Math.max(leftToRight[i], rightToLeft[i]);
+        }
+        return sum;
+    }
+    //方法二 省掉一遍遍历的时间
+    public int candy2(int[] ratings) {
+        int[] leftToRight = new int[ratings.length];
+        int[] rightToLeft = new int[ratings.length];
+        int sum = 0;
+        //1.从左往右遍历，找到比较右孩子比左孩子大的
+        for (int i = 0; i < ratings.length; i++){
+            if (i != 0 && ratings[i] > ratings[i - 1]){
+                leftToRight[i] = leftToRight[i - 1] + 1;
+            }else {
+                leftToRight[i] = 1;
+            }
+        }
+        //2.从右往左遍历，找到比较左孩子比右孩子大的
+        for (int i = ratings.length - 1; i >= 0; i--){
+            if (i != ratings.length - 1 && ratings[i] > ratings[i + 1]){
+                rightToLeft[i] = rightToLeft[i + 1] + 1;
+            }else {
+                rightToLeft[i] = 1;
+            }
+            sum += Math.max(rightToLeft[i], leftToRight[i]);
+        }
+        return sum;
+    }
+
+    /**
+     * √（13）860. 柠檬水找零 time：2023年11月22日20:46:41 -> 2023年11月22日21:05:08
+     * 我的思想：贪心思想：每次找零的时候有大的给大的，没大的给小的，小的也没有那就没了
+     */
+    public boolean lemonadeChange(int[] bills) {
+        //似乎用数组会更加的简单！
+        int[] money = new int[2];//5 10 20
+        for (int bill : bills) {
+            if (bill == 5) {
+                money[0] += 1;
+            } else if (bill == 10) {
+                money[1] += 1; //入账10
+                //找零-只需要找1个5元
+                money[0] -= 1;
+                if (money[0] < 0) return false;
+            } else if (bill == 20) {
+                //找零-两种情况
+                if (money[1] > 0) {
+                    money[1] -= 1;
+                    money[0] -= 1;
+                    if (money[0] < 0) return false;
+                } else if (money[1] == 0 && money[0] >= 3) {
+                    money[0] -= 3;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * ×【无思路】（14） 406. 根据身高重建队列 time：2023年11月22日21:06:29 -> 2023年11月22日21:19:34
+     * √ 题解思路：像这种有两个维度的题目：都是需要先确定其中一条的维度！再进行插入排序
+     */
+    // √ 题解方法：优先按照身高高的进行排序，因为k表示的是前面大于等于其身高的个数，所以要先排序高的，这样后面的都是比其矮的！不受影响（就算他们插入到前面，也是比它矮的，不加入到计算中）
+    //time：2023年11月22日21:36:11 -> 2023年11月22日22:15:32
+    public int[][] reconstructQueue(int[][] people) {
+        //先进行双重条件下的数组排序
+        Arrays.sort(people, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                if (o1[0] == o2[0]){
+                    return o1[1] - o2[1];//相等的时候按照第二个的升序
+                }else {//否则还是按照第一个的降序
+                    return o2[0] -o1[0];
+                }
+            }
+        });
+        //重建队列！
+        List<int[]> list = new ArrayList<>();
+        for (int i = 0; i < people.length; i++){
+            //看其people[1],其在什么位置 就插入到什么位置！因为前面的都是比其大的
+            list.add(people[i][1], people[i]);
+        }
+        return list.toArray(new int[0][]);
+    }
+
+
+
 
 
 
@@ -314,23 +482,54 @@ public class MyGreedy {
      */
     public static void main(String[] args) {
         MyGreedy myGreedy = new MyGreedy();
-        //测试 带有负数的排序
-        int nums[] = {2,-3,-1,5,-4};
-        Arrays.sort(nums);
-        System.out.println(Arrays.toString(nums));
 
-        //按照数值的绝对值，对数组进行排序！
-        Integer[]  numsArray= new Integer[nums.length];
-        for (int i = 0; i < nums.length; i++){
-            numsArray[i] = nums[i];
+        //测试二维数组的排序问题
+        List<int[]> list = new ArrayList<>();
+        list.add(new int[]{7, 0});
+        list.add(new int[]{4, 4});
+        list.add(new int[]{7, 1});
+        list.add(new int[]{5, 0});
+        list.add(new int[]{6, 1});
+        list.add(new int[]{5, 2});
+        for (int[] array : list){
+            System.out.print(Arrays.toString(array) + " ");
         }
-        Arrays.sort(numsArray, new Comparator<Integer>() {
+        Collections.sort(list, new Comparator<int[]>() {
             @Override
-            public int compare(Integer o1, Integer o2) {
-                return Math.abs(o2) - Math.abs(o1);
+            public int compare(int[] o1, int[] o2) {
+                if (o1[0] == o2[0]){
+                    return o1[1] - o2[1];
+                }else {
+                    return o2[0] - o1[0];
+                }
             }
         });
-        System.out.println(Arrays.toString(numsArray));
+
+        for (int[] array : list){
+            System.out.print(Arrays.toString(array) + " ");
+        }
+
+//        //按照数值的绝对值，对数组进行排序！
+//        int nums[] = {2,-3,-1,5,-4};
+//        Integer[]  integers = Arrays.stream(nums).boxed().toArray(Integer[]::new);
+//        Arrays.sort(integers, new Comparator<Integer>() {
+//            @Override
+//            public int compare(Integer o1, Integer o2) {
+//                return Math.abs(o2) - Math.abs(o1);
+//            }
+//        });
+//        System.out.println(Arrays.toString(integers));
+
+//        //方法一 int数组 -> integer数组 转化
+//        int[] numsTest = {1,2,3,4,5,6};
+//        IntStream stream = Arrays.stream(numsTest);//将int数组转换为数值流
+//        Stream<Integer> integerStream = stream.boxed();//流中的元素全部装箱，转换为Integer流
+//        Integer[] integers = integerStream.toArray(Integer[]::new);//将流转换为数组
+//        System.out.println(Arrays.toString(integers));
+//
+//        //方法二 int数组 -> integer数组 转化
+//        Integer integersNew[] = Arrays.stream(numsTest).boxed().toArray(Integer[]::new);
+//        System.out.println(Arrays.toString(integersNew));
 
     }
 }
