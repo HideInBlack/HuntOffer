@@ -569,10 +569,32 @@ public class MyGreedy {
     }
 
     /**
-     * （20） 56. 合并区间 time：2023年11月23日15:40:34 ->
+     * √（20） 56. 合并区间 time：2023年11月23日15:40:34 -> 2023年11月23日16:02:08
+     * 我的思路：此题思路比较简单 1.先进行升序排序 2.依次往后遍历合并区间 3.可以先使用list存储，最终直接返回（）因为list可以进行修改
      */
     public int[][] merge(int[][] intervals) {
-
+        List<int[]> result = new ArrayList<>();
+        //1. 先进行按照开始位置进行升序排序
+        Arrays.sort(intervals, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] - o2[0];//按照开始位置进行升序排序
+            }
+        });
+        //2. 开始合并
+        int preEnd = -1;
+        for (int i = 0; i < intervals.length; i++){
+            if (intervals[i][0] <= preEnd){ // 需要合并：修改最后一个结果（注意相等的时候也要合并的！）
+                if (intervals[i][1] > preEnd){//此时需要修改最后一个数组的值
+                    result.get(result.size() - 1)[1] = intervals[i][1];
+                }
+                preEnd = Math.max(preEnd, intervals[i][1]);//因为要合并所以这里要保存最大的
+            }else { // 不需要合并：直接保存结果
+                result.add(new int[]{intervals[i][0], intervals[i][1]});
+                preEnd = intervals[i][1];
+            }
+        }
+        return result.toArray(new int[0][]);
     }
 
 
