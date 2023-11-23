@@ -471,7 +471,109 @@ public class MyGreedy {
         return list.toArray(new int[0][]);
     }
 
+    /**
+     * ×【完全不会】（17） 452. 用最少数量的箭引爆气球 time：2023年11月23日10:30:51 -> 2023年11月23日10:57:37
+     * √ 题解思路：1.先按照开始位置进行从大到小的排序，然后不断保存重叠区域的新的最小右边界，2.如果下一个区间的左边界在里面则不需要+1，否则+1更新重叠右边界（非常的灵活）
+     */
+    // √ 题解方法 time：2023年11月23日11:14:15 -> 2023年11月23日11:26:22
+    public int findMinArrowShots(int[][] points) {
+        Arrays.sort(points, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return Integer.compare(o1[0], o2[0]);//按照起始位置的升序排序
+            }
+        });
+        int count = 1;//至少一个气球 至少需要一个箭
+        long preEnd = points[0][1];//第一个重叠区域的右边界为第一个数组的终点位置
+        //这里从1开始，因为0已经默认了！(从第二个开始)
+        for (int i = 1; i < points.length; i++){
+            if (points[i][0] <= preEnd){ // 1.如果开始位置在重叠区域的最右边里面 数量不变，更新重叠区域的最右边
+                preEnd = Math.min(preEnd, points[i][1]);
+            }else { // 2.否则如果开始位置不在重叠里面，数量+1，也需要更新重叠区域的最右边界
+                count++;
+                preEnd = points[i][1];//这里就相当于是新开启了一个重叠区间！
+            }
+        }
+        return count;
+    }
 
+    /**
+     * √（18）435. 无重叠区间 time：2023年11月23日14:24:33 -> 2023年11月23日14:47:03
+     *  我的思路：1.首先按照开始位置进行排序 2.其次记录前一个数组的最终位置 3.当有开始位置超过其最终位置时就要移除 4.保留最终位置更靠前的一个（可以留下更大的空间）
+     */
+    public int eraseOverlapIntervals(int[][] intervals) {
+        //1.先对数组进行排序
+        Arrays.sort(intervals, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] - o2[0]; // 按照开始位置升序进行排序
+            }
+        });
+        //2.统计遍历
+        int deleteCount = 0;
+        int preEnd = Integer.MIN_VALUE;//首先默认第一个最终位置
+        for (int i = 0; i < intervals.length; i++){
+            if (intervals[i][0] < preEnd){ // 1.此处表明有重叠
+                deleteCount++;
+                preEnd = Math.min(preEnd, intervals[i][1]); // 这里其实就是删除操作 谁小保留谁（谁大就删掉哪一个）
+            }else {// 2.此处表明没有重叠 需要更新最后位置
+                preEnd = intervals[i][1];
+            }
+        }
+        return deleteCount;
+    }
+
+    /**
+     * ×【完全无思路】（19）763. 划分字母区间 time：2023年11月23日14:57:29 -> 2023年11月23日15:06:50
+     * 题解思路：1.先写出每一个字符出现的最后位置 2.然后再遍历一遍找到当前遍历小组中最大距离与下标相等时就是分割点
+     */
+    // √ 题解方法 time：2023年11月23日15:10:50 -> 2023年11月23日15:28:26
+    public List<Integer> partitionLabels(String s) {
+        //1.先统计处每一个字符出现的最后位置
+        Map<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < s.length(); i++){
+            map.put(s.charAt(i), i);
+        }
+        //2.再遍历一遍 找到分割点
+        List<Integer> list = new ArrayList<>();
+        int maxPosition = Integer.MIN_VALUE;
+        int prePosition = -1;
+        for (int i = 0; i < s.length(); i++){
+            maxPosition = Math.max(maxPosition, map.get(s.charAt(i)));
+            if (maxPosition == i){ //找到分割点
+                list.add(i - prePosition); // 1.先添加结果：结果是长度！！
+                prePosition = i; // 2.记录上一个切割点 以计算长度
+            }
+        }
+        return list;
+    }
+    // √ 题解方法二 不用map，使用数组 time：2023年11月23日15:31:14 -> 2023年11月23日15:35:38
+    public List<Integer> partitionLabels2(String s) {
+        //1.先统计处每一个字符出现的最后位置
+        int[] position = new int[26];
+        for (int i = 0; i < s.length(); i++){
+            position[s.charAt(i) - 'a'] = i;//不断覆盖，最后保留的就是最终最远位置
+        }
+        //2.再遍历一遍 找到分割点
+        List<Integer> list = new ArrayList<>();
+        int maxPosition = Integer.MIN_VALUE;
+        int prePosition = -1;
+        for (int i = 0; i < s.length(); i++){
+            maxPosition = Math.max(maxPosition, position[s.charAt(i) - 'a']);
+            if (maxPosition == i){ //找到分割点
+                list.add(i - prePosition); // 1.先添加结果：结果是长度！！
+                prePosition = i; // 2.记录上一个切割点 以计算长度
+            }
+        }
+        return list;
+    }
+
+    /**
+     * （20） 56. 合并区间 time：2023年11月23日15:40:34 ->
+     */
+    public int[][] merge(int[][] intervals) {
+
+    }
 
 
 
@@ -483,31 +585,58 @@ public class MyGreedy {
     public static void main(String[] args) {
         MyGreedy myGreedy = new MyGreedy();
 
-        //测试二维数组的排序问题
-        List<int[]> list = new ArrayList<>();
-        list.add(new int[]{7, 0});
-        list.add(new int[]{4, 4});
-        list.add(new int[]{7, 1});
-        list.add(new int[]{5, 0});
-        list.add(new int[]{6, 1});
-        list.add(new int[]{5, 2});
-        for (int[] array : list){
-            System.out.print(Arrays.toString(array) + " ");
-        }
-        Collections.sort(list, new Comparator<int[]>() {
-            @Override
-            public int compare(int[] o1, int[] o2) {
-                if (o1[0] == o2[0]){
-                    return o1[1] - o2[1];
-                }else {
-                    return o2[0] - o1[0];
-                }
-            }
-        });
+        System.out.println(Integer.MIN_VALUE);
 
-        for (int[] array : list){
-            System.out.print(Arrays.toString(array) + " ");
-        }
+        //测试一维、二维数组的排序问题
+//        int[] oneDimension = {5, 0, 3, 2, 7};
+//        int[][] twoDimension = {{7, 0}, {4, 4}, {7, 1}, {5, 0}, {6, 1}};
+//
+//        Integer[] temp = Arrays.stream(oneDimension).boxed().toArray(Integer[]::new);
+//        Arrays.sort(temp, new Comparator<Integer>() {
+//            @Override
+//            public int compare(Integer o1, Integer o2) {
+//                return o2 - o1;
+//            }
+//        });
+//        Arrays.sort(twoDimension, new Comparator<int[]>() {
+//            @Override
+//            public int compare(int[] o1, int[] o2) {
+//                return o2[0] - o1[0];
+//            }
+//        });
+//        System.out.println(Arrays.toString(temp));
+//        for (int[] array : twoDimension){
+//            System.out.println(Arrays.toString(array));
+//        }
+//        System.out.println(Integer.compare(1, 2));
+//        System.out.println("a".compareTo("b"));
+
+
+        //测试二维数组的排序问题
+//        List<int[]> list = new ArrayList<>();
+//        list.add(new int[]{7, 0});
+//        list.add(new int[]{4, 4});
+//        list.add(new int[]{7, 1});
+//        list.add(new int[]{5, 0});
+//        list.add(new int[]{6, 1});
+//        list.add(new int[]{5, 2});
+//        for (int[] array : list){
+//            System.out.print(Arrays.toString(array) + " ");
+//        }
+//        Collections.sort(list, new Comparator<int[]>() {
+//            @Override
+//            public int compare(int[] o1, int[] o2) {
+//                if (o1[0] == o2[0]){
+//                    return o1[1] - o2[1];
+//                }else {
+//                    return o2[0] - o1[0];
+//                }
+//            }
+//        });
+//
+//        for (int[] array : list){
+//            System.out.print(Arrays.toString(array) + " ");
+//        }
 
 //        //按照数值的绝对值，对数组进行排序！
 //        int nums[] = {2,-3,-1,5,-4};
