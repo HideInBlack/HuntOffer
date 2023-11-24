@@ -597,6 +597,77 @@ public class MyGreedy {
         return result.toArray(new int[0][]);
     }
 
+    /**
+     * √（22） 738. 单调递增的数字 time：2023年11月24日10:07:53 -> 2023年11月24日10:48:54
+     * 我的思路：其实这一题就是找规律！1.首先找到不是严格递增的第一个数字的前一个-1； 2.其余后面各位置全部补0； 3.否则全部都是递增时则返回原数子
+     * 重要笔记：这一题呢，就是找到规律很重要！观察个别例子！
+     */
+    public int monotoneIncreasingDigits(int n) {
+        String s = Integer.toString(n);
+        //1.首先其本身就是单调递增数字
+        if (s.length() == 1) return n;
+        char target = '0';
+        for (int i = 1; i < s.length(); i++){
+            if (s.charAt(i) < s.charAt(i - 1)) {
+                target = s.charAt(i - 1);
+                break; // （在这里是可以相等的）只要出现一个不递增就中断循环,并保留中断值
+            }
+            if (i == s.length() - 1) return n; // 如果到最后一个都没出现，那就直接返回原数字
+        }
+        //2.其本身不是单调数字 需要操作
+        StringBuilder result = new StringBuilder();
+        for (int i = 1; i < s.length(); i++){
+            if (s.charAt(i) <= s.charAt(i - 1) && s.charAt(i - 1) == target){//就算是相等 也是找到的第一个不严格递增的数字
+                result.append(Integer.parseInt(String.valueOf(s.charAt(i - 1))) - 1);//这里要拼接前一个的-1
+                result.append("9".repeat(s.length() - i));
+                break;//找到第一个就要中断跳出
+            }else { //这里需要后者严格大于前者（=都是不行得！）
+                result.append(s.charAt(i - 1));
+            }
+        }
+        return Integer.parseInt(result.toString());
+    }
+
+    /**
+     * ×【无思路】（23） 968. 监控二叉树 time：2023年11月24日11:07:44 -> 2023年11月24日11:16:45
+     * 题解思路：局部最优：让叶子节点的父节点安摄像头，所用摄像头最少，整体最优：全部摄像头数量所用最少！
+     * 我们分别有三个数字来表示：
+     * 0：该节点无覆盖
+     * 1：本节点有摄像头
+     * 2：本节点有覆盖
+     * 总结：最关键的思想是：1.首先要明白要从叶子节点的父节点开始出发安装 2.要使用状态转移，使用三种数字表示三种节点的状态返回(返回就表示此节点的状态) 3.从下往上遍历所有节点 严格按照三种状态情况返回值
+     */
+    //题解方法 time：2023年11月24日11:30:51 -> 2023年11月24日11:41:34
+    int count = 0;
+    public int minCameraCover(TreeNode root) {
+        if (seeTree(root) == 0) count++;
+        return count;
+    }
+    //因为要从叶子节点往上遍历 所以就需要后序遍历 LRT
+    private int seeTree(TreeNode root){
+        //太巧妙了 根据数值来表示每个节点的状态
+        if (root != null){
+            int left = seeTree(root.left);
+            int right = seeTree(root.right);
+
+            //1.什么时候是无覆盖
+            if (left == 2 && right == 2) return 0;
+
+            //2.什么时候是有摄像头
+            if (left == 0 || right == 0) { // 只要左右孩子中有一个无覆盖就需要安装摄像头
+                count++;
+                return 1;
+            }
+
+            //3.什么时候是有覆盖
+            if (left == 1 || right == 1) return 2; //只要有一个是带摄像头的 那我就是有覆盖
+
+            return -1;//没有逻辑会走到这里的！上面的三种情况直接把逻辑截死住
+
+        }else { //空节点 直接返回是有覆盖2即可；因为它不需要覆盖
+            return 2;
+        }
+    }
 
 
 
@@ -607,7 +678,21 @@ public class MyGreedy {
     public static void main(String[] args) {
         MyGreedy myGreedy = new MyGreedy();
 
-        System.out.println(Integer.MIN_VALUE);
+        System.out.println(myGreedy.monotoneIncreasingDigits(123441));
+
+//        //测试链表转成一维数组【不能转int[] 只能转Object[]】
+//        List<Integer> list1 = new ArrayList<>();
+//        list1.add(1); list1.add(2); list1.add(3);
+//        Object[] array1 = list1.toArray();
+//        System.out.println(Arrays.toString(array1));
+//
+//        //测试链表转成二维数组【可以直接转成int[][]】
+//        List<int[]> list2 =new ArrayList<>();
+//        list2.add(new int[]{1, 2, 3, 4});list2.add(new int[]{1, 2, 3, 4});list2.add(new int[]{1, 2, 3, 4});
+//        int[][] array2 = list2.toArray(new int[0][]);
+//        for (int[] array : array2){
+//            System.out.println(Arrays.toString(array));
+//        }
 
         //测试一维、二维数组的排序问题
 //        int[] oneDimension = {5, 0, 3, 2, 7};
