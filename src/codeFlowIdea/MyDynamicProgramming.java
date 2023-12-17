@@ -208,18 +208,99 @@ public class MyDynamicProgramming {
     }
 
     /**
-     * （8） 343. 整数拆分 time：
+     *  ×【12 / 50 个通过的测试用例】（8） 343. 整数拆分 time：2023年12月17日15:57:13 -> 2023年12月17日16:28:52
      */
     public int integerBreak(int n) {
-        return 0;
+        int key = (int) Math.sqrt(n);
+        int num =  n / key;
+        int last = n % key;
+        if (last == 0){
+            if (key == 1) return n - 1;
+            return (int) Math.pow(key, num);
+        }else if (last == 1){
+            return (int) Math.pow(key, num - 1) * (key + 1);
+        }else {
+            return (int) Math.pow(key, num) * last;
+        }
+    }
+    // √ （8） 题解方法：动态规划 time：2023年12月17日19:31:26 -> 2023年12月17日19:50:03
+    // 1.dp[i]定义为：分解数字i，可以得到最大乘积dp[i] 2.状态转移方程：dp[i] = max(dp[i], max((i-j) * j, dp[i-j] * j)) // j是每一个拆分点 从1开始！
+    //细节1：j到i/2就停止了，因为再大也不满足相乘获得最大乘积了【小技巧】
+    public int integerBreak2(int n) {
+        int[] dp = new int[n +1];
+        dp[0] = 0; dp[1] = 1; dp[2] = 1;
+        for (int i = 3; i < n + 1; i++){
+            for (int j = 1; j <= i / 2; j++){
+                dp[i] = Math.max(dp[i], Math.max(j * (i - j), j * dp[i - j]));// 要么分2个，要么分2个以上：一生2,2生万物！
+            }
+        }
+        return dp[n];
     }
 
+    /**
+     * ×（9） 96. 不同的二叉搜索树 time：2023年12月17日20:01:38 -> 2023年12月17日20:24:07
+     * 想不出来状态转移方程！
+     * 总结：其实就是不停的拆分拆分，和上一题很像，就是把一大问题，分解成两个子问题！ 整数拆分是每次至少拆分成2个，然后需要多做一步判断；而二叉树的拆分是左右从0-i-1拆分【左0右i-1、左i-1右0】
+     */
+    // 题解方法：递归
+    public int numTrees(int n) {
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        for (int i = 1; i < n + 1; i++){
+            for (int j = 0; j < i; j++){
+                dp[i] += dp[j] * dp[i - j - 1];
+            }
+        }
+        return dp[n];
+    }
+
+    /**
+     * √ 0-1 背包问题（不可切割） time：2023年12月17日22:20:36 -> 2023年12月17日22:45:13
+     * 1.dp数组的定义：二维数组 i行是第i个物品， j列是背包的容量为j，dp[i][j]是当前位置的最大价值
+     * 2.情况① 背包放不下 不放：dp[i][j] = dp[i - 1][j] 等于上一个物品此时的最大价值 情况② 放得下： dp[i][j]=Math.max(dp[i - 1][j], dp[i -1][j - weight[i]] + value[i]) 在放与不放之间选择最大值
+     */
+    public static void testWeightBagProblem(int[] weight, int[] value, int bagSize){
+        //1.定义dp数组
+        int[][] dp = new int[weight.length][bagSize + 1];
+        //2.dp数组的初始化(最左边默认就位0，无需初始化)
+//        for (int i = 0; i < weight.length; i++){
+//            //最左边的一列初始化为0
+//            dp[i][0] = 0;
+//        }
+        for (int j = 0; j <= bagSize; j++){
+            //最上面的第一行初始化
+            if (j >= weight[0]){//如果容量大于等于第一个物品则 加上价值
+                dp[0][j] = value[0];
+            }
+        }
+        //3.根据状态转移公式 开始推理
+        for (int i = 1; i < weight.length; i++){ // 因为第一行、第一列已被初始化，所以从第二行第二列开始推导
+            for (int j = 1; j <= bagSize; j++){ // 横着遍历
+                if (weight[i] > j){ // 若当前物品比容量大 则不放:dp[i][j] = dp[i - 1][j]
+                    dp[i][j] = dp[i - 1][j];
+                }else { // <= 若可以放，则腾出来位置放进去；最后取放与不放的最大价值 dp[i][j]=Math.max(dp[i - 1][j], dp[i -1][j - weight[i]] + value[i]) 在放与不放之间选择最大值
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i]);
+                }
+            }
+        }
+
+        // 4.打印dp数组
+        for (int i = 0; i < weight.length; i++) {
+            for (int j = 0; j <= bagSize; j++) {
+                System.out.print(dp[i][j] + "\t");
+            }
+            System.out.println("\n");
+        }
+    }
 
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
      */
     public static void main(String[] args) {
-
+        int[] weight = {1,3,4};
+        int[] value = {15,20,30};
+        int bagSize = 4;
+        testWeightBagProblem(weight,value,bagSize);
     }
 }
