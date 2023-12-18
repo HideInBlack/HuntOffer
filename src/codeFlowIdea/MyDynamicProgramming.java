@@ -1,6 +1,9 @@
 package codeFlowIdea;
 
 
+import java.util.Arrays;
+import java.util.Scanner;
+
 /**
  * codeFlowIdea 代码随想录学习记录 time：2023年11月24日11:58:41
  * author：董政宇
@@ -293,14 +296,83 @@ public class MyDynamicProgramming {
         }
     }
 
+    /**
+     * √（11） 0-1 背包问题 【卡码网】 46. 携带研究材料（第六期模拟笔试） time：2023年12月18日11:20:47 -> 2023年12月18日11:50:00
+     * 1.首先确定dp数组的定义：dp[i][j] i是第i个物品 j是背包的容量为j！ dp[i][j]为当前j放到i（当然这里决定着放与不放）的最大价值
+     * 2.状态转移方程： ①放不下： dp[i][j]=dp[i-1][j] ②放得下(取放和不放之间的最大值)：dp[i][j]=Math.max(dp[i-1][j], dp[i-1][j-weight[i]] + value[i])
+     * 3.dp数组的初始化操作，首先最上面一行要初始化，j大于物品0重量的，初始化为其重量
+     */
+    public static void takeResearch(int[] weight, int[] value, int bagSize){
+        //定义dp数组
+        int[][] dp = new int[weight.length][bagSize + 1];
+        //dp数组的初始化
+        for (int i = 0; i <= bagSize; i++){
+            if (i >= weight[0]) dp[0][i] = value[0];// 这里一定要记得有等于号！
+        }
+        //dp数组的推导
+        for (int i = 1; i < weight.length; i++){ // 需要记住0-1背包 行列都从1开始遍历
+            for (int j = 1; j <= bagSize; j++){
+                if (weight[i] > j){ // 1.放不下
+                    dp[i][j] = dp[i - 1][j];
+                }else { // 2.放得下
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i]);
+                }
+            }
+        }
+        System.out.println(dp[weight.length - 1][bagSize]);
+    }
+    // √ 方法二 【一维数组】0-1背包问题 time：2023年12月18日12:16:23 -> 2023年12月18日12:28:46
+    // 采用一维数组 也就是滑动数组 因为当前物品的状态总是可以取决于上一个物品的状态 所以可以使用一个数组就可以了！
+    // 1.dp数组定义为：j容量背包的容纳的最大价值
+    // 2.需要注意的是j的遍历顺序要从后往前！
+    // 3.此时就需要从i = 0； j = 0；开始遍历！
+    public static void takeResearch2(int[] weight, int[] value, int bagSize){
+        //1.定义dp数组
+        int[] dp = new int[bagSize + 1];
+        //2.默认初始化为0
+        //3.开始推导dp数组
+        for (int i = 0; i < weight.length; i++){
+            for (int j = bagSize; j > 0; j--){
+                if (j >= weight[i]){ // 放的下的时候
+                    dp[j] = Math.max(dp[j], dp[j -weight[i]] + value[i]);
+                }
+                //放不下的时候 默认不变就可以了！(默认不变就相当于复制的上一层)
+            }
+        }
+        System.out.println(dp[bagSize]);
+    }
+
+
+
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
      */
     public static void main(String[] args) {
-        int[] weight = {1,3,4};
-        int[] value = {15,20,30};
-        int bagSize = 4;
-        testWeightBagProblem(weight,value,bagSize);
+
+        //测试 0-1 背包问题（不可切割）
+//        int[] weight = {1,3,4};
+//        int[] value = {15,20,30};
+//        int bagSize = 4;
+//        testWeightBagProblem(weight,value,bagSize);
+
+        //测试【卡码网】 0-1 背包问题
+        // Scanner 输入
+        Scanner input = new Scanner(System.in);
+        int length = input.nextInt();
+        int bagSize = input.nextInt();
+        int[] weight = new int[length];
+        int[] value = new int[length];
+        for (int i = 0; i < length; i++){
+            weight[i] = input.nextInt();
+        }
+        for (int i = 0; i < length; i++){
+            value[i] = input.nextInt();
+        }
+        takeResearch2(weight, value, bagSize);
+//        System.out.println("length = " + length);
+//        System.out.println("bagSize = " + bagSize);
+//        System.out.println(Arrays.toString(weight));
+//        System.out.println(Arrays.toString(value));
     }
 }
