@@ -2,7 +2,9 @@ package codeFlowIdea;
 
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * codeFlowIdea 代码随想录学习记录 time：2023年11月24日11:58:41
@@ -332,7 +334,7 @@ public class MyDynamicProgramming {
         //2.默认初始化为0
         //3.开始推导dp数组
         for (int i = 0; i < weight.length; i++){
-            for (int j = bagSize; j > 0; j--){
+            for (int j = bagSize; j >= 0; j--){
                 if (j >= weight[i]){ // 放的下的时候
                     dp[j] = Math.max(dp[j], dp[j -weight[i]] + value[i]);
                 }
@@ -342,13 +344,323 @@ public class MyDynamicProgramming {
         System.out.println(dp[bagSize]);
     }
 
+    /**
+     * √（13）416. 分割等和子集 time：2023年12月18日12:42:18 -> 2023年12月18日13:17:18
+     * 我的思路：首先两个子集相等肯定就是可以平分的！然后设置包的阈值为其sum/2，求其最大价值 如果等于sum/2 那就可以！
+     * 独立做对！！！ 牛！
+     * 重要笔记：此题的难点在于想到使用动态规划、想到使用0-1背包！
+     */
+    public boolean canPartition(int[] nums) {
+        //1.先求和
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++){
+            sum += nums[i];
+        }
+        //2.设置阈值为 sum / 2；
+        if (sum % 2 != 0) return false; // 不可以平分的 直接失败
+        int bagSize = sum / 2;
 
+        //3.下面使用0-1背包计算其最大价值是否可以达到sum/2！
+        //dp数组的定义：dp[j]就是容量j的最大价值【这里的容量和价值是一样的！！！】
+        int[] dp = new int[bagSize + 1];
+        //默认已初始化为0
+        //dp数组的推导
+        for (int i = 0; i < nums.length; i++){
+            for (int j = bagSize; j > 0; j--){
+                if (j >= nums[i]){ // 放得下！
+                    dp[j] = Math.max(dp[j], dp[j - nums[i]] + nums[i]);
+                    //在这里进行判断！
+                    if (dp[j] == bagSize) return true;
+                }
+                //放不下 一维数组默认不变！
+            }
+        }
+        return false;
+
+    }
+
+    /**
+     * ×【超出时间限制 46 / 163 个通过的测试用例】（13.1）拓展 698. 划分为k个相等的子集 time：2023年12月19日14:29:54 -> 2023年12月19日15:19:44
+     * 我的思路：由于len(nums) <= 16 所以此题目 可以使用暴力求解法 也就是回溯！因为回溯的极限范围就是【0-20】
+     * 回溯法: 单纯的优化不够 导致超时！ 而代码没有问题！
+     */
+    int curPath = 0;
+    Set<Integer> set = new HashSet<>(); // 使用哈希set保证访问过的位置不再访问
+    boolean resultK = false;
+    public boolean canPartitionKSubsets(int[] nums, int k) {
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++){
+            sum += nums[i];
+        }
+        if (sum % k != 0) return false;
+        int target = sum / k;
+        System.out.println(target);
+        backTrackingK(nums, target, 0, k);
+        return resultK;
+    }
+    private void backTrackingK(int[] nums, int target, int curValue, int k){
+        if (set.size() == nums.length){ // 终止条件
+            if (curPath == k) resultK = true;
+            return;
+        }
+        if (resultK) return; // 找到一个就可以 避免多余的计算
+
+        for (int i = 0; i < nums.length; i++){
+            if (!set.contains(i)){ // 不包含的位置 直接开始操作
+                set.add(i);
+                int temp = curValue;
+                temp += nums[i]; // 计算当前值
+
+                if (temp == target) {
+                    curPath++;
+                    backTrackingK(nums, target, 0, k); // 进入递归
+                    curPath--; // 回溯
+                    set.remove(i); // 回溯
+                }else if (temp < target){
+                    backTrackingK(nums, target, temp, k); // 进入递归
+                    set.remove(i); // 回溯
+                }else  { // temp > target
+                    set.remove(i); // 回溯
+                    return;
+                }
+            }
+        }
+    }
+
+    /**
+     * ×（14）1049. 最后一块石头的重量 II time：2023年12月19日15:56:23 -> 2023年12月19日16:20:49
+     * √ 题解方法：这一题不要微观细节上去分析，太绕了，要从宏观上出发：直接分成两堆（最相近的两堆！因为他们互相撞最后肯定剩下的就是两个大堆之间的差距）
+     * √ 所以可以使用0-1背包来解决！ 0-1背包无敌！
+     */
+    public int lastStoneWeightII(int[] stones) {
+        int sum = 0;
+        for (int i = 0; i < stones.length; i++){
+            sum += stones[i];
+        }
+        int target = sum / 2;
+        // dp数组的定义：dp[j] 就是容量为j的目标下的可分配最大堆重量
+        int[] dp = new int[target + 1];
+        // dp数组无需初始化 默认初始化为0
+        // 开始推导dp数组
+        for (int i = 0; i < stones.length; i++){
+            for (int j = target; j >= 0; j--){
+                if (j >= stones[i]){ //只有放得下的时候 才进行操作，否则直接是保存为原来的
+                    dp[j] = Math.max(dp[j], dp[j - stones[i]] + stones[i]);
+                }
+            }
+        }
+        return sum - 2 * dp[target];
+    }
+
+    /**
+     * ×【无思路】（16） 494. 目标和 time：2023年12月19日16:43:25 -> 2023年12月19日16:56:20
+     * 题解方法：此题和上一题一样的思路！居然没想到 也是从宏观上去分析问题！+-的意思其实就是分成两个堆（或者叫做两个组合），然后left-right= target!
+     * 然后在判断完所有的元素之后，最后dp数组有满足条件的数组就是最后的结果
+     * time：2023年12月19日17:09:34 -> 2023年12月19日17:30:58
+     * 重要笔记：组合问题的状态转移方程！！！ dp[j] = dp[j] + dp[j - nums[i]];
+     * dp[j] 表示：填满j（包括j）这么大容积的包，有dp[j]种方法
+     * dp[j]，j 为5， 已经有一个1（nums[i]） 的话，有 dp[4]种新方法 凑成 容量为5的背包。【dp[4]是新方法 所以要加上原来的方法总和】
+     */
+    public int findTargetSumWays(int[] nums, int target) {
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++){
+            sum += nums[i];
+        }
+        if ((sum + target) % 2 != 0) return 0;
+        if (Math.abs(target) > sum) return 0;
+        int size = (sum + target) / 2;
+
+        //dp数组的定义 填满容量j的背包 一共有多少种方法 有dp[j]中方法
+        int[] dp = new int[size + 1];
+        //dp数组初始化 此时需要把dp[0]=1 因为填满0背包，有1中方法
+        dp[0] = 1;
+        //开始推导dp数组
+        for (int i = 0; i < nums.length; i++){
+            for (int j = size; j >= 0; j--){
+                if (j >= nums[i]){ //1.如果放得下 那就在原来方法数量的基础上加上新增加的方法数量
+                    dp[j] = dp[j] + dp[j - nums[i]]; //dp[j - nums[i]]是新方法数量 再加上原来的！
+                }
+                //2.如果放不下 那就总方法数量不变呀！因为没受影响！
+            }
+        }
+        return dp[size];
+    }
+
+    /**
+     * √ （17） 474. 一和零 time：2023年12月19日20:09:43 -> 2023年12月19日21:08:07
+     * 我的思路：动态规划 0-1背包 涉及最大值问题可以使用0-1背包：因为要求子集中最多m个0、n个1 这就是背包的容量
+     * dp[i][j]定义为：所遍历的当前集合中满足i个0、j个1的子集个数
+     * 状态转移方程： dp[i][j] = Math.max(dp[i][j], dp[i - num0][j - num1] + 1);
+     * 初始化：dp[0][0] = 1
+     * 本质：其实就是组合问题的2个维度的0-1背包
+     */
+    public int findMaxForm(String[] strs, int m, int n) {
+        //定义dp数组
+        int[][] dp = new int[m + 1][n + 1];
+        //初始化 默认为0就可以
+        //推导dp数组
+        for (int x = 0; x < strs.length; x++){
+            int num0 = count(strs[x], '0');
+            int num1 = count(strs[x], '1');
+
+            for (int i = m; i >= 0; i--){
+                for (int j = n; j >= 0; j--){
+                    if (i >= num0 && j >= num1){ //满足条件的 加入计算
+                        dp[i][j] = Math.max(dp[i][j], dp[i - num0][j - num1] + 1);
+                    }
+                }
+            }
+        }
+        return dp[m][n];
+    }
+    private int count(String string, char target){
+        char[] characters = string.toCharArray();
+        int count = 0;
+        for (int i = 0; i < characters.length; i++){
+            if (characters[i] == target) count++;
+        }
+        return count;
+    }
+
+    /**
+     * √（18）完全背包问题 【卡码网】 52. 携带研究材料（第七期模拟笔试） time：2023年12月19日21:36:26 -> 2023年12月19日21:55:49
+     * 完全背包问题与0-1背包只有一个地方不同：j的遍历循序 完全背包的遍历为从小到大！
+     */
+    public static void testCompletePack(int[] weight, int[] value, int bagSize){
+        //1.dp数组的定义: dp[j]为容量j的背包所携带的最大价值
+        int[] dp = new int[bagSize + 1];
+        //2.dp数组的初始化：默认为0 无需初始化
+        //3.dp数组的推导
+        for (int i = 0; i < weight.length; i++){
+            for (int j = 0; j <= bagSize; j++){
+                if (j >= weight[i]){ // 1.放得下额度时候
+                    dp[j] = Math.max(dp[j], dp[j - weight[i]] + value[i]);
+                }
+                //2.放不下的时候默认不变
+            }
+        }
+        System.out.println(dp[bagSize]);
+    }
+
+    /**
+     * √（19）518. 零钱兑换 II time：2023年12月19日21:58:39 -> 2023年12月19日22:15:33
+     * 我的思路：这应该是完全背包的组合问题！ 问有多少个组合数？而不是能否组合成功
+     * dp[j] 定义为 凑成j面值的硬币，共有j种方法
+     * 若dp[j], amount=5. 若已经有1，则需要凑齐剩下的4 有dp[4]种方法
+     * 因此状态转移方程为：dp[j] = dp[j] + dp[j - coins[i]];
+     */
+    public int change(int amount, int[] coins) {
+        // dp[j] 定义为 凑成j面值的硬币，共有j种方法
+        int[] dp = new int[amount + 1];
+        //初始化
+        dp[0] = 1; //凑成0总共有1种
+        //开始推理dp数组
+        for (int i = 0; i < coins.length; i++){
+            for (int j = 0; j <= amount; j++){
+                if (j >= coins[i]){ // 1.放得下：
+                    dp[j] = dp[j] + dp[j - coins[i]];
+                }
+                // 2.放不下 那就总数量不变
+            }
+        }
+        return dp[amount];
+    }
+
+    /**
+     * √（21） 377. 组合总和 Ⅳ time：2023年12月19日22:26:22 -> 2023年12月19日22:34:08
+     * 名字叫着是组合 但实际上解决的确是排列的问题！因为【请注意，顺序不同的序列被视作不同的组合。】
+     * 重要笔记：解决排列问题 （由组合->排列）只需要调换一下物品、容量的遍历顺序即可（先容量j->物品i）
+     */
+    public int combinationSum4(int[] nums, int target) {
+        //dp定义：dp[j]为 和为j的所有组合总个数
+        int[] dp = new int[target + 1];
+        //初始化
+        dp[0] = 1;
+        //开始推导dp数组
+        for (int j = 0; j <= target; j++){
+            for (int i = 0; i < nums.length; i++){
+                    if (j >= nums[i]){ //1.放得下
+                        dp[j] = dp[j] + dp[j - nums[i]];
+                    }
+                    //2.放不下
+            }
+        }
+        return dp[target];
+    }
+
+    /***
+     * √（22）【卡码网】 57. 爬楼梯（第八期模拟笔试） time：2023年12月19日22:42:18 -> 2023年12月19日22:59:57
+     * 我的思路：首先这是一个组合问题还是排列问题：排列！
+     *  物品：1-m  容量是：n 其次是可以重复选择，所以此题目是完全背包问题
+     */
+    public static void climbStairs(int n, int m){
+        //dp数组的定义：爬到j共有dp[j]种方法
+        int[] dp = new int[n + 1];
+        //求排列问题，所以初始化要=1
+        dp[0] = 1;
+        //开始推导
+        for (int j = 0; j <= n; j++){ // 因为是排列问题， 所以要先遍历j 容量
+            for (int i = 1; i <= m; i++){ // 因为是完全背包问题，所以这里要从前往后遍历
+                if (j >= i){
+                    dp[j] = dp[j] + dp[j - i];
+                }
+            }
+        }
+        System.out.println(dp[n]);
+    }
+
+    /**
+     * 试一下使用完全背包来解决经典的爬楼梯
+     */
+
+    /**
+     * （23） 322. 零钱兑换 time：
+     */
+    public int coinChange(int[] coins, int amount) {
+        return 0;
+    }
 
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
      */
     public static void main(String[] args) {
+
+        MyDynamicProgramming myDynamicProgramming = new MyDynamicProgramming();
+
+        //测试【卡码网】爬楼梯
+        Scanner input = new Scanner(System.in);
+        int n = input.nextInt();
+        int m = input.nextInt();
+        climbStairs(n, m);
+
+//        System.out.println(myDynamicProgramming.count("0001", '1'));
+
+        //测试【卡码网】完全背包问题
+//        Scanner input = new Scanner(System.in);
+//        int length = input.nextInt();
+//        int bagSize = input.nextInt();
+//        int[] weight = new int[length];
+//        int[] value = new int[length];
+//        for (int i = 0; i < length; i++){
+//            weight[i] = input.nextInt();
+//            value[i] = input.nextInt();
+//        }
+//        System.out.println(Arrays.toString(weight));
+//        System.out.println(Arrays.toString(value));
+//        testCompletePack(weight, value, bagSize);
+
+
+        //测试（16）
+//        int[] nums = {1,1,1,1,1};
+//        myDynamicProgramming.findTargetSumWays(nums, 3);
+
+        //测试 （13.1）
+//        int[] nums = {18,20,39,73,96,99,101,111,114,190,207,295,471,649,700,1037};
+//        System.out.println(myDynamicProgramming.canPartitionKSubsets(nums, 4));
+
+//        int[] nums = {1,5,11,5};
+//        System.out.println(myDynamicProgramming.canPartition(nums));
 
         //测试 0-1 背包问题（不可切割）
 //        int[] weight = {1,3,4};
@@ -358,21 +670,22 @@ public class MyDynamicProgramming {
 
         //测试【卡码网】 0-1 背包问题
         // Scanner 输入
-        Scanner input = new Scanner(System.in);
-        int length = input.nextInt();
-        int bagSize = input.nextInt();
-        int[] weight = new int[length];
-        int[] value = new int[length];
-        for (int i = 0; i < length; i++){
-            weight[i] = input.nextInt();
-        }
-        for (int i = 0; i < length; i++){
-            value[i] = input.nextInt();
-        }
-        takeResearch2(weight, value, bagSize);
+//        Scanner input = new Scanner(System.in);
+//        int length = input.nextInt();
+//        int bagSize = input.nextInt();
+//        int[] weight = new int[length];
+//        int[] value = new int[length];
+//        for (int i = 0; i < length; i++){
+//            weight[i] = input.nextInt();
+//        }
+//        for (int i = 0; i < length; i++){
+//            value[i] = input.nextInt();
+//        }
+//        takeResearch2(weight, value, bagSize);
 //        System.out.println("length = " + length);
 //        System.out.println("bagSize = " + bagSize);
 //        System.out.println(Arrays.toString(weight));
 //        System.out.println(Arrays.toString(value));
+
     }
 }
