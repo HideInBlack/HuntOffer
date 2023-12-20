@@ -610,15 +610,110 @@ public class MyDynamicProgramming {
     }
 
     /**
-     * 试一下使用完全背包来解决经典的爬楼梯
+     * √ 试一下使用完全背包来解决经典的爬楼梯 time：2023年12月20日11:02:15 -> 2023年12月20日11:13:43
+     * 挑战使用完全背包来解决爬楼梯问题
      */
+    public int climbStairs9(int n) {
+        //dp数组的定义：dp[j]为爬到j层，所需要的dp[j]种方法
+        int[] dp = new int[n + 1];
+        //dp初始化
+        dp[0] = 1;
+        //开始推导dp数组
+        for (int j = 0; j <= n; j++){ //因为是完全背包问题！所以这里需要改成0->n！（0-1背包到完全背包 只需要改这里！）
+            for (int i = 1; i <= 2; i++){ // 又由于是求排列问题，所以要先遍历背包容量j 再遍历物品i
+                if (j >= i){
+                    dp[j] = dp[j] + dp[j - i];
+                }
+            }
+        }
+        return dp[n];
+    }
 
     /**
-     * （23） 322. 零钱兑换 time：
+     * √（23） 322. 零钱兑换 time：2023年12月20日11:48:38 -> 2023年12月20日12:33:30
+     * 我的思路：首先是完全背包问题、其次是组合问题！而不是排列问题！最后，其是求最大价值问题，而不是求有多少种方法
      */
     public int coinChange(int[] coins, int amount) {
-        return 0;
+        //1.dp数组的定义：dp[j]为凑成总金额j所需的最少硬币数
+        int[] dp = new int[amount + 1];
+        //2.dp数组的初始化 因为这里比较的是取最小值 所以这里要初始化其他的为max
+        for (int j = 1; j <= amount; j++){
+            dp[j] = Integer.MAX_VALUE;
+        }
+        //3.dp数组的推导
+        for (int i = 0; i < coins.length; i++){
+            for (int j = 0; j <= amount; j++){ //完全背包问题！所以j需要从0->amount
+                if (j >= coins[i] && dp[j - coins[i]] != Integer.MAX_VALUE){ //dp[j - coins[i]]为初始值就跳过
+                    dp[j] = Math.min(dp[j], dp[j - coins[i]] + 1);
+                }
+            }
+        }
+        if (dp[amount] == Integer.MAX_VALUE) return -1;
+        return dp[amount];
     }
+    //首先试试不用动态规划来做 感觉可以！只需要使用贪心每次选最大的就可以了！time：2023年12月20日11:53:32 -> 2023年12月20日12:06:13
+    //【解答错误 51 / 189 个通过的测试用例】因为这样不一定可以凑成真正的总金额！所以还是要使用动态规划
+    public int coinChange2(int[] coins, int amount) {
+        Arrays.sort(coins);
+        int nums = 0;
+        int curAmount = amount;
+        for (int i = coins.length - 1; i >= 0; i--){
+            if (coins[i] <= curAmount){ // 小的才表明可以使用
+                nums += curAmount / coins[i];
+                curAmount = curAmount % coins[i];
+
+            }
+            if (curAmount == 0) return nums;
+        }
+        return -1;
+    }
+
+    /**
+     * （24） 279. 完全平方数 time：2023年12月20日13:57:36 -> 2023年12月20日14:17:33
+     * 我的思路：最小数量 其实就是求可以放满背包的最少数量 和上一题的零钱对换很像
+     */
+    public int numSquares(int n) {
+        int length = (int)Math.sqrt(n) + 1;
+        //dp数组的定义：dp[j]凑齐j所需要的最小平方数数量
+        int[] dp = new int[n + 1];
+        //dp数组的初始化
+        dp[0] = 0;
+        for (int j = 1; j < n + 1; j++){ //其他>0的都初始化为最大值即可 （因为求得是最小数量）
+            dp[j] = Integer.MAX_VALUE;
+        }
+        //开始推导dp数组
+        for (int i = 0; i <= length; i++){
+            for (int j = 0; j <= n; j++) { //因为可以重复使用，所以是完全背包 所以 0->n
+                if (j >= i * i && dp[j - i*i] != Integer.MAX_VALUE){ //放得下
+                    dp[j] = Math.min(dp[j], dp[j - i*i] + 1);//dp[j]是不放的数量、 dp[j - i*i] + 1是放下的数量 取其最小值
+                }
+
+            }
+        }
+        return dp[n];
+    }
+    //也就可以是下面这种！
+//    public int numSquares(int n) {
+//        int length = (int)Math.sqrt(n) + 1;
+//        //dp数组的定义：dp[j]凑齐j所需要的最小平方数数量
+//        int[] dp = new int[n + 1];
+//        //dp数组的初始化
+//        dp[0] = 0;
+//        for (int j = 1; j < n + 1; j++){ //其他>0的都初始化为最大值即可 （因为求得是最小数量）
+//            dp[j] = 10001; //这里有变化！
+//        }
+//        //开始推导dp数组
+//        for (int i = 0; i <= length; i++){
+//            for (int j = 0; j <= n; j++) { //因为可以重复使用，所以是完全背包 所以 0->n
+//                if (j >= i * i){ //放得下 这里也改动啦！【不需要做多余的判断】
+//                    dp[j] = Math.min(dp[j], dp[j - i*i] + 1);//dp[j]是不放的数量、 dp[j - i*i] + 1是放下的数量 取其最小值
+//                }
+//
+//            }
+//        }
+//        return dp[n];
+//    }
+
 
 
     /**
@@ -628,11 +723,16 @@ public class MyDynamicProgramming {
 
         MyDynamicProgramming myDynamicProgramming = new MyDynamicProgramming();
 
+        System.out.println(Math.pow(5, 3));
+        System.out.println((int)Math.sqrt(9));
+//        int[] coins = {1};
+//        System.out.println(myDynamicProgramming.coinChange2(coins, 0));
+
         //测试【卡码网】爬楼梯
-        Scanner input = new Scanner(System.in);
-        int n = input.nextInt();
-        int m = input.nextInt();
-        climbStairs(n, m);
+//        Scanner input = new Scanner(System.in);
+//        int n = input.nextInt();
+//        int m = input.nextInt();
+//        climbStairs(n, m);
 
 //        System.out.println(myDynamicProgramming.count("0001", '1'));
 
