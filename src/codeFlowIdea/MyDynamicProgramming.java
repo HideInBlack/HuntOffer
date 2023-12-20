@@ -1,10 +1,7 @@
 package codeFlowIdea;
 
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 /**
  * codeFlowIdea 代码随想录学习记录 time：2023年11月24日11:58:41
@@ -714,17 +711,123 @@ public class MyDynamicProgramming {
 //        return dp[n];
 //    }
 
+    /**
+     * ×【无思路】（26）139. 单词拆分 time：2023年12月20日14:28:57 -> 2023年12月20日14:45:21
+     * 我的思路：1.重复使用所以是完全背包问题，j是0->n
+     * √ 题解方法：dp[i] : 字符串长度为i的话，dp[i]为true，表示可以拆分为一个或多个在字典中出现的单词。***
+     * 此方法比较绕！建议看下一个！正宗的j代表背包容量，i代表物品的背包解题思路！
+     * 关键：如果确定dp[j] 是true，且 [j, i] 这个区间的子串出现在字典里，那么dp[i]一定是true。
+     */
+    public boolean wordBreak(String s, List<String> wordDict) {//这里的j确实是背包容量，但这里的i却不是物品的意思了！
+
+        //dp数组
+        boolean[] dp = new boolean[s.length() + 1];
+        //初始化
+        dp[0] = true;//1:true   0:false
+        //推导dp数组
+        for (int j = 1; j <= s.length(); j++){ //完全背包【先0 -> length】
+            for (int i = 0; i < j ; i++){ //排列问题【先j -> i】
+                if (j > i && !dp[j]){
+                    String target = s.substring(i, j); //腾出来位置 取出多于的字符串【左闭右开】
+                    if (dp[i] && wordDict.contains(target)){
+                        dp[j] = true;
+                    }
+                }
+            }
+        }
+        return dp[s.length()];
+    }
+    // √ 正宗的j代表背包容量，i代表物品的背包解题思路！
+    public boolean wordBreak2(String s, List<String> wordDict) {
+        //dp数组
+        boolean[] dp = new boolean[s.length() + 1];
+        //初始化
+        dp[0] = true;//1:true   0:false
+        //推导dp数组
+        for (int j = 1; j <= s.length(); j++){ //完全背包【先0 -> length】
+            for (int i = 0; i < wordDict.size() ; i++){ //排列问题【先j -> i】
+                String word = wordDict.get(i);
+                if (j >= word.length()){ //1.放得下的！
+                    if (dp[j - word.length()] && word.equals(s.substring(j - word.length(), j))){
+                        dp[j] = true;
+                        break; //这里加break的意思代表着，字典根本不需要遍历完 因为只要为true就可以？？？
+                    }
+                    //2.放不下 不变
+                }
+            }
+        }
+        return dp[s.length()];
+    }
+
+    /**
+     * ×【无思路】（29） 198. 打家劫舍 time：2023年12月20日19:11:06 -> -- 2023年12月20日19:45:39
+     * 我的思路：首先不是背包问题，因为没有bagSize要求
+     * √ 题解方法：影响dp[i]的只有dp[i-1]和dp[i-2]，1.如果偷i，那就是要考虑dp[i-2]; 2.如果不偷i，那就考虑dp[i-1]，并且直接相等dp[i-1]
+     */
+    public int rob(int[] nums) {
+        if (nums.length == 1) return nums[0];
+        //1.dp数组的定义：dp[i]表明偷到i时的最高金额
+        int[] dp = new int[nums.length];
+        //2.dp数组的初始化操作：关键到只需要初始化前两个即可
+        dp[0] = nums[0];//偷到0家，那最高金额一定是nums[0]
+        dp[1] = Math.max(nums[0], nums[1]); //偷到1家，由于其两个挨着，所以一定是取他们两个里面的最大的！
+        //3.开始推导dp数组
+        for (int i = 2; i < nums.length; i++){
+            //在偷与不偷之间选择最大的！
+            dp[i] = Math.max(dp[i -1], dp[i - 2] + nums[i]); //1.不偷：dp[i -1] 2.偷：dp[i - 2] + nums[i]
+        }
+        return dp[nums.length - 1];
+    }
+
+    /**
+     * ×【无思路】（30） 213. 打家劫舍 II time：2023年12月20日20:26:41 -> 2023年12月20日20:40:38
+     *  我的思路：在上面的打家劫舍上稍微改动
+     *  √ 题解方法：考虑只含首元素、考虑只含尾元素 然后取其最大值
+     */
+    public int rob2(int[] nums) {
+        if (nums.length == 1) return nums[0];
+        //操作只含有首元素的
+        int onlyStart = robHome(nums, 0, nums.length - 2);
+        int onlyEnd = robHome(nums, 1, nums.length - 1);
+        return Math.max(onlyStart, onlyEnd);
+
+    }
+    private int robHome(int[] nums, int startIndex, int endIndex){
+        if (endIndex - startIndex == 0) return nums[startIndex];
+        if (endIndex - startIndex == 1) return Math.max(nums[startIndex], nums[startIndex + 1]);
+
+        //定义dp数组
+        int[] dp = new int[nums.length]; //注意dp数组还是和nums一样长！只需要最后取值的时候 取对值就可以了
+        //初始化dp数组
+        dp[startIndex] = nums[startIndex];
+        dp[startIndex + 1] = Math.max(nums[startIndex], nums[startIndex + 1]);
+        //推导dp数组
+        for (int i = startIndex + 2; i <= endIndex; i++){
+            dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i]);
+        }
+        return dp[endIndex];
+    }
+
+    /**
+     * （31） 337. 打家劫舍 III time：
+     */
+    public int rob(TreeNode root) {
+        return 0;
+    }
 
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
      */
     public static void main(String[] args) {
-
         MyDynamicProgramming myDynamicProgramming = new MyDynamicProgramming();
 
-        System.out.println(Math.pow(5, 3));
-        System.out.println((int)Math.sqrt(9));
+        System.out.println("0123456".substring(2, 8));
+//        System.out.println("123456".contains("1235"));
+//        System.out.println("123456123".replaceFirst("123", ""));
+
+//        System.out.println(Math.pow(5, 3));
+//        System.out.println((int)Math.sqrt(9));
 //        int[] coins = {1};
 //        System.out.println(myDynamicProgramming.coinChange2(coins, 0));
 
