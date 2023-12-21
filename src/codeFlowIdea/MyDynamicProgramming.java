@@ -839,11 +839,24 @@ public class MyDynamicProgramming {
 
     /**
      * ×【无思路】（32）121. 买卖股票的最佳时机 time：2023年12月21日12:17:56 -> 2023年12月21日12:46:05
-     * 题解方法：我觉得动态规划的方法过去牵强了 就使用贪心的方法就可以！
+     * √ 题解方法：我觉得动态规划的方法过去牵强了 就使用贪心的方法就可以！
      */
+    // √ 题解方法:动态规划 只讨论当前这一天到底持不持有此股票；所得的最多现金
     public int maxProfit(int[] prices) {
         //我觉得不适合动态规划的方法 ！
-        return 0;
+        //dp[i][0] 表示第i天持有股票所得最多现金（一开始现金是0，买了之后为负的）；dp[i][1] 表示第i天不持有股票所得最多现金；
+        int[][] dp = new int[prices.length][2];
+        //初始化
+        dp[0][0] = -prices[0];
+        dp[0][1] = 0;
+        //开始推导dp数组
+        for (int i = 1; i < prices.length; i++){
+            //当天i持有此股票的最多现金: 本来就持有、本来没有(当天才买)
+            dp[i][0] = Math.max(dp[i - 1][0], -prices[i]);// 这里一定是-prices[i]，因为只能买一次 所以买的时候是没有前的！为0！
+            //当天i不持有此股票的最多现金：本来就没有、今天才卖！
+            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 1][0] + prices[i]);
+        }
+        return dp[prices.length - 1][1];
     }
     // √ dp无思路 试一试贪心 思路：在遍历整个一圈价格时候，始终保存左边的最小值和当前的最大差距，遍历完一遍之后找到最优值
     //重要笔记：此方法更巧妙：在遍历的同时更新左边的最小值以及更新最大差距！！ 贪心思想
@@ -857,6 +870,92 @@ public class MyDynamicProgramming {
         return curMaxDiff;
     }
 
+    /**
+     * √ （34） 122. 买卖股票的最佳时机 II time：-> 2023年12月21日14:15:29
+     * 动态规划：与上一题的股票一样！但是仍然有更简单的方法就是使用贪心算法！
+     */
+    public int maxProfit3(int[] prices) {
+        //我觉得不适合动态规划的方法 ！
+        //dp[i][0] 表示第i天持有股票所得最多现金（一开始现金是0，买了之后为负的）；dp[i][1] 表示第i天不持有股票所得最多现金；
+        int[][] dp = new int[prices.length][2];
+        //初始化
+        dp[0][0] = -prices[0];
+        dp[0][1] = 0;
+        //开始推导dp数组
+        for (int i = 1; i < prices.length; i++){
+            //当天i持有此股票的最多现金: 本来就持有、本来没有(当天才买)
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] - prices[i]);// 这里就是 dp[i - 1][1] - prices[i]：因为买的时候有之前的利润！这也是能一直获利的原因！
+            //当天i不持有此股票的最多现金：本来就没有、今天才卖！
+            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 1][0] + prices[i]);
+        }
+        return dp[prices.length - 1][1];
+    }
+
+    /**
+     * ×【错误！这样不能同时满足maxDiff1 + maxDiff2是最大的！】（35） 123. 买卖股票的最佳时机 III time：2023年12月21日14:17:36 -> 2023年12月21日14:47:09
+     * 我的思路：尝试尝试贪心算法 先找第一个！找到第一个之后初始化第二个 然后找第二个！如果期间第一个变化了 立刻初始化第二个！
+     */
+    //错的思路！
+    public int maxProfit4(int[] prices) {
+        int leftMin1 = Integer.MAX_VALUE;
+        int maxDiff1 = 0;
+        int leftMin2 = Integer.MAX_VALUE;
+        int maxDiff2 = 0;
+        for (int i = 0; i < prices.length; i++){
+            //找到新的左边最小值1
+            leftMin1 = Math.min(prices[i], leftMin1);
+            //找到新的左边最小值2
+            leftMin2 = Math.min(prices[i], leftMin2);
+            //这是找2的 最大间距值
+            maxDiff2 = Math.max(prices[i] - leftMin2, maxDiff2);
+            //这是找1的
+            if (prices[i] - leftMin1 > maxDiff1){ //找到新的最大间距值
+                maxDiff1 = prices[i] - leftMin1;
+                //找到新1，重置2
+                leftMin2 = Integer.MAX_VALUE;
+                maxDiff2 = 0;
+            }
+        }
+        System.out.println(maxDiff1);
+        System.out.println(maxDiff2);
+        return maxDiff1 + maxDiff2;
+    }
+    //√ 题解方法：动态规划 四种核心状态 time：2023年12月21日14:47:09 -> 2023年12月21日15:08:05
+    public int maxProfit5(int[] prices) {
+        //dp[i][0] 表示第i天第一次持有股票所得最多现金（一开始现金是0，买了之后为负的）；dp[i][1] 表示第i天第一次不持有股票所得最多现金；
+        //dp[i][2] 表示第i天第二次持有股票所得最多现金（一开始现金是0，买了之后为负的）；dp[i][3] 表示第i天第二次不持有股票所得最多现金；
+        int[][] dp = new int[prices.length][4];
+        //初始化
+        dp[0][0] = -prices[0];//买了
+        dp[0][2] = -prices[0];//买了 卖了 又买了
+
+        //开始推导dp数组
+        for (int i = 1; i < prices.length; i++){
+            //第一次
+            //当天i持有此股票的最多现金: 本来就持有、本来没有(当天才买)
+            dp[i][0] = Math.max(dp[i - 1][0], -prices[i]);// 这里就是 dp[i - 1][1] - prices[i]：因为买的时候有之前的利润！这也是能一直获利的原因！
+            //当天i不持有此股票的最多现金：本来就没有、今天才卖！
+            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 1][0] + prices[i]);
+
+            //第二次
+            //当天i持有此股票的最多现金: 本来就持有、本来没有(当天才买)
+            dp[i][2] = Math.max(dp[i - 1][2], dp[i - 1][1] - prices[i]);// 这里就是 dp[i - 1][1] - prices[i]：因为买的时候有之前的利润！这也是能一直获利的原因！
+            //当天i不持有此股票的最多现金：本来就没有、今天才卖！
+            dp[i][3] = Math.max(dp[i - 1][3], dp[i - 1][2] + prices[i]);
+
+            //可以看到特别重要的一点是：每一个状态总是和上面的一个状态紧密相关！！！
+        }
+        return dp[prices.length - 1][3];
+    }
+
+    /**
+     * again一遍! 买卖股票一题足以！ 买卖股票的最佳时机 III  time：
+     */
+    public int maxProfitAgain(int[] prices) {
+        return 0;
+    }
+
+
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
@@ -864,7 +963,10 @@ public class MyDynamicProgramming {
     public static void main(String[] args) {
         MyDynamicProgramming myDynamicProgramming = new MyDynamicProgramming();
 
-        System.out.println("0123456".substring(2, 8));
+        int[] prices = {3,3,5,0,0,3,1,4};
+        myDynamicProgramming.maxProfit4(prices);
+
+//        System.out.println("0123456".substring(2, 8));
 //        System.out.println("123456".contains("1235"));
 //        System.out.println("123456123".replaceFirst("123", ""));
 
