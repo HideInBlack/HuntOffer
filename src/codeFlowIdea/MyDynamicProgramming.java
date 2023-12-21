@@ -809,10 +809,52 @@ public class MyDynamicProgramming {
     }
 
     /**
-     * （31） 337. 打家劫舍 III time：
+     * ×【无思路】（31） 337. 打家劫舍 III time：2023年12月21日11:02:52 -> 2023年12月21日11:18:27
+     * √ 题解方法：树形dp：此题一定要使用后序遍历（LRT）因为要根据左右孩子返回值做进一步判断 其他的就是正常的dp推导了
+     * dp[j]定义：仅仅是一个长度为2的数组，首先dp[0]是不偷当前结点的最高金额、dp[1]是偷当前结点的最高金额
+     * 永远考虑的都只有当前结点的 偷/不偷 两种情况！time：2023年12月21日11:49:36 -> 2023年12月21日12:09:48
      */
     public int rob(TreeNode root) {
+        int[] resultDp = treeDp(root);
+        return Math.max(resultDp[0], resultDp[1]);
+    }
+    //一定要是后序遍历 LRT
+    private int[] treeDp(TreeNode root){ //函数返回值为当前结点的偷和不偷的dp数组！
+        if (root != null){
+            //截止到j 首先dp[0]是不偷当前结点的最高金额、dp[1]是偷当前结点的最高金额
+            int[] left = treeDp(root.left); //左
+            int[] right = treeDp(root.right); //右
+
+            int[] dp = new int[2]; //中
+            //先是不偷当前节点！那就考虑偷左孩子、右孩子的！但注意是考虑偷而不是一定偷！
+            dp[0] = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);
+            //再是偷当前结点！那左右孩子就一定不能偷！
+            dp[1] = root.val + left[0] + right[0];
+            return dp;
+
+        }else {
+            return new int[]{0, 0}; //空节点偷不偷都是0
+        }
+    }
+
+    /**
+     * ×【无思路】（32）121. 买卖股票的最佳时机 time：2023年12月21日12:17:56 -> 2023年12月21日12:46:05
+     * 题解方法：我觉得动态规划的方法过去牵强了 就使用贪心的方法就可以！
+     */
+    public int maxProfit(int[] prices) {
+        //我觉得不适合动态规划的方法 ！
         return 0;
+    }
+    // √ dp无思路 试一试贪心 思路：在遍历整个一圈价格时候，始终保存左边的最小值和当前的最大差距，遍历完一遍之后找到最优值
+    //重要笔记：此方法更巧妙：在遍历的同时更新左边的最小值以及更新最大差距！！ 贪心思想
+    public int maxProfit2(int[] prices) {
+        int leftMin = Integer.MAX_VALUE;
+        int curMaxDiff = 0;
+        for (int i = 0; i < prices.length; i++){
+            leftMin = Math.min(leftMin, prices[i]); //始终在遍历的同时更新左边的最小值
+            curMaxDiff = Math.max(curMaxDiff, prices[i] - leftMin); //始终在遍历的同时更新最大差距
+        }
+        return curMaxDiff;
     }
 
 
