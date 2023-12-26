@@ -949,13 +949,81 @@ public class MyDynamicProgramming {
     }
 
     /**
-     * again一遍! 买卖股票一题足以！ 买卖股票的最佳时机 III  time：
+     * √ again一遍! 买卖股票一题足以！ 买卖股票的最佳时机 II  time：2023年12月26日15:21:34 -> 2023年12月26日21:53:34
+     * 1.dp数组的定义：dp[i][0]、dp[i][1] 其中dp[i][0]代表不持有股票的最大剩余现金 dp[i][1]代表持有股票的最大剩余现金
+     * 2.dp数组的推导：dp[i][0/1] 都是有前一天的dp[i-1][0/1]推导而来， 都是由前一天的最大值
+     *  dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]) // 1.i-1也不持有 2.i-1持有（那就是当天才卖）
+     *  dp[i][1] = Math.max(dp[i - 1][0] - prices[i], dp[i - 1][1]) // 1.i-1不持有（当天才买） 2.i-1持有
+     * 3.初始化：dp[0][0]=0; dp[0][1]=-prices[0];
      */
     public int maxProfitAgain(int[] prices) {
-        return 0;
+        //dp定义
+        int[][] dp = new int[prices.length][2];
+        //初始化
+        dp[0][0] = 0; dp[0][1] = -prices[0];
+        //开始推导
+        for (int i = 1; i < prices.length; i++){
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]); // 1.i-1也不持有 2.i-1持有（那就是当天才卖）
+            dp[i][1] = Math.max(dp[i - 1][0] - prices[i], dp[i - 1][1]); // 1.i-1不持有（当天才买） 2.i-1持有
+        }
+        return dp[prices.length - 1][0];
     }
 
+    /**
+     * √ again一遍! 买卖股票的最佳时机 III time：2023年12月26日21:53:57 -> 2023年12月26日22:10:13
+     * 1.dp数组的定义：dp[i][0]、dp[i][1] 其中dp[i][0]代表第一次持有股票的最大剩余现金 dp[i][1]代表第一次不持有股票的最大剩余现金
+     *               dp[i][2]、dp[i][3] 其中dp[i][2]代表第二次持有股票的最大剩余现金 dp[i][3]代表第二次不持有股票的最大剩余现金
+     * 其中的交易顺序其实就是 0 -> 1 -> 2 -> 3 【最后是不持有 就是卖掉之后！】
+     * 2.dp数组的推导：dp[i][0/1/2/3] 都是有前一天的dp[i-1][0/1/2/3]推导而来， 都是由前一天的最大值
+     *   i天第一次持有 dp[i][0] = Math.max(dp[i - 1][0], 0 - prices[i]) // 1.i-1天第一次也持有 2.i-1天第一次不持有（当天买）
+     * i天第一次不持有 dp[i][1] = Math.max(dp[i - 1][1], dp[i - 1][0] + prices[i]) // 1.i-1也不持有 2.i-1天持有（当天卖）
+     *   i天第二次持有 dp[i][2] = Math.max(dp[i - 1][2], dp[i - 1][1] - prices[i]) // 1.i-1第二次也持有 2.i-1第二次不持有（当天买）
+     * i天第二次不持有 dp[i][3] = Math.max(dp[i - 1][3], dp[i - 1][2] + prices[i]) // 1.i-1第二次也不持有， 2.i-1第二次持有（当天卖）
+     *
+     *3.初始化： dp[0][0] = -prices[0]; dp[0][2] = -prices[0];
+     */
+    public int maxProfitAgain0(int[] prices) {
+        //dp定义
+        int[][] dp = new int[prices.length][4];
+        //初始化
+        dp[0][0] = -prices[0]; dp[0][2] = -prices[0];
+        //开始推导
+        for (int i = 1; i < prices.length; i++){
+            dp[i][0] = Math.max(dp[i - 1][0], 0 - prices[i]); // 1.i-1天第一次也持有 2.i-1天第一次不持有（当天买）
+            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 1][0] + prices[i]); // 1.i-1也不持有 2.i-1天持有（当天卖）
+            dp[i][2] = Math.max(dp[i - 1][2], dp[i - 1][1] - prices[i]); // 1.i-1第二次也持有 2.i-1第二次不持有（当天买）
+            dp[i][3] = Math.max(dp[i - 1][3], dp[i - 1][2] + prices[i]); // 1.i-1第二次也不持有， 2.i-1第二次持有（当天卖）
+        }
+        return dp[prices.length - 1][3];
+    }
 
+    /**
+     * √（36） 188. 买卖股票的最佳时机 IV time：2023年12月26日22:11:43 -> 2023年12月26日22:26:14
+     * 我的思路：上一题是2次，此题是k次！
+     * 15分钟直接搞定！ 完全一样的思路！所以一定要搞会买卖股票的第3题！
+     */
+    public int maxProfit1226(int k, int[] prices) {
+        //dp定义
+        int[][] dp = new int[prices.length][2*k];
+        //初始化
+        for (int i = 0; i < 2 * k; i = i + 2){
+            dp[0][i] = -prices[0]; //dp[0][0] = -prices[0]; dp[0][2] = -prices[0];
+        }
+        //开始推导
+        for (int i = 1; i < prices.length; i++){
+            for (int j = 0; j < 2 * k; j = j + 2){
+                if (j == 0){
+                    dp[i][j] = Math.max(dp[i - 1][j], 0 - prices[i]); // 1.i-1天第一次也持有 2.i-1天第一次不持有（当天买）
+                    dp[i][j + 1] = Math.max(dp[i - 1][j + 1], dp[i - 1][j] + prices[i]); // 1.i-1也不持有 2.i-1天持有（当天卖）
+                }else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][j - 1] - prices[i]); // 1.i-1第二次也持有 2.i-1第二次不持有（当天买）
+                    dp[i][j + 1] = Math.max(dp[i - 1][j + 1], dp[i - 1][j] + prices[i]); // 1.i-1第二次也不持有， 2.i-1第二次持有（当天卖）
+                }
+
+            }
+        }
+        return dp[prices.length - 1][2*k - 1];
+    }
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
