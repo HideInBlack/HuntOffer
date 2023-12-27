@@ -1071,6 +1071,82 @@ public class MyDynamicProgramming {
         return dp[prices.length - 1][1];
     }
 
+    /**
+     * × 【无思路】（41） 300. 最长递增子序列 time：2023年12月27日15:12:34 -> 2023年12月27日15:26:55 -> 2023年12月27日15:53:04
+     * √ 题解方法：dp[i]定义：dp[i]表示i之前包括i 以nums[i]结尾的最长递增子序列的长度！【以nums[i]结尾 是定义中最巧妙的地方！】
+     * dp[i] = Math.max(dp[0]+1.....dp[i-1]+1) // if(nums[i] > nums[x])的话！
+     * 状态转移方程： if (nums[i] > nums[j]) dp[i] = Math.max(dp[i], dp[j] + 1);
+     */
+    public int lengthOfLIS(int[] nums) {
+        //dp[i]为截止到i之前，以nums[i]结尾的最长递增子序列的长度
+        int[] dp = new int[nums.length];
+        //dp的初始化
+        dp[0] = 1;
+        //开始dp数组的推导
+        int result = 1;
+        for (int i = 1; i < nums.length; i++){
+            dp[i] = 1;//先默认为1！这里必不可少！或者在初始化的时候来做！
+            for (int j = 0; j < i; j++){ //遍历i之前，找到所有的nums[i] > nums[j] 的并取出最大长度
+                if (nums[i] > nums[j]){ //这里是严格大于
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                    result = Math.max(result, dp[i]); //即是更新最大值，不用会面再遍历一遍了！
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * √（42） 674. 最长连续递增序列 time：2023年12月27日16:00:23 -> 2023年12月27日16:11:15
+     * 我的思路：这一题教上一题会更简单一些，还是一样的做法就可以了
+     * dp数组定义：dp[i] 为截止到i之前，以nums[i]结尾的最长连续递增子序列的长度为dp[i]
+     * dp数组初始化：都为1
+     * dp数组的推导：if (nums[i] > nums[i - 1]) dp[i] = dp[i - 1] + 1;
+     */
+    public int findLengthOfLCIS(int[] nums) {
+        int[] dp = new int[nums.length];
+        dp[0] = 1;
+        int maxLength = 1;
+        for (int i = 1; i < nums.length; i++){
+            if (nums[i] > nums[i - 1]){//严格大于
+                dp[i] = dp[i - 1] + 1;
+                maxLength = Math.max(maxLength, dp[i]);//及时保存最大长度
+            }else {
+                dp[i] = 1;
+            }
+        }
+        return maxLength;
+    }
+
+    /**
+     * ×【无思路】（43） 718. 最长重复子数组 time：2023年12月27日16:21:14 -> 2023年12月27日16:35:12
+     * √ 题解方法：dp[i][j] ：以下标i - 1为结尾的A，和以下标j - 1为结尾的B，最长重复子数组长度为dp[i][j]。 （特别注意： “以下标i - 1为结尾的A” 标明一定是 以A[i-1]为结尾的字符串 ）
+     * 重要笔记：和上一题做类比！很像的两个题！但此题比较难理解 那就记住吧！
+     */
+    public int findLength(int[] nums1, int[] nums2) {
+        int[][] dp = new int[nums1.length + 1][nums2.length + 1];
+        dp[0][0] = 0; // 只有dp[0][0]初始为0，正好符合递推公式逐步累加起来
+        int result = 0;
+        for (int i = 1; i <= nums1.length; i++){
+            for (int j = 1; j <= nums2.length; j++){
+                if (nums1[i - 1] == nums2[j - 1]){
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                }
+                result = Math.max(result, dp[i][j]);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * （44） 1143. 最长公共子序列 time：2023年12月27日18:41:05 ->
+     */
+    public int longestCommonSubsequence(String text1, String text2) {
+        return 1;
+    }
+
+
+
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
