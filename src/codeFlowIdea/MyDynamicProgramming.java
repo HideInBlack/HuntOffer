@@ -1139,10 +1139,26 @@ public class MyDynamicProgramming {
     }
 
     /**
-     * （44） 1143. 最长公共子序列 time：2023年12月27日18:41:05 ->
+     * ×【无思路 需要记住】（44） 1143. 最长公共子序列 time：2023年12月28日11:25:17 -> 2023年12月28日12:07:33 ->
+     * 题解方法：与上面一样的定义：dp[i][j]表明以i-1下标A 和 以j-1下标B最长公共子序列长度为dp[i][j]
+     * 重要笔记：要从二维矩阵的演变效果上去理解记住此题！
+     * 这两题从二维矩阵去思考去写代码就完事了！记住就完事了！
      */
     public int longestCommonSubsequence(String text1, String text2) {
-        return 1;
+        //定义dp数组
+        int[][] dp = new int[text1.length() + 1][text2.length() + 1];
+        //初始化 最上面一行和最左边一列都初始化为0（无需初始化）
+        //dp数组的推导
+        for (int i = 1; i < text1.length() + 1; i++){
+            for (int j = 1; j < text2.length() + 1; j++){
+                if (text1.charAt(i - 1) == text2.charAt(j - 1)){
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                }else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[text1.length()][text2.length()];
     }
 
 
