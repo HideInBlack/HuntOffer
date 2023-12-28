@@ -1139,8 +1139,8 @@ public class MyDynamicProgramming {
     }
 
     /**
-     * ×【无思路 需要记住】（44） 1143. 最长公共子序列 time：2023年12月28日11:25:17 -> 2023年12月28日12:07:33 ->
-     * 题解方法：与上面一样的定义：dp[i][j]表明以i-1下标A 和 以j-1下标B最长公共子序列长度为dp[i][j]
+     * ×【无思路 需要记住】（44） 1143. 最长公共子序列 time：2023年12月28日11:25:17 -> 2023年12月28日12:07:33 -> 2023年12月28日12:23:04
+     * 题解方法：dp[i][j]定义：长度为[0, i - 1]的字符串text1与长度为[0, j - 1]的字符串text2的最长公共子序列为dp[i][j]
      * 重要笔记：要从二维矩阵的演变效果上去理解记住此题！
      * 这两题从二维矩阵去思考去写代码就完事了！记住就完事了！
      */
@@ -1160,6 +1160,174 @@ public class MyDynamicProgramming {
         }
         return dp[text1.length()][text2.length()];
     }
+
+    /**
+     * √（45）1035. 不相交的线 time：2023年12月28日12:32:54 -> 2023年12月28日12:50:00
+     * 我的思路：此题看着听高大上 不相交的线 但其实就是转成了求公共子序列的最大长度的问题！
+     * dp[i][j]定义：长度为[0, i - 1]的字符串text1与长度为[0, j - 1]的字符串text2的最长公共子序列为dp[i][j]
+     * 转化为求公共子序列的问题！直接只用二维矩阵的思路来做！来写代码
+     */
+    public int maxUncrossedLines(int[] nums1, int[] nums2) {
+        //dp数组的定义
+        int[][] dp = new int[nums1.length + 1][nums2.length + 1];
+        //dp数组初始化 默认为0 无需初始化
+        //dp数组的推导
+        for (int i = 1; i <= nums1.length; i++){
+            for (int j = 1; j <= nums2.length; j++){
+                if (nums1[i - 1] == nums2[j - 1]){
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                }else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[nums1.length][nums2.length];
+    }
+
+    /**
+     * √（46）53. 最大子数组和 time：2023年12月28日15:42:29 -> 2023年12月28日16:15:55
+     * 我的思路：首先要求的是子数组所以一定是连续序列 则我们的dp[i]一定是定义为：以nums[i]为结尾的 最大连续子数组和！【强调，一定是以nums[i]为结尾的！】
+     * 开始吧！
+     */
+    public int maxSubArray(int[] nums) {
+        //dp数组的定义
+        int[] dp = new int[nums.length];
+        //dp数组初始化
+        dp[0] = nums[0];
+        //开始推导dp数组
+        int maxSum = dp[0];
+        for (int i = 1; i < nums.length; i++){
+            if (dp[i - 1] < 0){
+                dp[i] = nums[i]; //如果以nums[i-1]结尾的最大和都<0,那就一定不能加进去
+            }else {
+                dp[i] = dp[i - 1] + nums[i]; //如果以nums[i-1]结尾的最大和>0,那就可以加入进去！因为dp[i]的定义是一定要以nums[i]结尾的！
+            }
+            maxSum = Math.max(maxSum, dp[i]);//即是更新最大值
+        }
+        return maxSum;
+    }
+
+    /**
+     * √（47） 392. 判断子序列 time：2023年12月28日16:31:23 -> 2023年12月28日16:42:45
+     * 我的思路：这一题就是求公共子序列的最大长度，如果最大长度为s.length 那就返回true就可以了 很简单
+     * dp[i][j]定义：dp[i][j]为0 - i-1的字符串A，和0 - j-1的字符串B 所共有的公共子序列的最大长度dp[i][j]
+     * dp[i][j]受左上角影响 受左边和上面的影响
+     */
+    public boolean isSubsequence(String s, String t) {
+        //dp数组的定义
+        int[][] dp = new int[s.length() + 1][t.length() + 1];
+        //初始化 默认为0 无需初始化
+        //开始推导dp数组
+        for (int i = 1; i <= s.length(); i++){
+            for (int j = 1; j <= t.length(); j++){
+                if (s.charAt(i - 1) == t.charAt(j - 1)){
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                }else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[s.length()][t.length()] == s.length();
+    }
+    // √ 方法二 time：2023年12月28日16:42:45 -> 2023年12月28日16:55:47 击败100%！ 此方法也可以！无敌！
+    public boolean isSubsequence2(String s, String t) {
+        StringBuilder stringBuilder = new StringBuilder(t);
+        int lastIndex = -1;
+        for (int i = 0; i < s.length(); i++){
+            int firstIndex = stringBuilder.indexOf(String.valueOf(s.charAt(i)), lastIndex + 1);
+            if (firstIndex == -1) return false;
+            lastIndex = firstIndex;
+        }
+        return true;
+    }
+
+    /**
+     * （48） 115. 不同的子序列 time：
+     */
+    public int numDistinct(String s, String t) {
+        return 0;
+    }
+
+    /**
+     * √（49）583. 两个字符串的删除操作 time：2023年12月28日19:27:26 -> 2023年12月28日19:37:11
+     * 我的思路：根据题意就是求最长公共子序列的长度 ，然后再在word1中删除不是公共子序列的字符，world2中同样如此
+     * 所以直接求公共子序列（动态规划的二维矩阵）
+     * dp[i][j]为 0-i-1字符串 和 0-j-1长度的字符串的最长公共子序列的长度
+     */
+    public int minDistance(String word1, String word2) {
+        //dp数组的定义
+        int[][] dp = new int[word1.length() + 1][word2.length() + 1];
+        //dp数组的初始化 无需初始化
+        //dp数组的推导
+        for (int i = 1; i <= word1.length(); i++){
+            for (int j = 1; j <= word2.length(); j++){
+                if (word1.charAt(i - 1) == word2.charAt(j - 1)){
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                }else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        //前者是world1->公共子序列 所需要删除的步骤 后者是world2->公共子序列所需要删除的步骤
+        int sumStep = word1.length() + word2.length() - 2 * dp[word1.length()][word2.length()];
+        return sumStep;
+    }
+    // √ 方法二 另一种动态规划的思路 time：2023年12月28日20:30:28 -> 2023年12月28日20:36:21
+    //dp[i][j]：以i-1为结尾的字符串word1，和以j-1位结尾的字符串word2，想要达到相等，所需要删除元素的最少次数。
+    public int minDistance6(String word1, String word2) {
+        //定义
+        int[][] dp =new int[word1.length() + 1][word2.length() + 1];
+        //初始化
+        for (int i = 0; i <= word1.length(); i++){
+            dp[i][0] = i;//这里的意思是都和空字符串比，那替换次数都为本身
+        }
+        for (int i = 0; i <= word2.length(); i++){
+            dp[0][i] = i;
+        }
+        //开始推导
+        for (int i = 1; i <= word1.length(); i++){
+            for (int j = 1; j <= word2.length(); j++){
+                if (word1.charAt(i - 1) == word2.charAt(j - 1)){
+                    dp[i][j] = dp[i - 1][j - 1];//相等次数不变 不需要操作
+                }else {
+                    dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1);
+                }
+            }
+        }
+        return dp[word1.length()][word2.length()];
+    }
+
+    /**
+     * √ 题解方法（50）72. 编辑距离 time：2023年12月28日20:36:55 -> 2023年12月28日20:48:52
+     * 经典的编辑距离 取最小的！
+     * dp[i][j]：以i-1为结尾的字符串word1，和以j-1位结尾的字符串word2，想要达到相等，所需要操作元素的最少次数。
+     * 替换操作：dp[i - 1][j - 1] + 1
+     * 删除操作：dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1); 1.删除a 2.删除b 3.或者都删除（都删除可以省略！！！）
+     * 增加操作：增加操作也体现在删除操作里【因为增加就是变相的删除】
+     */
+    public int minDistance9(String word1, String word2) {
+        //dp数组的定义
+        int[][] dp = new int[word1.length() + 1][word2.length() + 1];
+        //dp数组的初始化
+        for (int i = 0; i <= word1.length(); i++){
+            dp[i][0] = i;
+        }
+        for (int i = 0; i <= word2.length(); i++){
+            dp[0][i] = i;
+        }
+        //dp数组的推导
+        for (int i = 1; i <= word1.length(); i++){
+            for (int j = 1; j <= word2.length(); j++){
+                if (word1.charAt(i - 1) == word2.charAt(j - 1)){
+                    dp[i][j] = dp[i - 1][j - 1]; //如果相等 则操作数不变
+                }else { //如果不等，则在替换 删除 添加等操作中找最小的一个
+                    dp[i][j] = Math.min(dp[i - 1][j - 1], Math.min(dp[i][j - 1], dp[i - 1][j])) + 1;//取最小的一个 +1个操作
+                }
+            }
+        }
+        return dp[word1.length()][word2.length()];
+    }
+
 
 
 
