@@ -1242,10 +1242,31 @@ public class MyDynamicProgramming {
     }
 
     /**
-     * （48） 115. 不同的子序列 time：
+     * √ 【此题较难】题解方法（48） 115. 不同的子序列 time：2023年12月29日11:56:16 -> 2023年12月29日12:59:27
+     * dp[i][j]定义为在0-i-1中的s中 0-i-1的t出现的次数为dp[i][j]
+     * 相等的时候：可以考虑 也可以不考虑最后一个（理解记住吧！较难！）
+     * 不相等的时候：一定不考虑s中的最后一个！（因为你要匹配，所以要继续往下）
+     * dp初始化：dp[i][0] 是s经过删除过后 t（空字符串）出现的次数，只出现了1次！
      */
     public int numDistinct(String s, String t) {
-        return 0;
+        //dp数组的定义
+        int[][] dp = new int[s.length() + 1][t.length() + 1];
+        //初始化
+        for (int i = 0; i < s.length() + 1; i++){
+            dp[i][0] = 1;
+        }
+
+        //开始推导dp数组
+        for (int i = 1; i < s.length() + 1; i++){
+            for (int j = 1; j < t.length() + 1; j++){
+                if (s.charAt(i - 1) == t.charAt(j - 1)){
+                    dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j]; //可以考虑 也可以不考虑最后一个（理解记住吧！较难！）
+                }else {
+                    dp[i][j] = dp[i - 1][j]; //一定不考虑s中的最后一个！（因为你要匹配，所以要继续往下）
+                }
+            }
+        }
+        return dp[s.length()][t.length()];
     }
 
     /**
@@ -1328,6 +1349,104 @@ public class MyDynamicProgramming {
         return dp[word1.length()][word2.length()];
     }
 
+    /**
+     * √ （50） 72. 编辑距离  完完整整的again！ time：2023年12月29日11:34:40 -> 2023年12月29日11:56:09
+     * 不要忘记上面还有一个题！
+     * dp数组的定义：dp[i][j]表示 0-i-1的world1 表示成 0-j-1的world2 所需要的使用的最少操作数dp[i][j]
+     * dp状态转移方程：1.替换操作：dp[i-1][j-1]+1  2.删除操作：①dp[i][j-1]+1 ②dp[i-1][j]+1 ③都删除等同于左边的 3.插入操作：等同于删除操作
+     * dp初始化：都与空字符串相比 然后初始化为i
+     */
+    public int minDistanceAgain(String word1, String word2) {
+        //dp数组定义
+        int[][] dp = new int[word1.length() + 1][word2.length() + 1];
+        //初始化
+        for (int i = 0; i <= word1.length(); i++){
+            dp[i][0] = i;
+        }
+        for (int i = 0; i <= word2.length(); i++){
+            dp[0][i] = i;
+        }
+
+        //开始推导dp数组
+        for (int i = 1; i < word1.length() + 1; i++){
+            for (int j = 1; j < word2.length() + 1; j++){
+                if (word1.charAt(i - 1) == word2.charAt(j - 1)){
+                    dp[i][j] = dp[i - 1][j - 1];//相等的时候不需要操作
+                }else {
+                    //不相等时候 在替换、删除、插入操作中选择最小的操作步数
+                    dp[i][j] = Math.min(dp[i - 1][j - 1], Math.min(dp[i][j - 1], dp[i - 1][j]))  + 1 ;
+                }
+            }
+        }
+        return dp[word1.length()][word2.length()];
+    }
+
+    /**
+     * × 【无思路】（52） 647. 回文子串 time：2023年12月29日13:07:27 -> 2023年12月29日13:18:08
+     * √ 题解方法：此题的dp定义思路就不一样了：dp[i][j]：表示区间范围[i,j] （注意是左闭右闭）的子串是否是回文子串，如果是dp[i][j]为true，否则为false。
+     *
+     */
+    public int countSubstrings(String s) {
+        int count = 0;
+        //dp数组定义
+        boolean[][] dp = new boolean[s.length()][s.length()];
+        //dp数组的初始化 全部默认为false
+        //开始推导dp数组
+        for (int i = s.length() - 1; i >= 0; i--){ //因为dp[i][j]取决于 dp[i + 1][j - 1]，其在i,j的左下角，所以这里需要行倒叙遍历！
+            for (int j = i; j < s.length(); j++){//这里的j要从i开始
+                if (s.charAt(i) == s.charAt(j)){
+                    if (j - i <= 1){ //只有1个或者2个字符，例如a, aa则一定是true的！
+                        count++;//个数+1
+                        dp[i][j] = true;
+                    }else if (j - i > 1 && dp[i + 1][j - 1]){
+                        count++;//个数+1
+                        dp[i][j] = true;
+                    }
+                    //否则也是直接默认为false了
+                }
+                //否则直接默认为false了
+            }
+        }
+        return count;
+    }
+    // √ 方法二 尝试一手暴力解法 time：2023年12月29日13:18:08 -> 2023年12月29日13:33:32
+    public int countSubstrings2(String s) {
+        int count = 0;
+        for (int i = 0; i < s.length(); i++){
+            for (int j = i + 1; j <= s.length(); j++){
+//                System.out.println(s.substring(i, j));
+                String cur = s.substring(i, j);
+                StringBuilder stringBuilder = new StringBuilder(cur);
+                if (cur.equals(stringBuilder.reverse().toString())) count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * √（52） 516. 最长回文子序列 time：2023年12月29日14:19:23 -> 2023年12月29日14:31:28
+     * 我的思路：此题简单! 找最长的回文子序列 首先是一定可以暴力求解的！但是没必要 还可以使用动态规划！把字符串反转！
+     * 原字符串A ， 反转字符串B 则就是求A,B的最长公共子序列问题！
+     * dp数组定义：dp[i][j] 表示以i-1结尾得A, 以j-1结尾的B 所拥有的最长公共子序列的长度是dp[i][j]
+     * dp状态转移方程：dp[i][j]在二维矩阵里与左上角(即dp[i - 1][j - 1])有关系 , 与其左边和上面有关系
+     */
+    public int longestPalindromeSubseq(String s) {
+        String sRevers = new StringBuilder(s).reverse().toString();
+        //dp数组的定义
+        int[][] dp = new int[s.length() + 1][s.length() + 1];
+        //初始化 无需初始化 最左边一列 和 最上面一行默认初始化为0
+        //开始推导dp数组
+        for (int i = 1; i < s.length() + 1; i++){
+            for (int j = 1; j < sRevers.length() + 1; j++){
+                if (s.charAt(i - 1) == sRevers.charAt(j - 1)){
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                }else {
+                    dp[i][j] = Math.max(dp[i][j - 1], dp[i - 1][j]);
+                }
+            }
+        }
+        return dp[s.length()][s.length()];
+    }
 
 
 
@@ -1338,8 +1457,11 @@ public class MyDynamicProgramming {
     public static void main(String[] args) {
         MyDynamicProgramming myDynamicProgramming = new MyDynamicProgramming();
 
-        int[] prices = {3,3,5,0,0,3,1,4};
-        myDynamicProgramming.maxProfit4(prices);
+        String test1 = "abc";
+        myDynamicProgramming.countSubstrings2(test1);
+
+//        int[] prices = {3,3,5,0,0,3,1,4};
+//        myDynamicProgramming.maxProfit4(prices);
 
 //        System.out.println("0123456".substring(2, 8));
 //        System.out.println("123456".contains("1235"));
