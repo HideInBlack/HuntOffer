@@ -4,7 +4,7 @@ package codeFlowIdea;
 import java.util.*;
 
 /**
- * codeFlowIdea 代码随想录学习记录 time：2023年11月24日11:58:41
+ * codeFlowIdea 代码随想录学习记录 time：2023年11月24日11:58:41 -> 2023年12月29日14:41:28
  * author：董政宇
  * 第十部分 动态规划部分：MyDynamicProgramming
  */
@@ -1447,7 +1447,10 @@ public class MyDynamicProgramming {
         }
         return dp[s.length()][s.length()];
     }
-
+    // 方法二 题解方法？再去看一遍吧
+    public int longestPalindromeSubseq2(String s) {
+        return 0;
+    }
 
 
 
