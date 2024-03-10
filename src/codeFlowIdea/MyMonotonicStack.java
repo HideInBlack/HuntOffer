@@ -103,6 +103,13 @@ public class MyMonotonicStack {
         return result;
     }
 
+    /**
+     * （4）42. 接雨水 time：
+     */
+    public int trap(int[] height) {
+        return 1;
+    }
+
 
     /**
      * -----------------------------------------------测试-----------------------------------------------
