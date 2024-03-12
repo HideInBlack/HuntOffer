@@ -193,13 +193,133 @@ public class Hot100 {
 
     }
 
+    // 2024美团春招 真题练习-完美矩阵-二维前缀和 time：2024年3月12日10:16:05 -> 2024年3月12日11:10:40
+    public void getPerfect(int[][] nums){
+        //获取当前矩阵中所有 i*i子矩阵的解
+        //首先求出来所有的二维前缀和【这里要加一行、加一列、才可以更好的进行计算（只需要一个公式，不需要讨论三个）】
+        int[][] numsSum = new int[nums.length + 1][nums.length + 1];
+        for (int i = 0; i < nums.length; i++){
+            int sum = 0;
+            for (int j = 0; j < nums[0].length; j++){
+                sum += nums[i][j];
+                numsSum[i + 1][j + 1] = sum + numsSum[i][j + 1];
+            }
+        }
 
+        int[] result = new int[nums.length];
+        //根据二维前缀和开始计算所有子矩阵
+        for (int line = 1; line <= nums.length; line++){
+            if (line == 1) continue;//剪枝优化
+            //基于line*line 统计
+            int count = 0;
+            //其实就是使用双重for循环找每个子矩阵的左上角坐标即可！其他的右下角的自动去生成
+            for (int i = 0; i < nums.length - line + 1; i++){
+                for (int j = 0; j < nums[0].length - line + 1; j++){
+                    //得到子矩阵是否完美的结果
+                    //注意这里的所有坐标 都要 + 1！因为numSum变大了！
+                    boolean prefect = isPerfect(numsSum, i + 1, j + 1, i + line, j + line);
+                    if (prefect) count++;
+                }
+            }
+            //保存结果
+            result[line - 1] = count;
+        }
+        System.out.println(Arrays.toString(result));
+        // 子矩阵总和 = 大的 - 左边 -上边 + 左上边
+    }
+    private boolean isPerfect(int[][] numsSum, int row1, int col1, int row2, int col2){
+        //不应该用÷2；应该用*2
+        int perfect = (row2 - row1 + 1) * (col2 - col1 + 1);
+        //只有子矩阵的和等于预期面积的一半 则就是完美矩阵
+        return (numsSum[row2][col2] - numsSum[row2][col1 - 1] - numsSum[row1 - 1][col2] + numsSum[row1 - 1][col1 - 1]) * 2 == perfect;
+    }
 
+    // 438. 找到字符串中所有字母异位词
+    public List<Integer> findAnagrams(String s, String p) {
+        List<Integer> list = new ArrayList<>();
+        if (s.length() < p.length()){
+            return list;
+        }
 
-    public static void main(String[] args) {
-        Hot100 hot100 = new Hot100();
-        int value = hot100.lengthOfLongestSubstring("a");
-        System.out.println("value = " + value);
+        int[] arrayP = new int[26];//26个英文字母！
+        int[] arrayS = new int[26];
+
+        for (int i = 0; i < p.length(); i++){
+            arrayP[p.charAt(i) - 'a']++;//默认为0，统计个数
+            arrayS[s.charAt(i) - 'a']++;
+        }
+        //开始判断
+        for (int i = 0; i <= s.length() - p.length(); i++){
+            if (Arrays.equals(arrayP, arrayS)){
+                list.add(i);
+            }
+            if (i != s.length() - p.length()){
+                //窗口移出
+                arrayS[s.charAt(i) - 'a']--;
+                //移进窗口
+                arrayS[s.charAt(i + p.length()) - 'a']++;
+            }
+
+        }
+        return list;
+    }
+
+    // ×（因为有负数）560. 和为 K 的子数组 time：2024年3月12日19:08:24 -> 2024年3月12日19:21:05
+    public int subarraySum(int[] nums, int k) {
+        int count = 0;
+        //使用双指针
+
+        int left = 0;
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++){
+            sum += nums[i];
+            if (sum == k){
+                count++;
+                //left不需要动
+            }else if (sum > k){
+                while (sum > k){
+                    //先减去此值，再移动指针
+                    sum -= nums[left];
+                    left++;
+                }
+                if (sum == k){
+                    count++;
+                }
+                //if sum<k,就什么都不做，因为下一步就是i++；
+            }
+
+        }
+        return count;
+    }
+    //暴力双层for循环，因为是子数组 就是left-right的区间，可以使用双层for循环搞定
+    public int subarraySum2(int[] nums, int k) {
+        int count = 0;
+        for (int i = 0; i < nums.length; i++){
+            int sum = 0;
+            for (int j = i; j < nums.length; j++){
+                sum += nums[j];
+                if (sum == k){
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+    //使用官方题解 前缀和做法 time：2024年3月12日19:48:30 -> 2024年3月12日19:59:06
+    public int subarraySum3(int[] nums, int k) {
+        int pre = 0;
+        int count = 0;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        //一定要初始化 默认和为前缀和为0的有1个
+        map.put(0, 1);
+        for (int i = 0; i < nums.length; i++){
+            pre += nums[i];
+            if (map.containsKey(pre - k)){//因为都是前缀和 所以这里是pre-k
+                count += map.get(pre - k);
+            }
+            map.put(pre, map.getOrDefault(pre, 0) + 1);
+        }
+        return count;
     }
 
 
@@ -207,8 +327,11 @@ public class Hot100 {
 
 
 
-
-
+    public static void main(String[] args) {
+        Hot100 hot100 = new Hot100();
+        int[][] nums = {{1,0,1,0},{0,1,0,1},{1,1,0,0},{0,0,1,1}};
+        hot100.getPerfect(nums);
+    }
 
 
 
