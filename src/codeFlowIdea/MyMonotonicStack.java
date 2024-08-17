@@ -48,6 +48,34 @@ public class MyMonotonicStack {
         return result;
     }
 
+    //每日温度复习 time：2024年3月14日11:12:41 -> 2024年3月14日11:25:53
+    public int[] dailyTemperatures3(int[] temperatures) {
+       int[] result = new int[temperatures.length];
+//        Stack<Integer> stack = new Stack<>();
+        Deque<Integer> stack = new LinkedList<>();
+        for (int i = 0; i < temperatures.length; i++){
+            if (stack.isEmpty()){//如果为空 直接入栈
+                stack.push(i);
+            }else { //不为空，则需要比一比
+                if (temperatures[i] > temperatures[stack.peek()]){
+                    //才出栈到一直保持递增
+                    while (!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]){
+                        int index = stack.pop();
+                        result[index] = i - index;
+                    }
+                    stack.push(i);
+                }else {
+                    //如果是当前温度小于等于 栈顶 直接入栈
+                    stack.push(i);
+                }
+
+            }
+        }
+        return result;
+
+    }
+
+
     /**
      * √（2） 496. 下一个更大元素 I time：2023年12月29日16:24:18 -> 2023年12月29日16:42:04
      * 我的思路：先使用单调栈遍历一遍nums2 求出右侧第一个大的元素数组！注意是元素而不是下标！
@@ -103,6 +131,37 @@ public class MyMonotonicStack {
         return result;
     }
 
+    // 复习：496. 下一个更大元素 I time：2024年3月14日11:28:40 -> 2024年3月14日11:51:41
+    public int[] nextGreaterElement2(int[] nums1, int[] nums2) {
+        //先使用单调栈求出所有的nums中每一个右侧最大元素的值，再对应num1找即可
+        Deque<Integer> stack = new LinkedList<>();
+        //使用map存储起来 nums2[i] : rightMax
+        Map<Integer, Integer> map = new HashMap<>();
+
+        for (int i = 0; i < nums2.length; i++){
+            if (stack.isEmpty()){
+                stack.push(i);
+            }else {
+                if (nums2[i] <= nums2[stack.peek()]){
+                    stack.push(i);//如果小 直接入栈下标
+                }else {//如果大于 则需要一直出栈 直到单调
+                    while (!stack.isEmpty() && nums2[i] > nums2[stack.peek()]){
+                        int index = stack.pop();
+                        map.put(nums2[index], nums2[i]);
+                    }
+                    stack.push(i);
+
+                }
+            }
+        }
+//        System.out.println(map);
+
+        for (int i = 0; i < nums1.length; i++){
+            nums1[i] = map.getOrDefault(nums1[i], -1);
+        }
+        return nums1;
+    }
+
     /**
      * （4）42. 接雨水 time：
      */
@@ -111,10 +170,15 @@ public class MyMonotonicStack {
     }
 
 
+
     /**
      * -----------------------------------------------测试-----------------------------------------------
      */
     public static void main(String[] args) {
+        MyMonotonicStack stack = new MyMonotonicStack();
+        int[] nums1 = {1,3,5,2,4};
+        int[] nums2 = {5,4,3,2,1};
+        stack.nextGreaterElement2(nums1, nums2);
 
     }
 }

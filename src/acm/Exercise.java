@@ -54,17 +54,71 @@ public class Exercise {
         return root;
     }
 
+    // 手撕快速排序 time：2024年3月22日14:24:08 -> 2024年3月22日15:01:16
+    public static void quickSort(int[] nums){
+        quickSortRecursive(nums, 0 , nums.length - 1);
+    }
+    //左闭 右闭
+    public static void quickSortRecursive(int[] nums, int i, int j){
+        if (i < j){
+            int left = i;
+            int right = j;
+            int keyValue = nums[i];//此次关注的中心值
+
+            while (left < right){
+                //先从right开始
+                while (left < right && nums[right] > keyValue){
+                    right--;
+                }
+                //找到第一个比key小的，转换值
+                nums[left] = nums[right];
+                nums[right] = keyValue;
+
+                if (left < right){//一定要注意这个！！！！！！！！！！！！！！！！！！！！只有满足left<right的时候 才left++，这样就可以保证最后一定是left=right
+                    left++;
+                }
+
+                //再从left开始找
+                while (left < right && nums[left] < keyValue){
+                    left++;
+                }
+                //找到第一个比key大的，转换值
+                nums[right] = nums[left];
+                nums[left] = keyValue;
+
+                if (left < right){//一定要注意这个！！！！！！！！！！！！！！！！！！！！只有满足left<right的时候 才right--,这样就可以保证最后一定是left=right
+                    right--;
+                }
+
+            }
+
+            quickSortRecursive(nums, i, right - 1);
+            quickSortRecursive(nums, right + 1, j);
+
+        }
+
+    }
+
+
+
+
+    /**
+     * main 函数 ------------------------------------------------------------------------------------------------------
+     */
     public static void main(String[] args) {
-        // 1.删除链表中的重复元素 time：2024年3月7日10:56:58 ->
-        Scanner input = new Scanner(System.in);
-        String line = input.next();
-        String[] nodes = line.split("->");
-
-        //调用函数
-        ListNodeACM output = deleteSame(createList(nodes));
-
-        //打印结果
-        printList(output);
+//        // 1.删除链表中的重复元素 time：2024年3月7日10:56:58 ->
+//        Scanner input = new Scanner(System.in);
+//        String line = input.next();
+//        String[] nodes = line.split("->");
+//
+//        //调用函数
+//        ListNodeACM output = deleteSame(createList(nodes));
+//
+//        //打印结果
+//        printList(output);
+        int[] nums = {9, 8, 7, 6, 5, 4, 3, 2, 1, 9, 8, 4};
+        quickSortRecursive(nums, 0, nums.length - 1);
+        System.out.println(Arrays.toString(nums));
 
     }
 }

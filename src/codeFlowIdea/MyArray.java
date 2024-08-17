@@ -1,7 +1,5 @@
 package codeFlowIdea;
 
-import util.DzyUtils;
-
 import java.util.*;
 
 /**
@@ -187,6 +185,7 @@ public class MyArray {
         int temp_left = left;
         int temp_right = right;
         int p = nums[left];
+
         while (left < right){
             while(nums[right] > p && left < right){
                 right--;
@@ -194,6 +193,7 @@ public class MyArray {
             nums[left] = nums[right];
             nums[right] = p;
             left++;
+
             while (nums[left] < p && left < right){
                 left++;
             }
@@ -201,6 +201,7 @@ public class MyArray {
             nums[left] = p;
             right--;
         }
+
         if(temp_left < left-1){//得在满足情况的条件下进行递归 用if！！！
             quickSort(nums, temp_left, left-1);
         }
@@ -455,7 +456,7 @@ public class MyArray {
     public static void main(String[] args) {
         MyArray myArray = new MyArray();
 
-        int nums[] = {3,2,1,5,6,4};
+        int nums[] = {9, 8, 7, 6, 5, 4, 3, 2, 1};
         myArray.quickSort(nums, 0, nums.length - 1);
         System.out.println(Arrays.toString(nums));
 

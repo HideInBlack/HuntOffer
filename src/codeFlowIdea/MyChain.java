@@ -1,8 +1,5 @@
 package codeFlowIdea;
 
-
-import util.DzyUtils;
-
 import java.util.*;
 
 /**
@@ -528,6 +525,108 @@ public class MyChain {
         }
     }
 
+    // 21. 合并两个有序链表 (思路：把b中的点合并到a上面去)
+    public ListNode mergeTwoLists(ListNode a, ListNode b) {
+        //我的思想，把b合并到a上，因此需要创建a的头结点
+        ListNode head = new ListNode(-1);
+        head.next = a;
+        //定义遍历指针
+        ListNode preA = head;
+        ListNode curB = b;
+        ListNode temp;
+
+        //开始遍历，挨个遍历b把其插入到a上面
+        while (curB != null){
+            while (preA.next != null && preA.next.val < curB.val){
+                preA = preA.next;
+            }
+
+            //先判断preA是否走到最后了
+            if (preA.next == null){
+                //直接所有的一起移动过去
+                preA.next = curB;
+                break;
+            }
+
+            //如果不为空，就只插入一个
+            if (preA.next != null){
+                temp = curB;
+                //后移一位
+                curB = curB.next;
+                //开始插入
+                temp.next = preA.next;
+                preA.next = temp;
+                //插入完成后移一位
+                preA = preA.next;
+            }
+
+        }
+        return head.next;
+
+    }
+
+    // 21. 合并两个有序链表 (思路：谁小就创建谁，新建一个新的链表) time：2024年3月24日14:28:35 -> 2024年3月24日14:36:48
+    // 离谱 明明这样是最简单的！直接创建一个新的头结点的，遍历a，b谁小就插入到新节点来。最后对剩下的进行批量操作！
+    public ListNode mergeTwoLists2(ListNode a, ListNode b) {
+        ListNode newHead = new ListNode(-1);
+        ListNode newCur = newHead;
+
+        ListNode curA = a;
+        ListNode curB = b;
+        ListNode temp;
+
+        while (curA != null && curB != null){
+            if (curA.val <= curB.val){
+                temp = curA;
+                curA = curA.next;
+            }else {
+                temp = curB;
+                curB = curB.next;
+            }
+            //插入temp到新序列即可
+            newCur.next = temp;
+            newCur = newCur.next;
+            newCur.next = null;
+        }
+
+        if (curA != null){
+            newCur.next = curA;
+        }
+        if (curB != null){
+            newCur.next = curB;
+        }
+
+        return newHead.next;
+    }
+
+    // LCR 024. 反转链表 time：2024年3月24日14:43:11 -> 2024年3月24日14:56:30
+    public ListNode reverseList1Dzy(ListNode head) {
+        if (head == null) return null;
+        ListNode fakeHead = new ListNode(-1);
+        fakeHead.next = head;
+
+        ListNode cur = fakeHead.next;
+        ListNode temp;//临时节点
+        while (cur.next != null){
+            temp = cur.next;
+            cur.next = cur.next.next;
+
+            //开始插入 不断头插
+            temp.next = fakeHead.next;
+            fakeHead.next = temp;
+        }
+        return fakeHead.next;
+
+    }
+
+    public static void printList(ListNode listNode){
+        ListNode cur = listNode;
+        while (cur != null){
+            System.out.print(cur.val + " ");
+            cur = cur.next;
+        }
+    }
+
 
 
     /**
@@ -536,12 +635,17 @@ public class MyChain {
     public static void main(String[] args) {
         MyChain myChain = new MyChain();
 
-        int n = 19;
-        while(n != 0){
-            System.out.println(n%10);
-            n = n/10;
-        }
+        ListNode listNode1 = new ListNode(1);
+        ListNode listNode2 = new ListNode(2);
+        ListNode listNode3 = new ListNode(3);
+        listNode1.next = listNode2;
+        listNode2.next = listNode3;
+        printList(listNode1);
 
+
+        ListNode listNode = myChain.reverseList1Dzy(listNode1);
+        System.out.println("\n翻转之后------------");
+        printList(listNode);
 
         //（8）-（2）快乐数
 //        System.out.println(myChain.isHappy(2));
