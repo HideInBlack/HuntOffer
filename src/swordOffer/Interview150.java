@@ -277,6 +277,244 @@ public class Interview150 {
     }
 
     // 改变一下思路：先刷面熟的！常考常手撕的算法
+    //（14）167. 两数之和 II - 输入有序数组 time：2024年8月18日10:04:10 -> 2024年8月18日10:14:01
+    // 思路总结：从双指针的思路去走会非常的简单！！！
+    public int[] twoSum(int[] numbers, int target) {
+        //使用双指针来做
+        int left = 0;
+        int right = numbers.length - 1;
+        int[] result = new int[2];
+        while (left < right){
+            if (numbers[left] + numbers[right] < target){
+                left++;
+            } else if (numbers[left] + numbers[right] > target) {
+                right--;
+            } else {
+                result[0] = left + 1;
+                result[1] = right + 1;
+                break;
+            }
+        }
+        return result;
+    }
+
+    //（15）15. 三数之和 time：2024年8月18日10:16:13 -> 2024年8月18日10:46:04
+    public List<List<Integer>> threeSum(int[] nums) {
+        // 1.先进行一手排序
+        Arrays.sort(nums);
+
+        // 2.再进行相关过滤
+        List<List<Integer>> result = new ArrayList<>();
+        for (int i = 0; i < nums.length; i++){
+            // 去重
+            if (i != 0 && nums[i] == nums[i - 1]){
+                continue;
+            }
+            // 3.最后两层循环得使用双指针进行改造
+            int left = i + 1;
+            int right = nums.length - 1;
+            while (left < right){
+                if (nums[left] + nums[right] + nums[i] < 0){
+                    left++;
+                } else if (nums[left] + nums[right] + nums[i] > 0) {
+                    right--;
+                } else {
+                    List<Integer> curLine = new ArrayList<>();
+                    curLine.add(nums[i]);
+                    curLine.add(nums[left]);
+                    curLine.add(nums[right]);
+                    result.add(curLine);
+
+                    // 重点重点！先移动一次再进行去重判断
+                    left++;
+                    right--;
+                    // 去重：把left和right移动到不重复的位置
+                    while (left < right && nums[left] == nums[left - 1]){
+                        left++;
+                    }
+                    while (left < right && nums[right] == nums[right + 1]){
+                        right--;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    //（16）209. 长度最小的子数组 time：2024年8月18日10:47:21 -> 2024年8月18日11:17:35
+    // 思路总结：就是滑动窗口的思路！具体编码实现的细节需要注意！建议again！
+    public int minSubArrayLen(int target, int[] nums) {
+        // 滑动窗口的思路 left++; right++;
+        int left = 0;
+        int right = 0;
+        int sum = nums[0];
+        int minLength = Integer.MAX_VALUE;
+        while (true){
+            if (sum < target){
+                right++;
+                if (right > nums.length - 1) break; // 在取值前单独判断即可！right
+                sum += nums[right];
+            } else {
+                // 记录每一个符合条件的长度 取最小的子数组长度
+                minLength = Math.min(minLength, right - left + 1);
+                if (left > nums.length - 1) break; // 在取值前单独判断即可！left
+                sum -= nums[left];
+                left++;
+            }
+        }
+        if (minLength == Integer.MAX_VALUE){
+            return 0;
+        }
+        return minLength;
+    }
+
+    //（17）3. 无重复字符的最长子串 time：2024年8月18日12:27:18 -> 2024年8月18日12:59:07
+    public int lengthOfLongestSubstring(String s) {
+        // 特殊情况
+        if (s.isEmpty()) return 0;
+        if (s.length() == 1) return 1;
+
+        //滑动窗口：滑动窗口的本质就是left和right的移动
+        int left = 0;
+        int right = 1;
+        int maxlength = 1;
+
+        Set<Character> set = new HashSet<>();
+        set.add(s.charAt(0));
+        while (right < s.length()){
+            if (set.contains(s.charAt(right))){
+                while (s.charAt(left) != s.charAt(right)){
+                    set.remove(s.charAt(left));
+                    left++;
+                }
+                left++;
+            } else {
+                // 不包含就算一次最大长度
+                maxlength = Math.max(maxlength, right - left + 1);
+                set.add(s.charAt(right));
+            }
+            right++;
+        }
+        return maxlength;
+    }
+
+    //（18）不用while 使用for再试一下滑动窗口 time：2024年8月18日14:41:36 ->
+    public int minSubArrayLen2(int target, int[] nums) {
+        // 一定要固定右端right使用for，左边left使用while这样足够简单
+        int left = 0;
+        int sum = 0;
+        int minLength = Integer.MAX_VALUE;
+
+        for (int right = 0; right < nums.length; right++){
+            sum += nums[right];
+            if (sum >= target){
+                while (sum >= target){
+                    minLength = Math.min(minLength, right - left + 1);
+                    sum -= nums[left];
+                    left++;
+                }
+            }
+        }
+
+        if (minLength == Integer.MAX_VALUE){
+            return 0;
+        }
+        return minLength;
+    }
+
+    //（19）36. 有效的数独 time：2024年8月18日14:57:51 -> 2024年8月18日15:19:15
+    // 思路总结：使用数学的思路模拟出来了，但是总感觉正确的做法应该不是这样的
+    public boolean isValidSudoku(char[][] board) {
+        Set<Character> setRow = new HashSet<>();
+        Set<Character> setCow = new HashSet<>();
+        Set<Character> set1 = new HashSet<>();
+        Set<Character> set2 = new HashSet<>();
+        Set<Character> set3 = new HashSet<>();
+        for (int i = 0; i < board.length; i++){
+            if (i % 3 == 0){
+                set1.clear();
+                set2.clear();
+                set3.clear();
+            }
+            for (int j = 0; j < board.length; j++){
+                // 对行进行有效判断
+                if (setRow.contains(board[i][j])){
+                    return false;
+                }
+                if (board[i][j] != '.') {
+                    setRow.add(board[i][j]);
+                }
+
+                // 对列进行有效判断
+                if (setCow.contains(board[j][i])){
+                    return false;
+                }
+                if (board[j][i] != '.') {
+                    setCow.add(board[j][i]);
+                }
+
+                // 对9方格进行有效判断
+                if (j / 3 == 0){
+                    if (set1.contains(board[i][j])){
+                        return false;
+                    }
+                    if (board[i][j] != '.') {
+                        set1.add(board[i][j]);
+                    }
+                }
+                if (j / 3 == 1){
+                    if (set2.contains(board[i][j])){
+                        return false;
+                    }
+                    if (board[i][j] != '.') {
+                        set2.add(board[i][j]);
+                    }
+                }
+                if (j / 3 == 2){
+                    if (set3.contains(board[i][j])){
+                        return false;
+                    }
+                    if (board[i][j] != '.') {
+                        set3.add(board[i][j]);
+                    }
+                }
+            }
+            setCow.clear();
+            setRow.clear();
+        }
+        return true;
+    }
+
+    //（20）73. 矩阵置零 time：2024年8月18日15:22:23 -> 2024年8月18日15:30:30
+    public void setZeroes(int[][] matrix) {
+        // 1.先遍历一遍所有应该置为0的所有行、所有列。并存储起来
+        int[] row = new int[matrix.length];
+        int[] cow = new int[matrix[0].length];
+        for (int i = 0; i < matrix.length; i++){
+            for (int j = 0; j < matrix[0].length; j++){
+                if (matrix[i][j] == 0){
+                    row[i] = 1;
+                    cow[j] = 1;
+                }
+            }
+        }
+
+        // 2.执行置0操作
+        for (int i = 0; i < matrix.length; i++){
+            for (int j = 0; j < matrix[0].length; j++){
+                if (row[i] == 1 || cow[j] == 1){
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+    }
+
+    //（21）205. 同构字符串 time： ->
+    public boolean isIsomorphic(String s, String t) {
+        return true;
+    }
+
+
 
 
 
