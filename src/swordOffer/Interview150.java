@@ -509,10 +509,112 @@ public class Interview150 {
         }
     }
 
-    //（21）205. 同构字符串 time： ->
+    //（21）205. 同构字符串 time：2024年8月19日10:22:51 -> 2024年8月19日10:36:43
+    // 思路：因为是互相映射的关系，所以要采用两个map互相映射才可以
     public boolean isIsomorphic(String s, String t) {
+        Map<Character, Character> map1 = new HashMap<>();
+        Map<Character, Character> map2 = new HashMap<>();
+        for (int i = 0; i < s.length(); i++){
+            if (map1.get(s.charAt(i)) == null && map2.get(t.charAt(i)) == null){
+                map1.put(s.charAt(i), t.charAt(i));
+                map2.put(t.charAt(i), s.charAt(i));
+            } else {
+                // 如果不为null 并且还不相等 则直接返回false
+                if (!Objects.equals(map1.get(s.charAt(i)), t.charAt(i)) || !Objects.equals(s.charAt(i), map2.get(t.charAt(i))) ){
+                    return false;
+                }
+            }
+        }
         return true;
     }
+
+    //（22）290. 单词规律 time：2024年8月19日10:37:45 -> 2024年8月19日10:50:06
+    public boolean wordPattern(String pattern, String s) {
+        // 继续使用双map 进行双向连接
+        char[] patternArray = pattern.toCharArray();
+        String[] strings = s.split(" ");
+        Map<Character, String> c2s = new HashMap<>();
+        Map<String, Character> s2c = new HashMap<>();
+
+        if (patternArray.length != strings.length) return false;
+        for (int i = 0; i < patternArray.length; i++){
+            // 1.当双向映射关系都为空的时候才加入到map里，否则就返回false
+            if (c2s.get(patternArray[i]) == null && s2c.get(strings[i]) == null){
+                c2s.put(patternArray[i], strings[i]);
+                s2c.put(strings[i], patternArray[i]);
+            } else {
+                // 2.不为null，则映射关系就必须一致，否则返回false
+                if (!Objects.equals(c2s.get(patternArray[i]), strings[i]) || !Objects.equals(s2c.get(strings[i]), patternArray[i])){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    //（23）49. 字母异位词分组 time：2024年8月19日13:39:31 -> 2024年8月19日13:59:33
+    public List<List<String>> groupAnagrams(String[] strs) {
+        // 以排序后的相同的字符串为key
+        Map<String, List<String>> map = new HashMap<>();
+        for (String str : strs) {
+            // 1.先分割成char进行排序，排序之后再new成新的字符串
+            char[] chars = str.toCharArray();
+            Arrays.sort(chars);
+            String key = new String(chars);
+
+            // 2.放进put里
+            List<String> mapOrDefault = map.getOrDefault(key, new ArrayList<>());
+            mapOrDefault.add(str);
+            map.put(key, mapOrDefault);
+        }
+        List<List<String>> result = new ArrayList<>();
+        map.forEach((key,value) -> result.add(value));
+        return result;
+    }
+
+    //（24）128. 最长连续序列 time：2024年8月19日14:00:41 -> 2024年8月19日14:18:12
+    public int longestConsecutive(int[] nums) {
+        // 1.先把整个数组放到set里
+        Set<Integer> set = new HashSet<>();
+        for (int num : nums) {
+            set.add(num);
+        }
+
+        // 2.开始遍历，对于100:只需要判断是否存在100-1，如果存在则代表其不是头直接结束；如果不存在则开始while遍历+1到另一头
+        int maxLength = 0;
+        for (int num : set) {
+            if (!set.contains(num - 1)) {
+                int curLength = 0;
+                int temp = num;
+                while (set.contains(temp)) {
+                    curLength++;
+                    temp++;
+                }
+                // 计算一遍最长连续序列长度
+                maxLength = Math.max(maxLength, curLength);
+            }
+        }
+        return maxLength;
+    }
+
+    //（25）219. 存在重复元素 II time：2024年8月19日14:19:00 -> 2024年8月19日14:32:08
+    public boolean containsNearbyDuplicate(int[] nums, int k) {
+        // 使用map保存起来值与下标
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++){
+            Integer index1 = map.get(nums[i]);
+            if (index1 != null){
+                if (Math.abs(i - index1) <= k){
+                    return true;
+                }
+            }
+            // 无论与否都需要更新下标
+            map.put(nums[i], i);
+        }
+        return false;
+    }
+
+
 
 
 
@@ -523,9 +625,15 @@ public class Interview150 {
          */
     public static void main(String[] args) {
         Interview150 interview = new Interview150();
-        char a = Character.toLowerCase('A');
-        System.out.println(a);
-        System.out.println(Character.isUpperCase('0'));
-        System.out.println(Character.isLowerCase('0'));
+        Map<Character, Character> map = new HashMap<>();
+        map.put('e', 'a');
+        System.out.println(map.get('e'));
+        System.out.println(map.get('d'));
+
+        String test1 = "nat";
+        char[] chars = test1.toCharArray();
+
+        String test2 = "tan";
+        System.out.println(b);
     }
 }
