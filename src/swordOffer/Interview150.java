@@ -614,6 +614,160 @@ public class Interview150 {
         return false;
     }
 
+    //（26）228. 汇总区间 time：2024年8月21日10:04:06 -> 2024年8月21日10:27:48
+    public List<String> summaryRanges(int[] nums) {
+        List<String> result = new ArrayList<>();
+        int left = 0;
+        int right = 0;
+        if (nums.length == 1){
+            result.add(String.valueOf(nums[0]));
+            return result;
+        }
+
+        for (int i = 0; i < nums.length; i++){
+            // 第一个特殊处理
+            if (i == 0){
+                left = nums[0];
+                right = nums[0];
+                continue;
+            }
+            // 正常逻辑
+            if (nums[i] != right + 1){
+                // 如果不等，就需要保存起来了
+                if (left == right){
+                    result.add(String.valueOf(left));
+                } else {
+                    result.add(left + "->" + right);
+                }
+                left = nums[i];
+                right = nums[i];
+            } else {
+                right = nums[i];
+            }
+            // 最后一个特殊处理
+            if (i == nums.length - 1){
+                if (left == right){
+                    result.add(String.valueOf(left));
+                } else {
+                    result.add(left + "->" + right);
+                }
+            }
+        }
+        return result;
+    }
+
+    //（27）56. 合并区间 time：2024年8月21日10:29:34 -> 2024年8月21日11:01:42
+    public int[][] merge(int[][] intervals) {
+        List<int[]> result = new ArrayList<>();
+
+        // 1.先对intervals进行排序，按照num[0]进行排序
+        Arrays.sort(intervals, Comparator.comparingInt(o -> o[0]));
+
+        // 2.再进行遍历合并
+        result.add(new int[]{intervals[0][0], intervals[0][1]});
+        for (int i = 1; i < intervals.length; i++){
+            int[] last = result.get(result.size() - 1);
+            if (intervals[i][0] > last[1]){
+                // 区间不相接连
+                result.add(new int[]{intervals[i][0], intervals[i][1]});
+            } else {
+                // 区间相连
+                last[1] = Math.max(intervals[i][1],  last[1]);
+            }
+        }
+//        int[][] realRet = new int[result.size()][2];
+//        for (int i = 0; i < realRet.length; i++){
+//            realRet[i] = result.get(i);
+//        }
+//        return realRet;
+        return result.toArray(new int[result.size()][]);
+    }
+
+    //（28）57. 插入区间 time：2024年8月21日13:50:55 -> 2024年8月21日14:06:18
+    public int[][] insert(int[][] intervals, int[] newInterval) {
+        // 此题思路：先插入到一个二维数组中，再进行排序与区间合并即可
+        // 1.先把二维数组转化为list，并插入最新的一个区间
+        List<int[]> list = new ArrayList<>(Arrays.stream(intervals).toList());
+        list.add(newInterval);
+
+        // 2.按照startIndex进行排序
+        list.sort(Comparator.comparingInt(o -> o[0]));
+
+        // 3.最后合并区间
+        List<int[]> result = new ArrayList<>();
+        result.add(new int[]{list.get(0)[0], list.get(0)[1]});
+        list.forEach(array -> {
+            int[] last = result.get(result.size() - 1);
+            if (array[0] > last[1]){
+                // 如果当前区间left比记录的最后一个的right还要大，则新增区间
+                result.add(new int[]{array[0], array[1]});
+            } else {
+                // 如果当前区间left比记录的最后一个right要小，则需要区间合并，最终的right要取两个right的最大值
+                last[1] = Math.max(last[1], array[1]);
+            }
+        });
+        return result.toArray(new int[result.size()][]);
+    }
+
+    //（29）452. 用最少数量的箭引爆气球 time：2024年8月21日14:07:33 -> 2024年8月21日14:38:40
+    public int findMinArrowShots(int[][] points) {
+        // 1.先进行一手按照left排序
+        Arrays.sort(points, Comparator.comparingInt(o -> o[0]));
+
+        // 2.再进行计算弓箭数量
+        int arrow = 1;
+        int minCommon = points[0][1];
+        // 就得从第二个开始
+        for (int i = 1; i < points.length; i++){
+            if (points[i][0] > minCommon){
+                // 如果下一个区间left大于交集
+                arrow++;
+                minCommon = points[i][1];
+            } else {
+                // 如果下一个区间小于等于交集
+                minCommon = Math.min(minCommon, points[i][1]);
+            }
+        }
+        return arrow;
+    }
+
+    //（30）71. 简化路径 time：2024年8月21日14:42:50 -> 2024年8月21日15:11:27
+    // 细节还挺多注意点，缝缝补补
+    public String simplifyPath(String path) {
+        String[] split = path.split("/");
+        Stack<String> stack = new Stack<>();
+
+        for (String s : split) {
+            if (Objects.equals(s, "") || Objects.equals(s, ".")) {
+                continue;
+            }
+            if (Objects.equals(s, "..") && !stack.isEmpty()) {
+                stack.pop();
+            } else {
+                if (Objects.equals(s, "..")) continue;
+                stack.push(s);
+            }
+        }
+        StringBuilder result = new StringBuilder();
+        while (!stack.isEmpty()){
+            result.insert(0, stack.pop());
+            result.insert(0, "/");
+        }
+        if (result.isEmpty()){
+            result.insert(0, "/");
+        }
+        return result.toString();
+    }
+
+    //（31）155. 最小栈 time： ->
+
+
+
+
+
+
+
+
 
 
 
@@ -625,15 +779,14 @@ public class Interview150 {
          */
     public static void main(String[] args) {
         Interview150 interview = new Interview150();
-        Map<Character, Character> map = new HashMap<>();
-        map.put('e', 'a');
-        System.out.println(map.get('e'));
-        System.out.println(map.get('d'));
+//        Map<Character, Character> map = new HashMap<>();
+//        map.put('e', 'a');
+//        System.out.println(map.get('e'));
+//        System.out.println(map.get('d'));
+        String path = "/.../a/..//b/c/../d/./";
+        String[] strings = path.split("/");
+        System.out.println(Arrays.toString(strings));
 
-        String test1 = "nat";
-        char[] chars = test1.toCharArray();
 
-        String test2 = "tan";
-        System.out.println(b);
     }
 }
