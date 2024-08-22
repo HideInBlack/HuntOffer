@@ -1,5 +1,8 @@
 package swordOffer;
 
+import codeFlowIdea.ListNode;
+
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -759,14 +762,153 @@ public class Interview150 {
         return result.toString();
     }
 
-    //（31）155. 最小栈 time： ->
+    //（31）155. 最小栈 time：2024年8月22日09:48:19 -> 2024年8月22日10:08:41
+    // 见MinStack类，已完成
 
+    //（32）141. 环形链表 time：2024年8月22日10:32:10 -> 2024年8月22日10:51:44
+    // 链表题目尽量全部做完：喜欢考
+    // 思路：两种方法都可以，一种是快慢指针相遇就代表有环，还有一个就是把节点直接放在set进行判断是否包含，这个可以找到环的起始位置！
+    public boolean hasCycle(ListNode head) {
+        Set<ListNode> set = new HashSet<>();
+        ListNode node = head;
+        while (node != null){
+            // 1.包含则返回
+            if (set.contains(node)){
+                return true;
+            }
 
+            // 2.未包含，继续往下走
+            set.add(node);
+            node = node.next;
+        }
+        return false;
+    }
+    // （33）其实最经典的是快慢指针相遇
+    public boolean hasCycle2(ListNode head) {
+        ListNode fast = head;
+        ListNode slow = head;
+        while (fast != null && fast.next != null){
+            fast = fast.next.next;
+            slow = slow.next;
+            if (fast == slow){
+                return true;
+            }
+        }
+        return false;
+    }
 
+    //（34）142. 环形链表 II time：2024年8月22日10:58:26 -> 2024年8月22日11:00:22
+    // 还别说！还真别说！这set还真行！但是时间复杂度有一点高！
+    // 还是需要使用快慢指针：首先快慢指针相遇在某节点，此时一个结点在head处，一个在相遇处，继续都一步一步的走，再次相遇时就是起始节点！
+    public ListNode detectCycle(ListNode head) {
+        Set<ListNode> set = new HashSet<>();
+        ListNode node = head;
+        while (node != null){
+            // 1.包含则返回
+            if (set.contains(node)){
+                return node;
+            }
 
+            // 2.未包含，继续往下走
+            set.add(node);
+            node = node.next;
+        }
+        return null;
+    }
 
+    //（35）2. 两数相加 time：2024年8月22日11:44:02 -> 2024年8月22日12:12:33
+    // 难点：完全可以使用字符串自己模拟整数相加，但是不如BigDecimal来得快
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        StringBuilder a = new StringBuilder();
+        StringBuilder b = new StringBuilder();
+        ListNode head1 = l1;
+        ListNode head2 = l2;
+        while (head1 != null){
+            a.insert(0, head1.val);
+            head1 = head1.next;
+        }
+        while (head2 != null){
+            b.insert(0, head2.val);
+            head2 = head2.next;
+        }
 
+        // 难点：使用字符串计算超大加法问题
 
+        BigDecimal numa = new BigDecimal(a.toString());
+        BigDecimal numb = new BigDecimal(b.toString());
+        BigDecimal result = numa.add(numb);
+        String string = result.toString();
+
+        ListNode fakeHead = new ListNode();
+        ListNode last = fakeHead;
+        for (int i = string.length() - 1; i >= 0; i--){
+            last.next = new ListNode(Integer.parseInt(String.valueOf(string.charAt(i))));
+            last = last.next;
+        }
+        return fakeHead.next;
+    }
+
+    //（36）21. 合并两个有序链表 time：2024年8月22日12:25:14 -> 2024年8月22日12:34:05
+    // 思路：有序链表的合并有两种解题思路：1.把b链表合并到a里 2.新建一个fakeHead假头结点，再把a、b合并到第三个链表里
+    // 我倾向于第2个解决方案，更加通俗易懂，也正是这样实现的，其中注意的细节有：1.首先创建fakeHead假头结点；2.处理剩余的节点
+    public ListNode mergeTwoLists(ListNode a, ListNode b) {
+        ListNode curA = a;
+        ListNode curB = b;
+        ListNode fakeHead = new ListNode();
+        ListNode curR = fakeHead;
+
+        while (curA != null && curB != null){
+            if (curA.val < curB.val){
+                curR.next = curA;
+                curA = curA.next; // a下移一个
+            } else {
+                curR.next = curB;
+                curB = curB.next; // b下移一个
+            }
+            curR = curR.next; // r下移一个
+        }
+
+        // 处理剩余的
+        if (curA != null){
+            curR.next = curA;
+        }
+        if (curB != null){
+            curR.next = curB;
+        }
+        return fakeHead.next;
+    }
+
+    //（37）138. 随机链表的复制 time：2024年8月22日12:36:44 -> 2024年8月22日13:04:31
+    public Node copyRandomList(Node head) {
+        Node fakeHead = new Node(-1);
+        Node newLast = fakeHead;
+        Node cur = head;
+        // 1.先建立标准的链表，建立的时候存一个map；map里保存的是key=旧Node，value=新Node；这样就可以根据旧的Node找到新的Node
+        Map<Node, Node> map = new HashMap<>();
+        while (cur != null){
+            Node newOne = new Node(cur.val); // 1.新建
+            newOne.random = cur.random; // 先复制给他，后续可以改变
+
+            // 这一步是关键！建立旧节点与新节点的关系
+            map.put(cur, newOne);
+
+            newLast.next = newOne; // 2.接入
+            newLast = newLast.next; // 3.新的下移
+            cur = cur.next; // 4.旧的下移
+        }
+        // 2.再进行赋值random指针
+        newLast = fakeHead; //回头重新遍历新list
+        while (newLast != null){
+            newLast.random = map.get(newLast.random);
+            newLast = newLast.next;
+        }
+        return fakeHead.next;
+    }
+
+    //（38）92. 反转链表 II time： ->
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        return null;
+    }
 
 
 
@@ -783,10 +925,88 @@ public class Interview150 {
 //        map.put('e', 'a');
 //        System.out.println(map.get('e'));
 //        System.out.println(map.get('d'));
-        String path = "/.../a/..//b/c/../d/./";
-        String[] strings = path.split("/");
-        System.out.println(Arrays.toString(strings));
 
+//        String path = "/.../a/..//b/c/../d/./";
+//        String[] strings = path.split("/");
+//        System.out.println(Arrays.toString(strings));
+        BigDecimal numa = new BigDecimal("1000000000000000000000000000001");
+        BigDecimal numb = new BigDecimal("465");
+        BigDecimal add = numa.add(numb);
+        System.out.println(add);
 
+    }
+}
+/**
+ *（31）155. 最小栈 time：2024年8月22日09:48:19 -> 2024年8月22日10:08:41
+ * Your MinStack object will be instantiated and called as such:
+ * MinStack obj = new MinStack();
+ */
+class MinStack {
+
+    Integer min;
+    Stack<Integer> stack;
+
+    public MinStack() {
+        this.stack = new Stack<>();
+        this.min = Integer.MAX_VALUE;
+    }
+
+    public void push(int val) {
+        stack.push(val);
+        this.min = Math.min(min, val);
+    }
+
+    public void pop() {
+        stack.pop();
+        if (stack.isEmpty()){
+            this.min = Integer.MAX_VALUE;
+        } else {
+            this.min = stack.peek();
+        }
+        stack.forEach(num -> {
+            this.min = Math.min(num, min);
+        });
+    }
+
+    public int top() {
+        return stack.peek();
+    }
+
+    public int getMin() {
+        return this.min;
+    }
+}
+
+/**
+ * 可以用一个栈，这个栈同时保存的是每个数字 x 进栈的时候的值 与 插入该值后的栈内最小值。
+ * 即每次新元素 x 入栈的时候保存一个元组：（当前值 x，栈内最小值）。
+ */
+class MinStack2 {
+
+    // 把截止到每一个栈顶的当前最小值都记录在数据本身上
+    Stack<int[]> stack;
+
+    public MinStack2() {
+        this.stack = new Stack<>();
+        // 先插入一个假的栈底: 这样栈就永远不会为空，方便后续
+        stack.push(new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE});
+    }
+
+    public void push(int val) {
+        // 每一个栈状态的最小值，都在这个地方计算下来
+        int min = Math.min(stack.peek()[1], val);
+        stack.push(new int[]{val, min});
+    }
+
+    public void pop() {
+        stack.pop();
+    }
+
+    public int top() {
+        return stack.peek()[0];
+    }
+
+    public int getMin() {
+        return stack.peek()[1];
     }
 }

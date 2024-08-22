@@ -691,22 +691,3 @@ public class MyChain {
     }
 }
 
-/**
- * 单链表 （2）移除链表元素 203 定义
- */
-class ListNode {
-    int val;
-    ListNode next;
-
-    ListNode(){}
-
-    ListNode(int val){
-        this.val = val;
-    }
-
-    ListNode(int val, ListNode next){
-        this.val = val;
-        this.next = next;
-    }
-
-}
