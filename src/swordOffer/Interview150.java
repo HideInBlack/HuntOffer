@@ -905,11 +905,172 @@ public class Interview150 {
         return fakeHead.next;
     }
 
-    //（38）92. 反转链表 II time： ->
+    //（38）92. 反转链表 II time：2024年8月23日11:12:04 -> 2024年8月23日11:25:43
     public ListNode reverseBetween(ListNode head, int left, int right) {
-        return null;
+        //使用栈的思路 试试：首先一定需要假头结点
+        ListNode fakeHead = new ListNode();
+        fakeHead.next = head;
+        ListNode cur = fakeHead; // 遍历指针
+        ListNode pre = null; // left左边一个的记录指针
+        ListNode suf = null; // right右边一个的记录指针
+
+        int index = 0;
+        Stack<ListNode> stack = new Stack<>();
+        while (cur != null){
+            if (index == left - 1){
+                pre = cur;
+            }
+            if (index == right + 1){
+                suf = cur;
+            }
+            if (index >= left && index <= right){
+                // 直接把结点入栈
+                stack.add(cur);
+            }
+            index++;
+            cur = cur.next;
+        }
+
+        //再出栈节点 组装链表
+        while (!stack.isEmpty()){
+            pre.next = stack.pop();
+            pre = pre.next;
+        }
+        pre.next = suf; //接上后缀
+
+        return fakeHead.next;
     }
 
+    //（39）25. K 个一组翻转链表 time：2024年8月23日11:39:10 -> 2024年8月23日11:59:53
+    public ListNode reverseKGroup(ListNode head, int k) {
+        // 使用栈的思路来吧，栈满k则出栈接入
+        ListNode fakeHead = new ListNode();
+        fakeHead.next = head;
+
+        ListNode cur = head;
+        ListNode pre = fakeHead;
+        Stack<ListNode> stack = new Stack<>();
+        while (cur != null){
+            if (stack.size() == k){
+                // 1.如果栈满了，则出栈接入list
+                while (!stack.isEmpty()){
+                    pre.next = stack.pop();
+                    pre = pre.next;
+                }
+                pre.next = cur;
+            } else {
+                // 2.栈不满，则直接入栈
+                stack.add(cur);
+                cur = cur.next;
+            }
+        }
+        // 最后再判断一下 如果栈是满的还是需要再改过来的
+        if (stack.size() == k) {
+            while (!stack.isEmpty()) {
+                pre.next = stack.pop();
+                pre = pre.next;
+            }
+            pre.next = null;
+        }
+        return fakeHead.next;
+    }
+
+    //（40）19. 删除链表的倒数第 N 个结点 time：2024年8月23日13:54:26 -> 2024年8月23日14:08:29
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        // 倒数第n个，正向第size-n+1个，但要先找siz-n个即可
+        int length = 0;
+        ListNode cur = head;
+        while (cur != null){
+            length++;
+            cur = cur.next;
+        }
+
+        // 1.删除第一个特殊处理
+        if (length - n + 1 == 1){
+            return head.next;
+        }
+        // 2.非第一个则找length-n个节点即可
+        int index = 1;
+        cur = head;
+        while (index < length - n){
+            index++;
+            cur = cur.next;
+        }
+        cur.next = cur.next.next;
+        return head;
+    }
+    //（40）方法二，一次遍历就删除倒数第N个节点 time：2024年8月23日14:10:48 -> 2024年8月23日14:19:25
+    // 思路无敌！
+    public ListNode removeNthFromEnd2(ListNode head, int n) {
+        // 使用快慢指针来做，让fast指针先多走n + 1个节点
+        ListNode fakeHead = new ListNode();
+        fakeHead.next = head;
+        ListNode fast = fakeHead;
+        ListNode slow = fakeHead;
+
+        // 1.快指针先走n+1步
+        int index = n;
+        while (index >= 0){
+            fast = fast.next;
+            index--;
+        }
+
+        // 2.快慢指针再同时走
+        while (fast != null){
+            fast = fast.next;
+            slow = slow.next;
+        }
+        slow.next = slow.next.next;
+        return fakeHead.next;
+    }
+
+    //（41）82. 删除排序链表中的重复元素 II time：2024年8月23日14:20:04 -> 2024年8月23日14:37:30
+    public ListNode deleteDuplicates(ListNode head) {
+        if (head == null) return head;
+        // 1.先遍历一遍记录下所有该删除的节点值
+        ListNode cur = head;
+        Set<Integer> deleteSet = new HashSet<>();
+        while (cur.next != null){
+            if (cur.val == cur.next.val) {
+                deleteSet.add(cur.val);
+            }
+            cur = cur.next;
+        }
+
+        // 2.针对deleteSet进行删除
+        ListNode fakeHead = new ListNode();
+        fakeHead.next = head;
+        ListNode pre = fakeHead;
+        while (pre.next != null){
+            if (deleteSet.contains(pre.next.val)){
+                pre.next = pre.next.next;
+            } else {
+                pre = pre.next;
+            }
+        }
+        return fakeHead.next;
+    }
+
+    //（42）83. 删除排序链表中的重复元素 time：2024年8月23日14:52:24 -> 2024年8月23日15:00:01
+    public ListNode deleteDuplicates2(ListNode head) {
+        if (head == null) return null;
+        ListNode pre = head;
+        while (pre.next != null){
+            if (pre.val == pre.next.val){
+                // 1.如果相等则删除下一个节点：但注意不要下移pre指针，因为还需要继续判断
+                pre.next = pre.next.next;
+            } else {
+                // 2.不等则下移pre指针
+                pre = pre.next;
+            }
+        }
+        return head;
+    }
+
+    //（43）61. 旋转链表 time： ->
+    public ListNode rotateRight(ListNode head, int k) {
+
+    }
 
 
 
