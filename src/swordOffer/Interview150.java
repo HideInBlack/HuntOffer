@@ -1067,10 +1067,247 @@ public class Interview150 {
         return head;
     }
 
-    //（43）61. 旋转链表 time： ->
+    //（43）61. 旋转链表 time：2024年8月24日10:16:51 -> 2024年8月24日10:36:04
+    // 思路：此题就是考的查到倒数第n个链表节点
     public ListNode rotateRight(ListNode head, int k) {
+        if (head == null) return null;
 
+        // 1.先遍历一遍找到length总长度
+        int length = 0;
+        ListNode cur = head;
+        while (cur != null){
+            length++;
+            cur = cur.next;
+        }
+        int realK = k % length;
+        if (realK == 0) return head;
+
+        // 2.遍历找到倒数第realK + 1个节点，以及最后一个结点
+        ListNode fast = head;
+        ListNode slow = head;
+        while (realK > 0){
+            realK--;
+            fast = fast.next;
+        }
+        while (fast.next != null){
+            fast = fast.next;
+            slow = slow.next;
+        }
+
+        // 3.重新拼接链表
+        ListNode newHead = slow.next;
+        slow.next = null;
+        fast.next = head;
+        return newHead;
     }
+
+    //（44）86. 分隔链表 time：2024年8月24日10:50:10 -> 2024年8月24日11:09:00
+    public ListNode partition(ListNode head, int x) {
+        // 思路：无论是否在x的左边或者右边，只要其小于x，就统一放到栈里并且删除掉，最后再从fakeHead头插
+        ListNode fakeHead = new ListNode();
+        fakeHead.next = head;
+
+        // 1.先进行遍历并且保存队列与删除小于x的节点
+        Stack<ListNode> stack = new Stack<>();
+        ListNode cur = fakeHead;
+        while (cur.next != null){
+            if (cur.next.val < x){
+                stack.push(cur.next); //放入栈
+                cur.next = cur.next.next; //删除
+            } else {
+                cur = cur.next;
+            }
+        }
+
+        // 2.出栈，然后头插入到链表里
+        while (!stack.isEmpty()){
+            ListNode node = stack.pop();
+            node.next = fakeHead.next;
+            fakeHead.next = node;
+        }
+        return fakeHead.next;
+    }
+
+    //（45）104. 二叉树的最大深度 time：2024年8月24日11:12:49 -> 2024年8月24日11:38:57
+    // 思路：记住递归是递进去、还要归回来的！往里进的时候（入参）是当前深度，最后返回的时候是返回最大的深度！
+    public int maxDepth(TreeNode root) {
+        // 此题使用递归来做试试
+        return midTree(root, 0);
+    }
+    public int midTree(TreeNode root, int curDepth){
+        // 此题使用递归来做试试
+        if (root != null){
+            curDepth++;
+            int left = midTree(root.left, curDepth);
+            int right = midTree(root.right, curDepth);
+            return Math.max(left, right);
+        } else {
+            return curDepth;
+        }
+    }
+
+    //（46）100. 相同的树 time：2024年8月24日15:05:40 -> 2024年8月24日15:11:33
+    // 这得要后序遍历,因为后序要使用到左子树的结果和右子树的结果
+    public boolean isSameTree(TreeNode p, TreeNode q) {
+        if (p != null && q != null){
+            if (p.val != q.val){
+                return false;
+            }
+            boolean left= isSameTree(p.left, q.left);
+            boolean right = isSameTree(p.right, q.right);
+            return left && right;
+        } else {
+            return p == null && q == null;
+        }
+    }
+
+    //（47）226. 翻转二叉树 time：2024年8月24日15:12:09 -> 2024年8月24日15:26:14
+    // 这个得使用后序遍历
+    public TreeNode invertTree(TreeNode root) {
+        if (root != null){
+            TreeNode left = invertTree(root.left);
+            TreeNode right = invertTree(root.right);
+            // 赋值就是根结点操作
+            root.left = right;
+            root.right = left;
+            return root;
+        } else {
+            return null;
+        }
+    }
+
+    //（48）101. 对称二叉树 time：2024年8月24日15:27:09 -> 2024年8月24日15:36:22
+    public boolean isSymmetric(TreeNode root) {
+        return isSymmetricIn(root.left, root.right);
+    }
+    // 还是后序遍历！
+    public boolean isSymmetricIn(TreeNode root1, TreeNode root2) {
+        if (root1 != null && root2 != null){
+            if (root1.val != root2.val){
+                return false;
+            }
+            boolean left = isSymmetricIn(root1.left, root2.right); // 左子树
+            boolean right = isSymmetricIn(root1.right, root2.left); // 右子树
+            return left && right; // 中间
+
+        } else return root1 == null && root2 == null;
+    }
+
+    //（49）199. 二叉树的右视图 time：2024年8月24日15:38:07 -> 2024年8月24日15:48:31
+    public List<Integer> rightSideView(TreeNode root) {
+        //此题思路：层次遍历，然后保存每一层的最后一个结点
+        List<Integer> result = new ArrayList<>();
+        if (root == null) return result;
+
+        Deque<TreeNode> deque = new LinkedList<>();
+        deque.add(root);
+        while (!deque.isEmpty()){
+            int length = deque.size(); // 先记住队列的长度，这是一次性要出队的所有节点
+            while (length > 0){
+                // 1.出队
+                TreeNode cur = deque.removeFirst();
+                // 2.入队刚刚出队节点的左节点和右节点
+                if (cur.left != null) deque.add(cur.left);
+                if (cur.right != null) deque.add(cur.right);
+
+                // 3.此题特殊要求，当每一层最后一个结点的时候，需要保存到结果里
+                if (length == 1){
+                    result.add(cur.val);
+                }
+                length--;
+            }
+        }
+        return result;
+    }
+
+    //（50）637. 二叉树的层平均值 time：2024年8月24日15:49:05 -> 2024年8月24日15:56:30
+    public List<Double> averageOfLevels(TreeNode root) {
+        // 二叉树的层次遍历
+        List<Double> result = new ArrayList<>();
+
+        Deque<TreeNode> deque = new LinkedList<>();
+        deque.add(root);
+        while (!deque.isEmpty()){
+            int size = deque.size();
+            int tempSize = size;
+            long sum = 0;
+            while (size > 0){
+                TreeNode node = deque.removeFirst();
+                sum += node.val;
+                if (node.left != null) deque.add(node.left);
+                if (node.right != null) deque.add(node.right);
+                size--;
+            }
+            result.add((double) sum / tempSize);
+        }
+        return result;
+    }
+
+    //（51）102. 二叉树的层序遍历 time：2024年8月24日15:56:49 ->2024年8月24日16:09:12
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (root == null) return result;
+
+        Deque<TreeNode> deque = new LinkedList<>();
+        deque.add(root);
+        while (!deque.isEmpty()) {
+            int length = deque.size(); // 先记住队列的长度，这是一次性要出队的所有节点
+            List<Integer> curLine = new ArrayList<>();
+            while (length > 0) {
+                // 1.出队
+                TreeNode cur = deque.removeFirst();
+                curLine.add(cur.val);
+                // 2.入队刚刚出队节点的左节点和右节点
+                if (cur.left != null) deque.add(cur.left);
+                if (cur.right != null) deque.add(cur.right);
+                length--;
+            }
+            result.add(curLine);
+        }
+        return result;
+    }
+
+    //（52）103. 二叉树的锯齿形层序遍历 time：2024年8月24日16:59:48 -> 2024年8月24日17:20:47
+    // 思路：不要想那么多，用什么栈啥的，都不需要，就正儿八经的队列！然后再存当前行数据的时候，用头插即可！
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        // 层次遍历的改编版
+        List<List<Integer>> result = new ArrayList<>();
+        if (root == null) return result;
+
+        Deque<TreeNode> deque = new LinkedList<>();
+        deque.add(root);
+        int key = 0;
+        while (!deque.isEmpty()){
+            int size = deque.size();
+            List<Integer> curLine = new ArrayList<>();
+            while (size > 0){
+                TreeNode node = deque.removeFirst();
+                if (key % 2 == 0){
+                    // 余数为0 则从左到右
+                    curLine.add(node.val);
+                } else {
+                    // 余数为1 则从右到左
+                    curLine.add(0, node.val);
+                }
+                if (node.left != null) deque.add(node.left);
+                if (node.right != null) deque.add(node.right);
+                size--;
+            }
+            result.add(curLine);
+            key++;
+        }
+        return result;
+    }
+
+    //（53）105. 从前序与中序遍历序列构造二叉树 time： ->
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        return null;
+    }
+
+
+
+
+
 
 
 
@@ -1090,10 +1327,6 @@ public class Interview150 {
 //        String path = "/.../a/..//b/c/../d/./";
 //        String[] strings = path.split("/");
 //        System.out.println(Arrays.toString(strings));
-        BigDecimal numa = new BigDecimal("1000000000000000000000000000001");
-        BigDecimal numb = new BigDecimal("465");
-        BigDecimal add = numa.add(numb);
-        System.out.println(add);
 
     }
 }
