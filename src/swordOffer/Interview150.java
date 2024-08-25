@@ -1299,17 +1299,156 @@ public class Interview150 {
         return result;
     }
 
-    //（53）105. 从前序与中序遍历序列构造二叉树 time： ->
+    //（53）105. 从前序与中序遍历序列构造二叉树 time：2024年8月25日10:11:02 -> 2024年8月25日10:39:34
     public TreeNode buildTree(int[] preorder, int[] inorder) {
-        return null;
+        // 1.先把inorder中元素与小标对应起来（注意：只有在无重复元素的情况下才可以使用）
+        Map<Integer, Integer> inMap = new HashMap<>();
+        for (int i = 0; i < inorder.length; i++){
+            inMap.put(inorder[i], i);
+        }
+
+        // 2.递归调用构造二叉树方法:都是左闭右闭
+        return buildTreeIn(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1, inMap);
     }
 
+    public TreeNode buildTreeIn(int[] preorder, int preLeft, int preRight, int[] inorder, int inLeft, int inRight, Map<Integer, Integer> inMap) {
+        if (preLeft > preRight && inLeft > inRight){
+            return null;
+        } else {
+            // 这里得使用后序遍历
+            Integer index = inMap.get(preorder[preLeft]);
+            int leftLength = index - inLeft;
+            int rightLength = inRight - index;
+            TreeNode leftNode = buildTreeIn(preorder, preLeft + 1, preLeft + leftLength, inorder, inLeft, index - 1, inMap); // 构建左子树
+            TreeNode rightNode = buildTreeIn(preorder, preLeft + leftLength + 1, preRight, inorder, index + 1, inRight, inMap); // 构建右子树
+            TreeNode root = new TreeNode(preorder[preLeft]);
+            root.left = leftNode;
+            root.right = rightNode;
+            return root;
+        }
+    }
 
+    //（54）117. 填充每个节点的下一个右侧节点指针 II time：2024年8月25日10:47:41 -> 2024年8月25日10:51:11
+    // 层次遍历 这里就不做了
 
+    //（55）114. 二叉树展开为链表 time：2024年8月25日10:52:10 -> 2024年8月25日11:09:29
+    // 思路：万事不要着急！画图模拟一下！对于二叉树就用最简单的三个节点来模拟即可！
+    public void flatten(TreeNode root) {
+        // 递归去做
+        flattenIn(root);
+    }
+    public TreeNode flattenIn(TreeNode root) {
+        if (root != null){
+            TreeNode leftNode = flattenIn(root.left);// 展开左子树
+            TreeNode rightNode = flattenIn(root.right);// 展开右子树
+            // 1.先把右孩子根结点接到左孩子的最后一个结点上
+            TreeNode cur = leftNode;
+            if (cur == null){
+                leftNode = rightNode;
+            }else {
+                while (cur.right != null){
+                    cur = cur.right;
+                }
+                cur.right = rightNode;
+            }
 
+            // 2.左孩子置空
+            root.left = null;
 
+            //3.右孩子接上左孩子头结点
+            root.right = leftNode;
 
+            return root;
+        } else {
+            return null;
+        }
+    }
 
+    //（56）129. 求根节点到叶节点数字之和 time：2024年8月25日11:11:35 -> 2024年8月25日11:26:13
+    // 思路：此题得使用回溯来做吧：随时记录着当前路径，知道遇到叶子节点的时候才保存下来
+    Integer allSum = 0;
+    public int sumNumbers(TreeNode root) {
+        StringBuilder blank = new StringBuilder();
+        backTracking(root, blank);
+        return allSum;
+    }
+    private void backTracking(TreeNode root, StringBuilder list){
+        if (root != null){
+            list.append(root.val);
+            backTracking(root.left, list);
+            list.deleteCharAt(list.length() - 1);
+            backTracking(root.right, list);
+            list.deleteCharAt(list.length() - 1);
+            if (root.left == null && root.right == null){
+                // 只有叶子节点的时候才计算总和
+                int num = Integer.parseInt(list.toString());
+                allSum += num;
+            }
+        } else {
+            list.append("-"); // 加个字符，方便回溯
+        }
+    }
+
+    //（57）129 方法二
+    Integer sum = 0;
+    public int sumNumbers1(TreeNode root) {
+        backTracking(root, 0);
+        return sum;
+    }
+    private void backTracking(TreeNode root, int curSum){
+        if (root != null){
+            curSum = curSum * 10 + root.val;
+            backTracking(root.left, curSum);
+            backTracking(root.right, curSum);
+            if (root.left == null && root.right == null){
+                // 只有叶子节点的时候才计算总和
+                sum += curSum;
+            }
+        }
+    }
+
+    //（58）173. 二叉搜索树迭代器 time：2024年8月25日15:10:26 -> 2024年8月25日15:25:56
+    // 见下面BSTIterator类：我巧妙使用的list存储来解决
+
+    //（59）222. 完全二叉树的节点个数 time：2024年8月25日15:27:38 -> 2024年8月25日15:31:28
+    Integer countNodes = 0;
+    public int countNodes(TreeNode root) {
+        countNodesIn(root);
+        return countNodes;
+    }
+    // 无所谓哪个顺序遍历 反正是统计总个数
+    public void countNodesIn(TreeNode root) {
+        if (root != null){
+            countNodes++; // 根节点
+            countNodesIn(root.left); // 左子树
+            countNodesIn(root.right); // 右子树
+        }
+    }
+
+    //（60）236. 二叉树的最近公共祖先 time：2024年8月25日15:31:47 -> 2024年8月25日15:51:35
+    // 思路：后序遍历：找到q或者p就直接返回！null也返回
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root != null){
+            // 1.如果找到了p、q就直接返回
+            if (root == p || root == q){
+                return root;
+            }
+
+            // 2.后序遍历寻找
+            TreeNode left = lowestCommonAncestor(root.left, p, q);
+            TreeNode right = lowestCommonAncestor(root.right, p, q);
+            if (left != null && right != null) return root;
+            if (left != null) return left;
+            return right;
+        } else {
+            return null;
+        }
+    }
+
+    //（61）530. 二叉搜索树的最小绝对差 time：2024年8月25日15:53:07 ->
+    public int getMinimumDifference(TreeNode root) {
+        return 0;
+    }
 
 
 
@@ -1330,6 +1469,37 @@ public class Interview150 {
 
     }
 }
+
+/**
+ * 173. 二叉搜索树迭代器
+ */
+class BSTIterator {
+    Integer curIndex;
+    List<Integer> values;
+
+    public BSTIterator(TreeNode root) {
+        // 开始初始化
+        this.values = new ArrayList<>();
+        BST(root);
+        this.curIndex = 0;
+    }
+    private void BST(TreeNode root){
+        if (root != null){
+            BST(root.left); // 左子树
+            this.values.add(root.val);
+            BST(root.right); // 右子树
+        }
+    }
+
+    public int next() {
+        return values.get(curIndex++);
+    }
+
+    public boolean hasNext() {
+        return curIndex < values.size();
+    }
+}
+
 /**
  *（31）155. 最小栈 time：2024年8月22日09:48:19 -> 2024年8月22日10:08:41
  * Your MinStack object will be instantiated and called as such:
