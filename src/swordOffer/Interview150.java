@@ -1445,10 +1445,169 @@ public class Interview150 {
         }
     }
 
-    //（61）530. 二叉搜索树的最小绝对差 time：2024年8月25日15:53:07 ->
-    public int getMinimumDifference(TreeNode root) {
-        return 0;
+    //（61）530. 二叉搜索树的最大绝对差 time：2024年8月26日10:04:01 -> 2024年8月26日10:12:31
+    public int getMaxDifference(TreeNode root) {
+        // 二叉搜索树：我们知道中序遍历是有序递增的，但这里不需要遍历全局，我们只需要找到最左边的节点、最右边的节点即可。
+        TreeNode left = root;
+        TreeNode right = root;
+        while (left.left != null){
+            left = left.left;
+        }
+        while (right.right != null){
+            right = right.right;
+        }
+
+        // 计算最大绝对差值
+        return right.val - left.val;
     }
+
+    //（62）530. 二叉搜索树的最小绝对差 time：2024年8月26日10:13:19 -> 2024年8月26日10:27:48
+    Integer minDiff = Integer.MAX_VALUE;
+    Integer preVal = -100000;
+    public int getMinimumDifference(TreeNode root) {
+        // 此题思路：正常中序遍历，遍历一遍即可
+        countMinDiff(root);
+        return minDiff;
+    }
+    // 中序遍历
+    public void countMinDiff(TreeNode root){
+        if (root != null){
+            countMinDiff(root.left); // 左孩子遍历
+            minDiff = Math.min(minDiff, Math.abs(preVal - root.val));
+            preVal = root.val; // 中间节点遍历
+            countMinDiff(root.right); // 右孩子遍历
+        }
+    }
+
+    //（63）230. 二叉搜索树中第 K 小的元素 time：2024年8月26日10:29:10 -> 2024年8月26日10:38:32
+    Integer kthSmallest;
+    Integer count = 0;
+    public int kthSmallest(TreeNode root, int k) {
+        // 中序遍历即可，到第k小保存下来
+        kthSmallestIn(root, k);
+        return kthSmallest;
+    }
+    public void kthSmallestIn(TreeNode root, int k) {
+        if (root != null){
+            kthSmallestIn(root.left, k); // 遍历左孩子
+
+            count++; // 遍历中间节点
+            if (count == k) kthSmallest = root.val;
+
+            kthSmallestIn(root.right, k); // 遍历右孩子
+        }
+    }
+
+    //（64）98. 验证二叉搜索树 time：2024年8月26日10:42:01 -> 2024年8月26日10:59:14
+    Long pre = Long.MIN_VALUE;
+    Boolean isValidBST = true;
+    public boolean isValidBST(TreeNode root) {
+        // 中序遍历是否是递增的
+        isValidBSTIn(root);
+        return isValidBST;
+    }
+    public void isValidBSTIn(TreeNode root) {
+        // 中序遍历是否是递增的
+        if (root != null){
+            isValidBSTIn(root.left); // 左孩子
+            if (pre >= root.val){ // 中节点
+                isValidBST = false;
+            }
+            pre = (long) root.val;
+            isValidBSTIn(root.right); // 右孩子
+        }
+    }
+
+    //（65）9. 回文数 time：2024年8月26日11:04:04 -> 2024年8月26日11:11:23
+    public boolean isPalindrome(int x) {
+        // 1.所有负数都不是回文数
+        if (x < 0){
+            return false;
+        }
+
+        // 2.正数的判断
+        StringBuilder num = new StringBuilder(String.valueOf(x));
+        StringBuilder reverse = num.reverse();
+        StringBuilder numNew = new StringBuilder(String.valueOf(x));
+        int result = numNew.compareTo(reverse);
+
+        return result == 0;
+    }
+
+    //（66）66. 加一 time：2024年8月26日14:30:24 -> 2024年8月26日14:47:48
+    public int[] plusOne(int[] digits) {
+        // 1.999等需要特殊处理（增加组数长度）
+        boolean key = true;
+        for (int digit : digits) {
+            if (digit != 9) {
+                key = false;
+                break;
+            }
+        }
+        if (key){
+            int[] result = new int[digits.length + 1];
+            result[0] = 1;
+            return result;
+        }
+
+        // 2.其他都只需要原数组上进行变换即可
+        int remain = 1;
+        for (int i = digits.length - 1; i >= 0; i--){
+            int curR = (digits[i] + remain) / 10;
+            int curV = (digits[i] + remain) % 10;
+            remain = curR;
+            digits[i] = curV;
+        }
+        return digits;
+    }
+
+    //（67）172. 阶乘后的零 time：2024年8月26日15:10:42 -> 2024年8月26日15:40:25
+    // 思路：此题学到了！找尾尾随0的数量，其实就是找乘数中10的数量，而10只等于2*5，所以就是找2和5成对的数量，而其中2远远要比5的个数多，所以此题就变成在乘数中有多少5了？
+    public int trailingZeroes(int n) {
+        int count = 0;
+        for (int i = 1; i <= n; i++){
+            int cur = i;
+            while (cur > 0){
+                // 1.如果上来就没有因子5，直接结束
+                if (cur % 5 != 0){
+                    break;
+                }
+
+                // 2.有因子5
+                count++;
+                cur = cur / 5;
+            }
+        }
+        return count;
+    }
+
+    //（68）69. x 的平方根  time：2024年8月26日14:49:44 -> 2024年8月26日15:10:42
+    public int mySqrt(int x) {
+        if(x == 1) return 1;
+        int pre = 1;
+        for (int i = 1; i <= x / 2; i++){
+            long cur = (long) i * i;
+            if (cur < x){
+                pre = i;
+            } else if (cur == x){
+                return i;
+            } else if (cur > x){
+                return pre;
+            }
+        }
+        return x / 2;
+    }
+
+    //（69）215. 数组中的第K个最大元素 time： ->
+    public int findKthLargest(int[] nums, int k) {
+
+    }
+
+
+
+
+
+
 
 
 
@@ -1466,7 +1625,6 @@ public class Interview150 {
 //        String path = "/.../a/..//b/c/../d/./";
 //        String[] strings = path.split("/");
 //        System.out.println(Arrays.toString(strings));
-
     }
 }
 
