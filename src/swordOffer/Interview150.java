@@ -1598,12 +1598,95 @@ public class Interview150 {
         return x / 2;
     }
 
-    //（69）215. 数组中的第K个最大元素 time： ->
+    //（69）215. 数组中的第K个最大元素 time：2024年8月27日10:03:24 -> 2024年8月27日10:19:20
     public int findKthLargest(int[] nums, int k) {
+        // 经典使用小顶堆 一直保持其有k个即可
+        PriorityQueue<Integer> priorityQueue = new PriorityQueue<>((Comparator.comparingInt(o -> o)));
+        for (int num : nums) {
+            // 先入堆
+            priorityQueue.add(num);
 
+            // 再判断是否需要出堆
+            if (priorityQueue.size() > k) {
+                priorityQueue.poll();
+            }
+        }
+        return priorityQueue.peek();
     }
 
+    //（70）373. 查找和最小的 K 对数字 time：2024年8月27日10:29:57 -> 2024年8月27日11:03:57
+    public List<List<Integer>> kSmallestPairs(int[] nums1, int[] nums2, int k) {
+        // 使用大顶堆 自定义排序即可
+        PriorityQueue<List<Integer>> priorityQueue = new PriorityQueue<>((list1, list2) -> {
+            int sum1 = list1.get(0) + list1.get(1);
+            int sum2 = list2.get(0) + list2.get(1);
+            return sum2 - sum1;
+        });
+        // 1.先把（i，0）入堆
+        for (int u : nums1) {
+            List<Integer> cur = new ArrayList<>();
+            cur.add(u);
+            cur.add(nums2[0]);
+            priorityQueue.add(cur);
+            // 只要队列size大于k 那就出堆 始终保持k个
+            if (priorityQueue.size() > k) {
+                priorityQueue.poll();
+            }
+        }
+        // 2.再正式遍历
+        for (int u : nums1) {
+            // 优化
+            if (priorityQueue.size() == k && u + nums2[0] >= priorityQueue.peek().get(0) + priorityQueue.peek().get(1)) {
+                break;
+            }
+            for (int j = 1; j < nums2.length; j++) {
+                List<Integer> cur = new ArrayList<>();
+                cur.add(u);
+                cur.add(nums2[j]);
+                priorityQueue.add(cur);
+                // 只要队列size大于k 那就出堆 始终保持k个
+                if (priorityQueue.size() > k) {
+                    priorityQueue.poll();
+                }
+            }
+        }
+        // 最终把所有的都出堆
+        List<List<Integer>> result = new ArrayList<>();
+        while (!priorityQueue.isEmpty()){
+            result.add(0, priorityQueue.poll());
+        }
+        return result;
+    }
 
+    //（71）200. 岛屿数量 time：2024年8月27日11:22:30 -> 2024年8月27日11:33:04
+    public int numIslands(char[][] grid) {
+        int count = 0;
+        for (int i = 0; i < grid.length; i++){
+            for (int j = 0; j < grid[0].length; j++){
+                if (grid[i][j] == '1'){
+                    count++;
+                    numIslandsDFS(grid, i, j);
+                }
+            }
+        }
+        return count;
+    }
+    public void numIslandsDFS(char[][] grid, int i, int j){
+        // 把与之相连接的所有岛屿浸没 1->0
+        if (i >= 0 && i < grid.length && j >= 0 && j < grid[0].length && grid[i][j] == '1'){
+            // 在范围内，并且还是岛屿
+            grid[i][j] = '0';
+            numIslandsDFS(grid, i - 1, j);
+            numIslandsDFS(grid, i + 1, j);
+            numIslandsDFS(grid, i, j - 1);
+            numIslandsDFS(grid, i, j + 1);
+        }
+    }
+
+    //（72）130. 被围绕的区域 time：->
+    public void solve(char[][] board) {
+
+    }
 
 
 
