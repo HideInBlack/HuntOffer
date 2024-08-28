@@ -879,31 +879,31 @@ public class Interview150 {
     }
 
     //（37）138. 随机链表的复制 time：2024年8月22日12:36:44 -> 2024年8月22日13:04:31
-    public Node copyRandomList(Node head) {
-        Node fakeHead = new Node(-1);
-        Node newLast = fakeHead;
-        Node cur = head;
-        // 1.先建立标准的链表，建立的时候存一个map；map里保存的是key=旧Node，value=新Node；这样就可以根据旧的Node找到新的Node
-        Map<Node, Node> map = new HashMap<>();
-        while (cur != null){
-            Node newOne = new Node(cur.val); // 1.新建
-            newOne.random = cur.random; // 先复制给他，后续可以改变
-
-            // 这一步是关键！建立旧节点与新节点的关系
-            map.put(cur, newOne);
-
-            newLast.next = newOne; // 2.接入
-            newLast = newLast.next; // 3.新的下移
-            cur = cur.next; // 4.旧的下移
-        }
-        // 2.再进行赋值random指针
-        newLast = fakeHead; //回头重新遍历新list
-        while (newLast != null){
-            newLast.random = map.get(newLast.random);
-            newLast = newLast.next;
-        }
-        return fakeHead.next;
-    }
+//    public Node copyRandomList(Node head) {
+//        Node fakeHead = new Node(-1);
+//        Node newLast = fakeHead;
+//        Node cur = head;
+//        // 1.先建立标准的链表，建立的时候存一个map；map里保存的是key=旧Node，value=新Node；这样就可以根据旧的Node找到新的Node
+//        Map<Node, Node> map = new HashMap<>();
+//        while (cur != null){
+//            Node newOne = new Node(cur.val); // 1.新建
+//            newOne.random = cur.random; // 先复制给他，后续可以改变
+//
+//            // 这一步是关键！建立旧节点与新节点的关系
+//            map.put(cur, newOne);
+//
+//            newLast.next = newOne; // 2.接入
+//            newLast = newLast.next; // 3.新的下移
+//            cur = cur.next; // 4.旧的下移
+//        }
+//        // 2.再进行赋值random指针
+//        newLast = fakeHead; //回头重新遍历新list
+//        while (newLast != null){
+//            newLast.random = map.get(newLast.random);
+//            newLast = newLast.next;
+//        }
+//        return fakeHead.next;
+//    }
 
     //（38）92. 反转链表 II time：2024年8月23日11:12:04 -> 2024年8月23日11:25:43
     public ListNode reverseBetween(ListNode head, int left, int right) {
@@ -1683,11 +1683,90 @@ public class Interview150 {
         }
     }
 
-    //（72）130. 被围绕的区域 time：->
+    //（72）130. 被围绕的区域 time：2024年8月28日09:40:43 -> 2024年8月28日10:10:02
     public void solve(char[][] board) {
+        // 我的思路：1.先遍历四个边，把四个边能到达的地方都变成一个中间态M；2.然后正常从头遍历开始浸没O
+        // 1.先遍历四个边，把四个边能到达的地方都变成一个中间态M；
+        for(int j = 0; j < board[0].length; j++){
+            solveDFS(board, 0, j, 'O', 'M');
+            solveDFS(board, board.length - 1, j, 'O', 'M');
+        }
+        for(int i = 0; i < board.length; i++){
+            solveDFS(board, i, 0, 'O', 'M');
+            solveDFS(board, i, board[0].length - 1, 'O', 'M');
+        }
+
+        // 2.然后正常从头遍历开始浸没O
+        for (int i = 0; i < board.length; i++){
+            for (int j = 0; j < board[0].length; j++){
+                solveDFS(board, i, j, 'O', 'X');
+            }
+        }
+
+        // 3.最后再把M变成O
+        for (int i = 0; i < board.length; i++){
+            for (int j = 0; j < board[0].length; j++){
+                if (board[i][j] == 'M'){
+                    board[i][j] = 'O';
+                }
+            }
+        }
 
     }
+    public void solveDFS(char[][] board, int i, int j, char target, char replace) {
+        // 在界内，并且等于target的时候，才开始浸没
+        if (i >= 0 && i < board.length && j >= 0 && j < board[0].length && board[i][j] == target){
+            board[i][j] = replace;
+            solveDFS(board, i - 1, j, target, replace);
+            solveDFS(board, i + 1, j, target, replace);
+            solveDFS(board, i, j - 1, target, replace);
+            solveDFS(board, i, j + 1, target, replace);
+        }
+    }
 
+    //（73）133. 克隆图 time：2024年8月28日10:17:05 -> 2024年8月28日10:57:06
+    // 思路：我觉得是和随机链表的copy一个思路的！需要new一个，然后在新节点与旧节点做map映射起来，第二遍再换节点
+    Map<Node, Node> map = new HashMap<>(); // 新旧节点的映射，也是判断是否已访问过的关键 key=原节点，value=新节点
+    public Node cloneGraph(Node node) {
+        // 直接进行深度优先遍历
+        if (node == null){
+            return node;
+        }
+
+        // 如果已经访问过 直接返回，无需新建
+        if (map.containsKey(node)){
+            return map.get(node);
+        }
+
+        // 开始深度拷贝
+        Node clone = new Node(node.val, new ArrayList<>());
+        map.put(node, clone);
+        for (int i = 0; i < node.neighbors.size(); i++){
+            // 深入拷贝邻接节点
+            clone.neighbors.add(cloneGraph(node.neighbors.get(i)));
+        }
+        return clone;
+    }
+
+    //（74）77. 组合 time：2024年8月28日11:01:31 -> 2024年8月28日11:13:42
+    // 标准回溯 问题
+    List<List<Integer>> result = new ArrayList<>();
+    List<Integer> path = new ArrayList<>();
+    public List<List<Integer>> combine(int n, int k) {
+        combineBackTracking(n, k, 1);
+        return result;
+    }
+    public void combineBackTracking(int n, int k, int startIndex) {
+        if (path.size() == k){ // 递归终止条件
+            result.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = startIndex; i <= n; i++){
+            path.add(i); // 1.处理当前
+            combineBackTracking(n, k, i + 1); // 2.进入递归
+            path.remove(path.size() - 1); // 3.回溯当前
+        }
+    }
 
 
 
