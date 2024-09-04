@@ -1768,6 +1768,99 @@ public class Interview150 {
         }
     }
 
+    // DFS & 回溯 继续强化？ 还是挑重点学习即可
+
+    //（75）2737:大整数除法 http://bailian.openjudge.cn/practice/2737/
+
+    //（76）108. 将有序数组转换为二叉搜索树 time：2024年9月4日14:26:06 -> 2024年9月4日14:41:08
+    public TreeNode sortedArrayToBST(int[] nums) {
+        return arrayToBST(nums, 0, nums.length - 1);
+    }
+    // 必须前序遍历才行
+    public TreeNode arrayToBST(int[] nums, int left, int right){
+        if (left <= right){
+            int index= (left + right) / 2;
+            TreeNode root = new TreeNode(nums[index]); // 根节点
+            root.left = arrayToBST(nums, left, index - 1); // 左孩子
+            root.right = arrayToBST(nums, index + 1, right); // 右孩子
+            return root;
+        } else {
+            return null;
+        }
+    }
+
+    //（77）23. 合并 K 个升序链表 time：2024年9月4日14:41:18 -> 2024年9月4日15:13:28
+    public ListNode mergeKLists(ListNode[] lists) {
+        // 先试试暴力合并：for循环挨个遍历 把所有的list合并到new上
+        ListNode newHead = new ListNode();
+        for (int i = 0; i < lists.length; i++){
+            newHead.next = mergeTwoLists2(newHead.next, lists[i]);
+        }
+        return newHead.next;
+    }
+    public ListNode mergeTwoLists2(ListNode a, ListNode b) {
+        ListNode fakeHead = new ListNode();
+        ListNode cur = fakeHead;
+
+        ListNode curA = a;
+        ListNode curB = b;
+        while (curA != null && curB != null){
+            if (curA.val < curB.val){
+                cur.next = curA;
+                cur = cur.next;
+                curA = curA.next;
+            } else {
+                cur.next = curB;
+                cur = cur.next;
+                curB = curB.next;
+            }
+            cur.next = null;
+        }
+        if (curA != null){
+            cur.next = curA;
+        }
+        if (curB != null){
+            cur.next = curB;
+        }
+
+        return fakeHead.next;
+    }
+
+    // 23. 合并 K 个升序链表 使用优先权队列 time：2024年9月4日16:08:21 -> 2024年9月4日16:30:28
+    // 思路：此题还是用小顶堆 简单的一
+    public ListNode mergeKLists2(ListNode[] lists) {
+        // 1.建立小顶堆并入堆
+        PriorityQueue<ListNode> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(listNode -> listNode.val));
+        for (ListNode list : lists) {
+            if (list != null) {
+                priorityQueue.add(list);
+            }
+        }
+
+        // 2.开始把所有的节点合并到结果上
+        ListNode fakeHead = new ListNode();
+        ListNode cur = fakeHead;
+        while (!priorityQueue.isEmpty()){
+            ListNode minOne = priorityQueue.poll();
+            // 只有当其下一个节点不为null时才入堆
+            if (minOne.next != null) priorityQueue.add(minOne.next);
+
+            // 合并操作
+            cur.next = minOne;
+            cur = cur.next;
+            cur.next = null;
+        }
+        return fakeHead.next;
+    }
+
+    //（78）148. 排序链表 time：2024年9月4日16:35:06 ->
+    public ListNode sortList(ListNode head) {
+        return null;
+    }
+
+
+
+
 
 
 
