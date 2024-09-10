@@ -1826,7 +1826,7 @@ public class Interview150 {
         return fakeHead.next;
     }
 
-    // 23. 合并 K 个升序链表 使用优先权队列 time：2024年9月4日16:08:21 -> 2024年9月4日16:30:28
+    // （78）23. 合并 K 个升序链表 使用优先权队列 time：2024年9月4日16:08:21 -> 2024年9月4日16:20:28
     // 思路：此题还是用小顶堆 简单的一
     public ListNode mergeKLists2(ListNode[] lists) {
         // 1.建立小顶堆并入堆
@@ -1853,12 +1853,130 @@ public class Interview150 {
         return fakeHead.next;
     }
 
-    //（78）148. 排序链表 time：2024年9月4日16:35:06 ->
+    //（79）148. 排序链表 time：2024年9月10日10:36:40 -> 2024年9月10日10:44:58
     public ListNode sortList(ListNode head) {
-        return null;
+        // 解题思路：直接放到小顶堆中，然后一个一个的出堆即可
+        PriorityQueue<ListNode> queue = new PriorityQueue<>(Comparator.comparingInt(node -> node.val));
+
+        // 1.先建立小顶堆
+        ListNode cur = head;
+        while (cur != null){
+            queue.add(cur);
+            cur = cur.next;
+        }
+
+        // 2.再出堆
+        ListNode fakeHead = new ListNode();
+        ListNode newCur = fakeHead;
+        while (!queue.isEmpty()){
+            newCur.next = queue.poll();
+            newCur = newCur.next;
+        }
+        newCur.next = null;
+
+        return fakeHead.next;
     }
 
+    //（79）148. 排序链表 time：2024年9月10日13:30:47 ->
+    // 使用分治递归的思想试着解决解决
+    public ListNode sortList2(ListNode head) {
+        // 如果为空或者只有一个结点直接返回
+        if (head == null || head.next == null){
+            return head;
+        }
 
+        // 1.首先进行切割，把一个链表切割成均匀两份（使用快慢指针）
+        ListNode fast = head.next;
+        ListNode slow = head;
+        while (fast != null && fast.next != null){
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+        ListNode temp = slow.next;
+        slow.next = null;
+
+        // 2.分别对左右链表进行排序
+        ListNode left = sortList2(head);
+        ListNode right = sortList2(temp);
+
+        // 3.再针对左右排序后的链表（递增有序的链表）进行合并
+        ListNode fakeHead = new ListNode();
+        ListNode last = fakeHead;
+        while (left != null && right != null){
+            if (left.val > right.val){
+                last.next = right;
+                last = last.next;
+                right = right.next;
+            } else {
+                 last.next = left;
+                 last = last.next;
+                 left = left.next;
+            }
+        }
+
+        if (left != null) last.next = left;
+        if (right != null) last.next = right;
+
+        return fakeHead.next;
+    }
+
+    //（80）103. 二叉树的锯齿形层序遍历 again time：2024年9月9日20:04:25 -> 2024年9月9日20:14:37
+    public List<List<Integer>> zigzagLevelOrder2(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (root == null) return result;
+
+        // 就是层序遍历；原层序遍历放入队列的顺序不变；变得是输出结果的时候，是头插还是尾插即可；
+        // 栈的操作是push pop peek；队列的操作是addLast、removeFirst、
+        Deque<TreeNode> deque = new LinkedList<>();
+        deque.addLast(root);
+        int key = 0;
+
+        while (!deque.isEmpty()){
+            int size = deque.size();
+            List<Integer> cur = new ArrayList<>();
+            for (int i = 0; i < size; i++){
+                TreeNode node = deque.removeFirst();
+                if (key % 2 == 0){
+                    cur.add(node.val);
+                } else {
+                    cur.add(0, node.val);
+                }
+                if (node.left != null) deque.addLast(node.left);
+                if (node.right != null) deque.addLast(node.right);
+            }
+
+            key++;
+            result.add(cur);
+        }
+        return result;
+    }
+
+    /**
+     * （81） time：2024年9月10日20:44:23 -> 2024年9月10日20:58:56
+     * 题目描述
+     * 一个环上有10个点，编号为0-9, 从0点出发，每步可以顺时针到下一个点，也可以逆时针到上一个点。
+     * 求:经过n步又回到0点有多少种不同的走法?
+     */
+    public int countPath(int n) {
+        // 首先此题目是经典的动态规划题目
+        // 1. dp[i][j]定义：从0经过i步，回到j点一共有多少种不同的做法？ i是步数，j是节点
+        // 2. dp[0][0]=1; 初始化:从0经过0步，回到0点一共有1种不同的做法
+        // 3. 状态转移方程：dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j + 1]
+        // 3. 状态转移方程：dp[i][j] = dp[i - 1][(j - 1 + m) % m] + dp[i - 1][(j + 1) % m] 因为是个环所以要取余m
+        int[][] dp = new int[n + 1][10];
+
+        dp[0][0] = 1;
+
+        // 注意：因为0步的第一层已经初始化，所以直接从1步开始
+        for (int i = 1; i <= n; i++){
+            for (int j = 0; j < 10; j++){
+                dp[i][j] = dp[i - 1][(j - 1 + 10) % 10] + dp[i - 1][(j + 1) % 10];
+            }
+        }
+
+
+        return dp[n][0];
+    }
 
 
 
@@ -1872,6 +1990,8 @@ public class Interview150 {
          */
     public static void main(String[] args) {
         Interview150 interview = new Interview150();
+        int i = interview.countPath(2);
+        System.out.println(i);
 //        Map<Character, Character> map = new HashMap<>();
 //        map.put('e', 'a');
 //        System.out.println(map.get('e'));
