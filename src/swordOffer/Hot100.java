@@ -41,7 +41,8 @@ public class Hot100 {
 
         }
 
-        return map.values().stream().toList();
+//        return map.values().stream().toList();
+        return new ArrayList<>();
     }
 
     //3： 128. 最长连续序列 time：2024年4月10日19:27:03 -> 2024年4月10日19:39:36

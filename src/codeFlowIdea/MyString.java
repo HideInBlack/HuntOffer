@@ -101,7 +101,7 @@ public class MyString {
     // √ 题解方法二 （4）151. 反转字符串中的单词 time：2023年10月26日14:37:35 -> 2023年10月26日14:55:18
     public String reverseWords2(String s) {
         //先去除前后缀的空白符
-        s = s.strip();
+        s = s.replaceAll("\\s+", "");
         String stringArray[] = s.split("\\s+");
         StringBuilder result = new StringBuilder();
         for (int i = stringArray.length - 1; i >= 0; i--){
@@ -214,7 +214,7 @@ public class MyString {
      * 题目意思：输入：__hello___world__  输出：hello_world
      */
         public String deleteSpace(String s){
-            s = s.strip();
+            s = s.replaceAll("\\s+", "");
             StringBuilder stringBuilder = new StringBuilder(s);
             for (int i = 0; i < stringBuilder.length(); i++){
                 //此为空格 且前一个也是空格才进行删掉【不删除第一个空格，只删除第一个之后的空格】

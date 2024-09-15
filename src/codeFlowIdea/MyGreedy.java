@@ -617,7 +617,8 @@ public class MyGreedy {
         for (int i = 1; i < s.length(); i++){
             if (s.charAt(i) <= s.charAt(i - 1) && s.charAt(i - 1) == target){//就算是相等 也是找到的第一个不严格递增的数字
                 result.append(Integer.parseInt(String.valueOf(s.charAt(i - 1))) - 1);//这里要拼接前一个的-1
-                result.append("9".repeat(s.length() - i));
+//                result.append("9".repeat(s.length() - i));
+                result.append("9");
                 break;//找到第一个就要中断跳出
             }else { //这里需要后者严格大于前者（=都是不行得！）
                 result.append(s.charAt(i - 1));

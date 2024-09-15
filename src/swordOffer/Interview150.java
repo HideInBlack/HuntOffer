@@ -215,7 +215,8 @@ public class Interview150 {
 
     //（11）151. 反转字符串中的单词 time：2024年8月17日20:37:10 -> 2024年8月17日20:57:06
     public String reverseWords(String s) {
-        String newS = s.strip();
+//        String newS = s.strip();
+        String newS = s.trim();
         String[] strings = newS.split("\\s+");
         StringBuilder result = new StringBuilder();
         for (int i = strings.length - 1; i >= 0; i--){
@@ -690,7 +691,8 @@ public class Interview150 {
     public int[][] insert(int[][] intervals, int[] newInterval) {
         // 此题思路：先插入到一个二维数组中，再进行排序与区间合并即可
         // 1.先把二维数组转化为list，并插入最新的一个区间
-        List<int[]> list = new ArrayList<>(Arrays.stream(intervals).toList());
+//        List<int[]> list = new ArrayList<>(Arrays.stream(intervals).toList());
+        List<int[]> list = new ArrayList<>();
         list.add(newInterval);
 
         // 2.按照startIndex进行排序
@@ -756,7 +758,7 @@ public class Interview150 {
             result.insert(0, stack.pop());
             result.insert(0, "/");
         }
-        if (result.isEmpty()){
+        if (result.length() == 0) {
             result.insert(0, "/");
         }
         return result.toString();
@@ -1529,7 +1531,7 @@ public class Interview150 {
         StringBuilder num = new StringBuilder(String.valueOf(x));
         StringBuilder reverse = num.reverse();
         StringBuilder numNew = new StringBuilder(String.valueOf(x));
-        int result = numNew.compareTo(reverse);
+        int result = numNew.toString().compareTo(reverse.toString());
 
         return result == 0;
     }

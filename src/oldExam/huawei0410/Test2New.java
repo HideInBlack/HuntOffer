@@ -34,7 +34,8 @@ public class Test2New {
 
 //        System.out.println(Arrays.toString(father));
 //        System.out.println(map);
-        List<Integer> list = new ArrayList<>(map.values().stream().toList());
+//        List<Integer> list = new ArrayList<>(map.values().stream().toList());
+        List<Integer> list = new ArrayList<>();
         list.sort(new Comparator<Integer>() {
             @Override
             public int compare(Integer o1, Integer o2) {

@@ -440,7 +440,8 @@ public class MyBackTracking {
         //先初始化棋盘
         int[][] checkerboard = new int[n][n];
         StringBuilder lineStr = new StringBuilder();
-        lineStr.append(".".repeat(checkerboard.length));
+//        lineStr.append(".".repeat(checkerboard.length));
+        lineStr.append(".");
         solveNQueensBackTracking(checkerboard, 0, lineStr.toString());
         return solveNQueensResult;
     }

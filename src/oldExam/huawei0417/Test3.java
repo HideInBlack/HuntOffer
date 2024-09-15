@@ -54,7 +54,8 @@ public class Test3 {
 //        System.out.println(allPath);
 //        System.out.println(map);
 
-        List<Integer> list = new ArrayList<>(map.keySet().stream().toList());
+//        List<Integer> list = new ArrayList<>(map.keySet().stream().toList());
+        List<Integer> list = new ArrayList<>();
         list.sort(new Comparator<Integer>() {
             @Override
             public int compare(Integer o1, Integer o2) {

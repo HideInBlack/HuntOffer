@@ -599,7 +599,8 @@ public class MyStacksQueues {
         });
         StringBuilder result = new StringBuilder();
         for (char element : list){
-            result.append(String.valueOf(element).repeat(Math.max(0, map.get(element))));
+//            result.append(String.valueOf(element).repeat(Math.max(0, map.get(element))));
+            result.append(element);
         }
         return result.toString();
     }

@@ -40,7 +40,8 @@ public class BigDividerOwn {
 
             // 2.开始计算当前商和余数
             long curNum = Long.parseLong(cur.toString());
-            BigDecimal value = new BigDecimal((curNum / divider + "0".repeat(strLength - index)));
+//            BigDecimal value = new BigDecimal((curNum / divider + "0".repeat(strLength - index)));
+            BigDecimal value = new BigDecimal((curNum / divider + "0"));
             result = result.add(value);
             remain = curNum % divider;
         }
