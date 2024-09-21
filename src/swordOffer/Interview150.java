@@ -1974,7 +1974,6 @@ public class Interview150 {
             }
         }
 
-
         return dp[n][0];
     }
 
